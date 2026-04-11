@@ -32,6 +32,8 @@ model Program {
   program_instruments  ProgramInstrument[]
   program_categories   ProgramCategory[]
   program_locations    ProgramLocation[]
+  import_sources       ImportSource[]
+  program_candidates   ProgramCandidate[]
 
   @@map("program")
 }
@@ -162,4 +164,73 @@ model AuditionInstrument {
 
   @@unique([audition_id, instrument_id])
   @@map("audition_instrument")
+}
+
+// ---------------------------------------------------------------------------
+// Import pipeline
+// ---------------------------------------------------------------------------
+// Scraping never writes directly to `program` — everything flows through
+// ImportSource → ImportRun → ProgramCandidate → human approval.
+
+model ImportSource {
+  id                String   @id @default(uuid())
+  name              String
+  url               String   @unique
+  status            String   @default("active") // active | paused | broken
+  schedule          String? // optional cron expression; null = manual only
+  program_id        String? // optional pin to an existing canonical program
+  last_fetched_at   DateTime?
+  last_content_hash String?
+  notes             String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  program    Program?           @relation(fields: [program_id], references: [id])
+  runs       ImportRun[]
+  candidates ProgramCandidate[]
+
+  @@map("import_source")
+}
+
+model ImportRun {
+  id                    String    @id @default(uuid())
+  import_source_id      String
+  started_at            DateTime  @default(now())
+  finished_at           DateTime?
+  result                String // success | unchanged | fetch_error | extraction_error
+  error_message         String?
+  http_status           Int?
+  content_hash          String?
+  raw_html_gz           Bytes? // gzipped HTML, null on unchanged runs
+  raw_html_size         Int? // uncompressed size in bytes
+  extraction_model      String?
+  extraction_tokens_in  Int?
+  extraction_tokens_out Int?
+
+  import_source ImportSource       @relation(fields: [import_source_id], references: [id])
+  candidates    ProgramCandidate[]
+
+  @@index([import_source_id, started_at])
+  @@map("import_run")
+}
+
+model ProgramCandidate {
+  id               String    @id @default(uuid())
+  import_source_id String
+  import_run_id    String
+  program_id       String? // set on approve to link candidate to canonical program
+  extracted_json   Json // full ProgramInput shape as returned by the extractor
+  confidence       Float?
+  status           String    @default("pending") // pending | approved | rejected | stale
+  reviewer_notes   String?
+  approved_at      DateTime?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  import_source ImportSource @relation(fields: [import_source_id], references: [id])
+  import_run    ImportRun    @relation(fields: [import_run_id], references: [id])
+  program       Program?     @relation(fields: [program_id], references: [id])
+
+  @@index([status, created_at])
+  @@map("program_candidate")
 }
