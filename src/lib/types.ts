@@ -1,13 +1,12 @@
-export interface PaginationMeta {
-  page_number: number
-  page_size: number
-  total_pages: number
+export interface CursorPageMeta {
+  next: string | null
+  prev: string | null
   total_items: number
 }
 
 export interface ListResponse<T> {
   items: T[]
-  meta: PaginationMeta
+  meta: CursorPageMeta
 }
 
 export interface BareListResponse<T> {
