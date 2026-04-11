@@ -88,19 +88,33 @@ export default async function ProgramsPage({
     'page[size]': getString(params, 'page[size]') ?? '12',
   })
 
-  const [programsRes, instrumentsRes, categoriesRes, locationsRes] = await Promise.all([
-    listPrograms(query),
-    listInstruments(),
-    listCategories(),
-    listLocations(),
-  ])
+  const [programsRes, allProgramsRes, instrumentsRes, categoriesRes, locationsRes] =
+    await Promise.all([
+      listPrograms(query),
+      listPrograms(buildQuery({ 'page[size]': '100' })),
+      listInstruments(),
+      listCategories(),
+      listLocations(),
+    ])
 
   const { items: programs, meta } = programsRes
-  const instruments = instrumentsRes.items
-  const categories = categoriesRes.items
-  const locations = locationsRes.items
+  const allPrograms = allProgramsRes.items
 
-  const countries = Array.from(new Set(locations.map((l) => l.country))).sort()
+  const usedInstrumentIds = new Set<string>()
+  const usedCategoryIds = new Set<string>()
+  const usedCountries = new Set<string>()
+  for (const p of allPrograms) {
+    for (const i of p.instruments) usedInstrumentIds.add(i.id)
+    for (const c of p.categories) usedCategoryIds.add(c.id)
+    for (const l of p.locations) usedCountries.add(l.country)
+  }
+
+  const instruments = instrumentsRes.items.filter((i) => usedInstrumentIds.has(i.id))
+  const categories = categoriesRes.items.filter((c) => usedCategoryIds.has(c.id))
+  const countries = locationsRes.items
+    .map((l) => l.country)
+    .filter((c, idx, arr) => usedCountries.has(c) && arr.indexOf(c) === idx)
+    .sort()
 
   const currentQ = getString(params, 'q') ?? ''
   const currentInstrument = getString(params, 'instrument_id') ?? ''
