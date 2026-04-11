@@ -37,7 +37,7 @@ export function validationError(detail: string): NextResponse {
   return problemResponse({
     type: '/problems/validation-error',
     title: 'Validation failed',
-    status: 422,
+    status: 400,
     detail,
   })
 }
