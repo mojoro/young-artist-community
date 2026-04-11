@@ -49,7 +49,7 @@ function formatRating(avg: number | null, count: number): string {
   return `★ ${avg.toFixed(1)} (${count} review${count === 1 ? '' : 's'})`
 }
 
-function pageLink(params: SearchParams, newPageNumber: number): string {
+function cursorLink(params: SearchParams, newCursor: string | null): string {
   const qs = new URLSearchParams()
   const keys = [
     'q',
@@ -59,14 +59,15 @@ function pageLink(params: SearchParams, newPageNumber: number): string {
     'offers_scholarship',
     'tuition_lower_than',
     'sort',
-    'page[size]',
+    'limit',
   ]
   for (const k of keys) {
     const v = getString(params, k)
     if (v !== undefined && v !== '') qs.set(k, v)
   }
-  qs.set('page[number]', String(newPageNumber))
-  return `/programs?${qs.toString()}`
+  if (newCursor) qs.set('cursor', newCursor)
+  const qsStr = qs.toString()
+  return qsStr ? `/programs?${qsStr}` : '/programs'
 }
 
 export default async function ProgramsPage({
@@ -84,14 +85,14 @@ export default async function ProgramsPage({
     offers_scholarship: getString(params, 'offers_scholarship'),
     tuition_lower_than: getString(params, 'tuition_lower_than'),
     sort: getString(params, 'sort') ?? '-created_at',
-    'page[number]': getString(params, 'page[number]') ?? '0',
-    'page[size]': getString(params, 'page[size]') ?? '12',
+    cursor: getString(params, 'cursor'),
+    limit: getString(params, 'limit') ?? '12',
   })
 
   const [programsRes, allProgramsRes, instrumentsRes, categoriesRes, locationsRes] =
     await Promise.all([
       listPrograms(query),
-      listPrograms(buildQuery({ 'page[size]': '100' })),
+      listPrograms(buildQuery({ limit: '100' })),
       listInstruments(),
       listCategories(),
       listLocations(),
@@ -124,10 +125,9 @@ export default async function ProgramsPage({
   const currentTuition = getString(params, 'tuition_lower_than') ?? ''
   const currentSort = getString(params, 'sort') ?? '-created_at'
 
-  const pageNumber = meta.page_number
-  const totalPages = Math.max(1, meta.total_pages)
-  const hasPrev = pageNumber > 0
-  const hasNext = pageNumber + 1 < totalPages
+  const totalItems = meta.total_items
+  const hasPrev = meta.prev !== null
+  const hasNext = meta.next !== null
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8">
@@ -303,7 +303,7 @@ export default async function ProgramsPage({
           <nav className="mt-8 flex items-center justify-between border-t border-gray-200 pt-4">
             {hasPrev ? (
               <Link
-                href={pageLink(params, pageNumber - 1)}
+                href={cursorLink(params, meta.prev)}
                 className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
               >
                 ← Previous
@@ -315,12 +315,12 @@ export default async function ProgramsPage({
             )}
 
             <span className="text-sm text-gray-600">
-              Page {pageNumber + 1} of {totalPages}
+              {totalItems} total
             </span>
 
             {hasNext ? (
               <Link
-                href={pageLink(params, pageNumber + 1)}
+                href={cursorLink(params, meta.next)}
                 className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
               >
                 Next →

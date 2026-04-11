@@ -137,8 +137,8 @@ export default async function ProgramDetailPage({
   if (!program) notFound()
 
   const [reviewsRes, auditionsRes] = await Promise.all([
-    listProgramReviews(program_id, '?page%5Bsize%5D=50'),
-    listProgramAuditions(program_id, '?page%5Bsize%5D=50'),
+    listProgramReviews(program_id, '?limit=50'),
+    listProgramAuditions(program_id, '?limit=50'),
   ])
 
   const reviews = reviewsRes.items

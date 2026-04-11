@@ -32,7 +32,7 @@ export default async function Home() {
   const [upcomingRes, categoriesRes] = await Promise.all([
     listPrograms(
       buildQuery({
-        'page[size]': 6,
+        limit: 6,
         sort: 'application_deadline',
         deadline_after: today,
       }),
@@ -43,7 +43,7 @@ export default async function Home() {
   let featured = upcomingRes.items
   if (featured.length === 0) {
     const fallback = await listPrograms(
-      buildQuery({ 'page[size]': 6, sort: '-created_at' }),
+      buildQuery({ limit: 6, sort: '-created_at' }),
     )
     featured = fallback.items
   }
