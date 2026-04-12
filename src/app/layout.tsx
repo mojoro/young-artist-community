@@ -114,10 +114,10 @@ export default function RootLayout({
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <p className="text-sm font-medium text-slate-300">
-                    Join our mailing list
+                    Interested in this platform?
                   </p>
                   <p className="mt-0.5 text-xs text-slate-500">
-                    New programs and deadlines, straight to your inbox.
+                    Sign up to let us know there's demand.
                   </p>
                 </div>
                 <div className="w-full sm:w-80">

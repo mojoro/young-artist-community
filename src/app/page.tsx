@@ -240,6 +240,23 @@ export default async function Home() {
               Search
             </button>
           </form>
+
+          {/* Interest signup CTA */}
+          <div className="mt-10 rounded-xl bg-brand-50 p-8 sm:p-10 text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+              Should we keep building this?
+            </h2>
+            <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-slate-600">
+              YACTracker is an early-stage project. We're trying to figure out
+              if the young artist community actually wants a dedicated directory
+              and review platform. If this is something you'd use, drop your
+              email below — it helps us know there's real interest and whether
+              it's worth continuing development.
+            </p>
+            <div className="mx-auto mt-6 max-w-sm">
+              <SubscribeForm variant="light" />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -292,24 +309,6 @@ export default async function Home() {
               ))}
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Mailing list CTA */}
-      <section className="pb-16 pt-4">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-xl bg-brand-50 p-8 sm:p-10">
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-              Stay in the loop
-            </h2>
-            <p className="mt-2 max-w-xl text-sm text-slate-600">
-              Get notified about new programs, upcoming deadlines, and community
-              updates. No spam — just the good stuff.
-            </p>
-            <div className="mt-5 max-w-md">
-              <SubscribeForm variant="light" />
-            </div>
-          </div>
         </div>
       </section>
     </>
