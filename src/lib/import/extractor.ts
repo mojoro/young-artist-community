@@ -160,9 +160,10 @@ export async function extractProgram(
 
     if (!res.ok) {
       const text = await res.text()
+      console.error(`[extractor] OpenRouter API ${res.status}:`, text.slice(0, 500))
       return {
         kind: 'error',
-        message: `OpenRouter API ${res.status}: ${text.slice(0, 500)}`,
+        message: `OpenRouter API returned ${res.status}`,
         model,
         tokens_in: 0,
         tokens_out: 0,
@@ -171,6 +172,7 @@ export async function extractProgram(
 
     body = (await res.json()) as OpenRouterResponse
   } catch (e) {
+    console.error('[extractor] OpenRouter request failed:', e)
     return {
       kind: 'error',
       message: `OpenRouter request failed: ${e instanceof Error ? e.message : String(e)}`,
@@ -185,23 +187,28 @@ export async function extractProgram(
   const raw = body.choices?.[0]?.message?.content
 
   if (!raw) {
+    console.error('[extractor] OpenRouter returned no content')
     return {
       kind: 'error',
-      message: 'OpenRouter returned no content in response',
+      message: 'OpenRouter returned no content',
       model,
       tokens_in,
       tokens_out,
     }
   }
 
+  // Strip markdown fences if the model wraps the response
+  const cleaned = raw.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim()
+
   // Parse and validate the JSON output
   let parsed: unknown
   try {
-    parsed = JSON.parse(raw)
+    parsed = JSON.parse(cleaned)
   } catch {
+    console.error('[extractor] Failed to parse LLM JSON:', raw.slice(0, 500))
     return {
       kind: 'error',
-      message: `Failed to parse LLM JSON: ${raw.slice(0, 200)}`,
+      message: 'LLM returned invalid JSON',
       model,
       tokens_in,
       tokens_out,
@@ -223,9 +230,10 @@ export async function extractProgram(
   const result = extractedProgramSchema.safeParse(parsed)
   if (!result.success) {
     const issues = result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`)
+    console.error('[extractor] Schema validation failed:', issues)
     return {
       kind: 'error',
-      message: `Schema validation failed: ${issues.join('; ')}`,
+      message: 'Extracted data failed schema validation',
       model,
       tokens_in,
       tokens_out,

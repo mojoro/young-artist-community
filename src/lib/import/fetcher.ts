@@ -70,6 +70,7 @@ export async function fetchSource(
     })
 
     if (!res.ok) {
+      console.error(`[fetcher] HTTP ${res.status} for ${url}`)
       return {
         kind: 'fetch_error',
         http_status: res.status,
@@ -103,6 +104,7 @@ export async function fetchSource(
     if (e instanceof Error && e.cause instanceof Error) {
       message = `${message}: ${e.cause.message}`
     }
+    console.error(`[fetcher] Fetch failed for ${url}:`, message)
     return { kind: 'fetch_error', http_status: null, message }
   } finally {
     clearTimeout(timer)
