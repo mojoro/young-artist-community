@@ -13,9 +13,9 @@ export async function generateMetadata({
     where: { slug },
     select: { name: true },
   })
-  if (!program) return { title: 'Not Found — YACTracker' }
+  if (!program) return { title: 'Not Found | Young Artist Community' }
   return {
-    title: `Add Audition — ${program.name} — YACTracker`,
+    title: `Add Audition — ${program.name} | Young Artist Community`,
     description: `Submit an audition location for ${program.name}.`,
   }
 }

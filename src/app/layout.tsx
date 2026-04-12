@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'YACTracker — Young Artist Community',
+  title: 'Young Artist Community | Classical Music Programs Directory',
   description:
-    'Find and review young artist programs in classical music and opera. YACTracker is a Young Artist Community resource for singers and instrumentalists.',
+    'Find and review young artist programs in classical music and opera. A community resource for singers and instrumentalists.',
 }
 
 export default function RootLayout({
@@ -48,12 +48,11 @@ export default function RootLayout({
                     <path d="M22.5 5.5 Q24 12 21.5 15" stroke="white" strokeWidth="1.3" strokeLinecap="round" fill="none" opacity="0.35" />
                   </svg>
                   <span className="text-base font-semibold text-white">
-                    YACTracker
+                    Young Artist Community
                   </span>
                 </div>
                 <p className="mt-2 max-w-md text-sm text-slate-300">
-                  A Young Artist Community resource for classical music and
-                  opera programs.
+                  A community directory for classical music and opera programs.
                 </p>
               </div>
               <nav className="flex gap-6 text-sm text-slate-300">
@@ -112,7 +111,7 @@ export default function RootLayout({
                 </div>
               </div>
               <p className="mt-6 text-xs text-slate-300">
-                &copy; {new Date().getFullYear()} YACTracker
+                &copy; {new Date().getFullYear()} Young Artist Community
               </p>
             </div>
           </div>

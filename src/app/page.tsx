@@ -215,9 +215,9 @@ export default async function Home() {
             Find and review young artist programs in classical music and opera
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-slate-600">
-            YACTracker is a Young Artist Community where singers and
-            instrumentalists browse summer festivals, academies, and young
-            artist programs — and share honest reviews from past participants.
+            A community directory where singers and instrumentalists browse
+            summer festivals, academies, and young artist programs, with
+            honest reviews from past participants.
           </p>
 
           <form
@@ -249,11 +249,10 @@ export default async function Home() {
               Should we keep building this?
             </h2>
             <p className="sm:mx-auto mt-3 max-w-lg text-sm leading-relaxed text-slate-600">
-              YACTracker is an early-stage project. We're trying to figure out
+              This is an early-stage project. We're trying to figure out
               if the young artist community actually wants a dedicated directory
-              and review platform. If this is something you'd use, please drop your
-              email below. It helps us know there's real interest and whether
-              it's worth continuing development.
+              and review platform. If this is something you'd use, drop your
+              email below. It helps us know there's real interest.
             </p>
             <div className="sm:mx-auto mt-6 max-w-sm">
               <SubscribeForm variant="light" />

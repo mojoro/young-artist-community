@@ -6,7 +6,7 @@
  * that currently encodes only `{ offset: N }`. Clients must treat it as
  * opaque — we reserve the right to change the encoding.
  *
- * yactracker is a small-dataset project (≤ ~1000 rows) so we keep
+ * This is a small-dataset project (≤ ~1000 rows) so we keep
  * `total_items` in the meta even though cursor meta typically omits totals.
  * This is a deliberate pragmatic deviation from the spec — see
  * `memory/feedback_pragmatic_spec_compliance.md`.

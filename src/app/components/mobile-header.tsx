@@ -43,11 +43,11 @@ export function MobileHeader() {
               <path d="M22.5 5.5 Q24 12 21.5 15" stroke="white" strokeWidth="1.3" strokeLinecap="round" fill="none" opacity="0.35" />
             </svg>
             <div className="flex flex-col">
-              <span className="text-base font-bold leading-tight text-slate-900 tracking-tight">
-                YACTracker
+              <span className="text-sm font-bold leading-tight text-slate-900 tracking-tight">
+                Young Artist
               </span>
-              <span className="text-[10px] font-medium uppercase tracking-widest text-slate-400">
-                Young Artist Community
+              <span className="text-sm font-bold leading-tight text-brand-600 tracking-tight">
+                Community
               </span>
             </div>
           </Link>

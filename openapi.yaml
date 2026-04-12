@@ -1,19 +1,19 @@
 openapi: 3.0.3
 info:
-  title: YACTracker API
+  title: Young Artist Community API
   description: |
-    REST API for YACTracker — a directory and review platform for Young Artist
-    Programs (YAPs) in classical music and opera.
+    REST API for Young Artist Community, a directory and review platform for
+    Young Artist Programs (YAPs) in classical music and opera.
   version: 0.2.0
   contact:
-    name: YACTracker Team
-    email: api@yactracker.app
-    url: https://yactracker.app
-  x-api-id: yactracker-api
+    name: Young Artist Community
+    email: api@youngartist.community
+    url: https://youngartist.community
+  x-api-id: young-artist-community-api
   x-audience: external-public
 
 servers:
-  - url: https://yactracker.app
+  - url: https://youngartist.community
 
 # ---------------------------------------------------------------------------
 # PATHS

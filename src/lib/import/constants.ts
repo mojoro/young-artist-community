@@ -1,4 +1,4 @@
-export const USER_AGENT = 'YACTrackerBot/1.0 (+https://yactracker.com/bot)'
+export const USER_AGENT = 'YoungArtistCommunityBot/1.0 (+https://youngartist.community/bot)'
 
 // Minimum delay in milliseconds between two requests to the same host.
 export const PER_HOST_DELAY_MS = 5_000

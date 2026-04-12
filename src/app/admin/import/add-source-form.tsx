@@ -49,7 +49,7 @@ export function AddSourceForm({
             defaultValue=""
             className="mt-1 w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm"
           >
-            <option value="">None — new program</option>
+            <option value="">None (new program)</option>
             {programs.map((p) => (
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}

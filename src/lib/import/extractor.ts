@@ -81,7 +81,7 @@ export type ExtractionResult = ExtractionSuccess | ExtractionFailure
 // System prompt
 // ---------------------------------------------------------------------------
 
-const SYSTEM_PROMPT = `You are a structured data extractor for YACTracker, a directory of Young Artist Programs (YAPs) in classical music and opera.
+const SYSTEM_PROMPT = `You are a structured data extractor for Young Artist Community, a directory of Young Artist Programs (YAPs) in classical music and opera.
 
 Given the HTML of a program's webpage, extract all available information into a JSON object. Follow these rules:
 
@@ -141,8 +141,8 @@ export async function extractProgram(
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://yactracker.com',
-        'X-Title': 'YACTracker Import Pipeline',
+        'HTTP-Referer': 'https://youngartist.community',
+        'X-Title': 'Young Artist Community Import Pipeline',
       },
       body: JSON.stringify({
         model,
@@ -298,8 +298,8 @@ export async function extractProgramFromMultipleSources(
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://yactracker.com',
-        'X-Title': 'YACTracker Import Pipeline',
+        'HTTP-Referer': 'https://youngartist.community',
+        'X-Title': 'Young Artist Community Import Pipeline',
       },
       body: JSON.stringify({
         model,

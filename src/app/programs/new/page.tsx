@@ -3,8 +3,8 @@ import { prisma } from '@/lib/prisma'
 import { ProgramForm } from './program-form'
 
 export const metadata = {
-  title: 'Submit a Program — YACTracker',
-  description: 'Submit a young artist program to the YACTracker directory.',
+  title: 'Submit a Program | Young Artist Community',
+  description: 'Submit a young artist program to the Young Artist Community directory.',
 }
 
 export default async function NewProgramPage() {

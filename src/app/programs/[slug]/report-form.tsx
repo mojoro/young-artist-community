@@ -21,7 +21,7 @@ export function ReportButton({
   if (state?.message && !state.error) {
     return (
       <p className="text-sm text-success-700">
-        Thank you — your report has been submitted.
+        Thank you. Your report has been submitted.
       </p>
     )
   }

@@ -14,7 +14,7 @@ export async function generateMetadata({
     select: { name: true },
   })
   return {
-    title: program ? `Edit ${program.name} — YACTracker` : 'Edit Program — YACTracker',
+    title: program ? `Edit ${program.name} | Young Artist Community` : 'Edit Program | Young Artist Community',
   }
 }
 
