@@ -4,7 +4,7 @@ info:
   description: |
     REST API for YACTracker — a directory and review platform for Young Artist
     Programs (YAPs) in classical music and opera.
-  version: 0.1.0
+  version: 0.2.0
   contact:
     name: YACTracker Team
     email: api@yactracker.app
@@ -805,12 +805,17 @@ components:
           type: string
           nullable: true
           description: Opaque cursor for the previous page, or null if this is the first page.
+        total_items:
+          type: integer
+          format: int32
+          description: Total number of items matching the query across all pages.
 
     # -- Program --
     Program:
       type: object
       required:
         - id
+        - slug
         - name
         - created_at
         - updated_at
@@ -819,6 +824,11 @@ components:
           type: string
           format: uuid
           readOnly: true
+        slug:
+          type: string
+          readOnly: true
+          description: URL-friendly kebab-case identifier derived from the program name.
+          example: salzburg-festival-young-singers-project
         name:
           type: string
           example: Salzburg Festival Young Singers Project
