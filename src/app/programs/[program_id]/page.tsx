@@ -122,32 +122,34 @@ function formatReviewRow(row: {
 function KeyFact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs uppercase tracking-wide text-gray-500">{label}</dt>
-      <dd className="mt-1 text-sm text-gray-900">{children}</dd>
+      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+        {label}
+      </dt>
+      <dd className="mt-1 text-sm font-medium text-slate-900">{children}</dd>
     </div>
   )
 }
 
 function AuditionCard({ audition }: { audition: Audition }) {
   return (
-    <li className="rounded-lg border border-gray-200 p-4">
+    <li className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <div className="font-medium text-gray-900">
+        <div className="font-semibold text-slate-900">
           {audition.location.city}, {audition.location.country}
         </div>
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-slate-500">
           {audition.time_slot ? formatDate(audition.time_slot, { time: true }) : '—'}
         </div>
       </div>
-      <div className="mt-1 text-sm text-gray-700">
+      <div className="mt-1 text-sm text-slate-600">
         Fee: {formatFee(audition.audition_fee)}
       </div>
       {audition.instruments.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-1.5">
+        <div className="mt-3 flex flex-wrap gap-1.5">
           {audition.instruments.map((inst) => (
             <span
               key={inst.id}
-              className="rounded border border-gray-300 bg-gray-50 px-2 py-0.5 text-xs text-gray-700"
+              className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs text-slate-600"
             >
               {inst.name}
             </span>
@@ -155,7 +157,7 @@ function AuditionCard({ audition }: { audition: Audition }) {
         </div>
       )}
       {audition.instructions && (
-        <p className="mt-2 whitespace-pre-line text-sm text-gray-700">
+        <p className="mt-3 whitespace-pre-line text-sm text-slate-600">
           {audition.instructions}
         </p>
       )}
@@ -164,9 +166,12 @@ function AuditionCard({ audition }: { audition: Audition }) {
           href={audition.registration_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 inline-block text-sm font-medium text-blue-600 hover:underline"
+          className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-700"
         >
-          Register →
+          Register
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+          </svg>
         </a>
       )}
     </li>
@@ -175,20 +180,29 @@ function AuditionCard({ audition }: { audition: Audition }) {
 
 function ReviewCard({ review }: { review: Review }) {
   return (
-    <li className="rounded-lg border border-gray-200 p-4">
-      <div className="flex items-center gap-2">
-        <span className="text-yellow-500" aria-label={`${review.rating} out of 5`}>
-          {renderStars(review.rating)}
-        </span>
-        {review.title && (
-          <span className="font-medium text-gray-900">{review.title}</span>
-        )}
+    <li className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5">
+      <div className="flex items-center gap-1">
+        {Array.from({ length: 5 }, (_, i) => (
+          <svg
+            key={i}
+            className={`h-4 w-4 ${i < review.rating ? 'text-accent-500' : 'text-slate-200'}`}
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+        ))}
       </div>
-      <div className="mt-1 text-xs text-gray-500">
+      {review.title && (
+        <h4 className="mt-2 font-semibold text-slate-900">{review.title}</h4>
+      )}
+      <p className="mt-1 text-xs text-slate-400">
         {review.reviewer_name ?? 'Anonymous'}
         {review.year_attended ? ` · ${review.year_attended}` : ''}
-      </div>
-      <p className="mt-2 whitespace-pre-line text-sm text-gray-800">{review.body}</p>
+      </p>
+      <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-700">
+        {review.body}
+      </p>
     </li>
   )
 }
@@ -277,27 +291,45 @@ export default async function ProgramDetailPage({
   const avg = program.average_rating
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10 space-y-10">
-      {/* Header */}
-      <div>
-        <Link
-          href="/programs"
-          className="text-sm text-blue-600 hover:underline"
-        >
-          ← Back to programs
-        </Link>
-        <h1 className="mt-3 text-3xl font-bold text-gray-900 sm:text-4xl">
+    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+      {/* Breadcrumb */}
+      <Link
+        href="/programs"
+        className="inline-flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-700"
+      >
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+        </svg>
+        Back to programs
+      </Link>
+
+      {/* Page header */}
+      <div className="mt-3">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
           {program.name}
         </h1>
         {locationLabel && (
-          <p className="mt-2 text-sm text-gray-600">{locationLabel}</p>
+          <p className="mt-2 text-base text-slate-500">{locationLabel}</p>
         )}
+
+        {reviewCount > 0 && avg !== null && (
+          <div className="mt-3 flex items-center gap-2">
+            <svg className="h-5 w-5 text-accent-500" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+            <span className="text-2xl font-bold text-slate-900">{avg.toFixed(1)}</span>
+            <span className="text-sm text-slate-500">
+              ({reviewCount} review{reviewCount === 1 ? '' : 's'})
+            </span>
+          </div>
+        )}
+
         {(program.categories.length > 0 || program.instruments.length > 0) && (
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-4 flex flex-wrap gap-2">
             {program.categories.map((c) => (
               <span
                 key={c.id}
-                className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700"
+                className="rounded-full bg-tag-50 px-2.5 py-0.5 text-xs font-medium text-tag-700"
               >
                 {c.name}
               </span>
@@ -305,19 +337,50 @@ export default async function ProgramDetailPage({
             {program.instruments.map((i) => (
               <span
                 key={i.id}
-                className="rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-xs text-gray-700"
+                className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs text-slate-600"
               >
                 {i.name}
               </span>
             ))}
           </div>
         )}
+
+        {(program.program_url || program.application_url) && (
+          <div className="mt-5 flex flex-wrap gap-3">
+            {program.program_url && (
+              <a
+                href={program.program_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
+              >
+                Visit website
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                </svg>
+              </a>
+            )}
+            {program.application_url && (
+              <a
+                href={program.application_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-slate-900/10 hover:bg-slate-50 transition-colors"
+              >
+                Apply now
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                </svg>
+              </a>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Key facts */}
-      <section>
-        <h2 className="text-lg font-semibold text-gray-900">Key facts</h2>
-        <dl className="mt-4 grid grid-cols-1 gap-4 rounded-lg border border-gray-200 p-4 sm:grid-cols-2 md:grid-cols-3">
+      <section className="mt-10 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
+        <h2 className="text-lg font-semibold text-slate-900">Key facts</h2>
+        <dl className="mt-4 grid grid-cols-2 gap-6 sm:grid-cols-3">
           <KeyFact label="Dates">
             {formatDateRange(program.start_date, program.end_date)}
           </KeyFact>
@@ -332,50 +395,32 @@ export default async function ProgramDetailPage({
             {formatAgeRange(program.age_min, program.age_max)}
           </KeyFact>
           <KeyFact label="Scholarship">
-            {program.offers_scholarship ? 'Yes' : 'No'}
+            {program.offers_scholarship ? (
+              <span className="inline-flex items-center rounded-full bg-success-50 px-2 py-0.5 text-xs font-medium text-success-700">
+                Available
+              </span>
+            ) : (
+              'No'
+            )}
           </KeyFact>
         </dl>
-        {(program.program_url || program.application_url) && (
-          <div className="mt-3 flex flex-wrap gap-3 text-sm">
-            {program.program_url && (
-              <a
-                href={program.program_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-blue-600 hover:underline"
-              >
-                Program website →
-              </a>
-            )}
-            {program.application_url && (
-              <a
-                href={program.application_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-blue-600 hover:underline"
-              >
-                Apply now →
-              </a>
-            )}
-          </div>
-        )}
       </section>
 
-      {/* Description */}
-      <section>
-        <h2 className="text-lg font-semibold text-gray-900">About</h2>
-        <p className="mt-3 whitespace-pre-line text-sm text-gray-800">
+      {/* About */}
+      <section className="mt-8 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
+        <h2 className="text-lg font-semibold text-slate-900">About</h2>
+        <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-700">
           {program.description ?? '—'}
         </p>
       </section>
 
       {/* Auditions */}
-      <section>
-        <h2 className="text-lg font-semibold text-gray-900">Auditions</h2>
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold text-slate-900">Auditions</h2>
         {auditions.length === 0 ? (
-          <p className="mt-3 text-sm text-gray-600">No scheduled auditions.</p>
+          <p className="mt-3 text-sm text-slate-500">No scheduled auditions.</p>
         ) : (
-          <ul className="mt-4 space-y-3">
+          <ul className="mt-4 space-y-4">
             {auditions.map((a) => (
               <AuditionCard key={a.id} audition={a} />
             ))}
@@ -384,15 +429,30 @@ export default async function ProgramDetailPage({
       </section>
 
       {/* Reviews */}
-      <section>
-        <h2 className="text-lg font-semibold text-gray-900">Reviews</h2>
-        <p className="mt-2 text-sm text-gray-700">
-          {reviewCount > 0 && avg !== null
-            ? `★ ${avg.toFixed(1)} out of 5 · ${reviewCount} review${reviewCount === 1 ? '' : 's'}`
-            : 'No reviews yet'}
-        </p>
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold text-slate-900">
+          Reviews{reviewCount > 0 ? ` (${reviewCount})` : ''}
+        </h2>
+
+        {reviewCount > 0 && avg !== null ? (
+          <div className="mt-4 flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5">
+            <svg className="h-8 w-8 text-accent-500" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+            <div>
+              <span className="text-3xl font-bold text-slate-900">{avg.toFixed(1)}</span>
+              <span className="ml-1 text-sm text-slate-500">out of 5</span>
+              <p className="text-sm text-slate-500">
+                {reviewCount} review{reviewCount === 1 ? '' : 's'}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <p className="mt-3 text-sm text-slate-500">No reviews yet.</p>
+        )}
+
         {reviews.length > 0 && (
-          <ul className="mt-4 space-y-3">
+          <ul className="mt-4 space-y-4">
             {reviews.map((r) => (
               <ReviewCard key={r.id} review={r} />
             ))}
@@ -401,106 +461,110 @@ export default async function ProgramDetailPage({
       </section>
 
       {/* Review form */}
-      <section>
-        <h3 className="text-lg font-semibold text-gray-900">Submit a review</h3>
-        <form action={submitReview} className="mt-4 space-y-4">
+      <section className="mt-8 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
+        <h2 className="text-lg font-semibold text-slate-900">Share your experience</h2>
+        <form action={submitReview} className="mt-5">
           <input type="hidden" name="program_id" value={program_id} />
 
-          <div>
-            <label
-              htmlFor="reviewer_name"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Your name
-            </label>
-            <input
-              id="reviewer_name"
-              name="reviewer_name"
-              type="text"
-              className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm"
-            />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label
+                htmlFor="reviewer_name"
+                className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+              >
+                Your name
+              </label>
+              <input
+                id="reviewer_name"
+                name="reviewer_name"
+                type="text"
+                className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="rating"
+                className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+              >
+                Rating <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="rating"
+                name="rating"
+                required
+                defaultValue=""
+                className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+              >
+                <option value="" disabled>
+                  Select a rating
+                </option>
+                <option value="5">5 - Excellent</option>
+                <option value="4">4 - Very good</option>
+                <option value="3">3 - Average</option>
+                <option value="2">2 - Below average</option>
+                <option value="1">1 - Poor</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                htmlFor="year_attended"
+                className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+              >
+                Year attended
+              </label>
+              <input
+                id="year_attended"
+                name="year_attended"
+                type="number"
+                min={1950}
+                max={2100}
+                step={1}
+                className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="title"
+                className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+              >
+                Title
+              </label>
+              <input
+                id="title"
+                name="title"
+                type="text"
+                className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+              />
+            </div>
           </div>
 
-          <div>
-            <label
-              htmlFor="rating"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Rating <span className="text-red-600">*</span>
-            </label>
-            <select
-              id="rating"
-              name="rating"
-              required
-              defaultValue=""
-              className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm"
-            >
-              <option value="" disabled>
-                Select a rating
-              </option>
-              <option value="5">5 ★★★★★</option>
-              <option value="4">4 ★★★★</option>
-              <option value="3">3 ★★★</option>
-              <option value="2">2 ★★</option>
-              <option value="1">1 ★</option>
-            </select>
-          </div>
-
-          <div>
-            <label
-              htmlFor="year_attended"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Year attended
-            </label>
-            <input
-              id="year_attended"
-              name="year_attended"
-              type="number"
-              min={1950}
-              max={2100}
-              step={1}
-              className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="title"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Title
-            </label>
-            <input
-              id="title"
-              name="title"
-              type="text"
-              className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm"
-            />
-          </div>
-
-          <div>
+          <div className="mt-4">
             <label
               htmlFor="body"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
             >
-              Review <span className="text-red-600">*</span>
+              Review <span className="text-red-500">*</span>
             </label>
             <textarea
               id="body"
               name="body"
               required
               rows={4}
-              className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
             />
           </div>
 
-          <button
-            type="submit"
-            className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            Submit review
-          </button>
+          <div className="mt-5">
+            <button
+              type="submit"
+              className="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
+            >
+              Submit review
+            </button>
+          </div>
         </form>
       </section>
     </div>

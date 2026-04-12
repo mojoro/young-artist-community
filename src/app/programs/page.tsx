@@ -279,43 +279,51 @@ export default async function ProgramsPage({
   const hasNext = meta.next !== null
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8">
-      <header className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Programs</h1>
-        <p className="mt-1 text-sm text-gray-600">
-          Browse and filter young artist programs.
+    <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <header className="py-8">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+          Programs
+        </h1>
+        <p className="mt-1 text-base text-slate-500">
+          Browse and filter young artist programs in classical music and opera.
         </p>
       </header>
 
       <form
         action="/programs"
         method="GET"
-        className="mb-6 rounded-lg border border-gray-200 bg-white p-4"
+        className="mb-8 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5"
       >
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <div className="lg:col-span-3">
-            <label htmlFor="q" className="block text-sm font-medium text-gray-700">
-              Search
-            </label>
-            <input
-              id="q"
-              name="q"
-              type="text"
-              defaultValue={currentQ}
-              placeholder="Search by name or description..."
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
-            />
-          </div>
+        <div>
+          <label
+            htmlFor="q"
+            className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+          >
+            Search
+          </label>
+          <input
+            id="q"
+            name="q"
+            type="text"
+            defaultValue={currentQ}
+            placeholder="Search by name or description..."
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+          />
+        </div>
 
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-4">
           <div>
-            <label htmlFor="instrument_id" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="instrument_id"
+              className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+            >
               Instrument
             </label>
             <select
               id="instrument_id"
               name="instrument_id"
               defaultValue={currentInstrument}
-              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
             >
               <option value="">All instruments</option>
               {instruments.map((i) => (
@@ -327,14 +335,17 @@ export default async function ProgramsPage({
           </div>
 
           <div>
-            <label htmlFor="category_id" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="category_id"
+              className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+            >
               Category
             </label>
             <select
               id="category_id"
               name="category_id"
               defaultValue={currentCategory}
-              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
             >
               <option value="">All categories</option>
               {categories.map((c) => (
@@ -346,14 +357,17 @@ export default async function ProgramsPage({
           </div>
 
           <div>
-            <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="country"
+              className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+            >
               Country
             </label>
             <select
               id="country"
               name="country"
               defaultValue={currentCountry}
-              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
             >
               <option value="">All countries</option>
               {countries.map((c) => (
@@ -365,7 +379,10 @@ export default async function ProgramsPage({
           </div>
 
           <div>
-            <label htmlFor="tuition_lower_than" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="tuition_lower_than"
+              className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+            >
               Max tuition (USD)
             </label>
             <input
@@ -376,19 +393,22 @@ export default async function ProgramsPage({
               step="1"
               defaultValue={currentTuition}
               placeholder="e.g. 5000"
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
             />
           </div>
 
           <div>
-            <label htmlFor="sort" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="sort"
+              className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+            >
               Sort by
             </label>
             <select
               id="sort"
               name="sort"
               defaultValue={currentSort}
-              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
             >
               {SORT_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -398,85 +418,91 @@ export default async function ProgramsPage({
             </select>
           </div>
 
-          <div className="flex items-end">
-            <label className="inline-flex items-center gap-2 text-sm text-gray-700">
+          <div className="flex items-end pb-0.5">
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
               <input
                 type="checkbox"
                 name="offers_scholarship"
                 value="true"
                 defaultChecked={currentScholarship}
-                className="h-4 w-4 rounded border-gray-300"
+                className="h-4 w-4 rounded border-slate-300 accent-brand-600"
               />
               Offers scholarship
             </label>
           </div>
         </div>
 
-        <div className="mt-4 flex items-center gap-3">
+        <div className="mt-5 flex items-center gap-4 border-t border-slate-100 pt-4">
           <button
             type="submit"
-            className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+            className="rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
           >
             Apply filters
           </button>
           <Link
             href="/programs"
-            className="text-sm text-gray-600 underline hover:text-gray-900"
+            className="text-sm font-medium text-slate-500 hover:text-slate-700"
           >
             Clear
           </Link>
-          <span className="ml-auto text-sm text-gray-500">
+          <span className="ml-auto text-sm text-slate-400">
             {meta.total_items} result{meta.total_items === 1 ? '' : 's'}
           </span>
         </div>
       </form>
 
       {programs.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-gray-300 bg-white p-12 text-center">
-          <p className="text-gray-700">No programs match your filters.</p>
-          <Link
-            href="/programs"
-            className="mt-3 inline-block text-sm text-gray-900 underline hover:text-gray-600"
-          >
-            Clear filters
-          </Link>
+        <div className="rounded-xl bg-white p-16 text-center shadow-sm ring-1 ring-slate-900/5">
+          <p className="text-lg font-medium text-slate-700">
+            No programs match your filters.
+          </p>
+          <p className="mt-2 text-sm text-slate-500">
+            Try adjusting your search criteria or{' '}
+            <Link
+              href="/programs"
+              className="font-medium text-brand-600 hover:text-brand-700 transition-colors"
+            >
+              clear all filters
+            </Link>{' '}
+            to start over.
+          </p>
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {programs.map((p) => (
               <ProgramCard key={p.id} program={p} />
             ))}
           </div>
 
-          <nav className="mt-8 flex items-center justify-between border-t border-gray-200 pt-4">
+          <nav className="mt-10 flex items-center justify-between">
             {hasPrev ? (
               <Link
                 href={cursorLink(params, meta.prev)}
-                className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+                className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium bg-white text-slate-700 shadow-sm ring-1 ring-slate-900/5 hover:bg-slate-50 transition-colors"
               >
-                ← Previous
+                Previous
               </Link>
             ) : (
-              <span className="rounded-md border border-gray-200 px-3 py-1.5 text-sm text-gray-400">
-                ← Previous
+              <span className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-slate-300 cursor-not-allowed">
+                Previous
               </span>
             )}
 
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-slate-400">
               {totalItems} total
             </span>
 
             {hasNext ? (
               <Link
                 href={cursorLink(params, meta.next)}
-                className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+                className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium bg-white text-slate-700 shadow-sm ring-1 ring-slate-900/5 hover:bg-slate-50 transition-colors"
               >
-                Next →
+                Next
               </Link>
             ) : (
-              <span className="rounded-md border border-gray-200 px-3 py-1.5 text-sm text-gray-400">
-                Next →
+              <span className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-slate-300 cursor-not-allowed">
+                Next
               </span>
             )}
           </nav>
@@ -489,7 +515,7 @@ export default async function ProgramsPage({
 function ProgramCard({ program }: { program: Program }) {
   const locationText =
     program.locations.length > 0
-      ? program.locations.map((l) => `${l.city}, ${l.country}`).join(' • ')
+      ? program.locations.map((l) => `${l.city}, ${l.country}`).join(' / ')
       : 'Location TBD'
 
   const shownInstruments = program.instruments.slice(0, 3)
@@ -498,66 +524,88 @@ function ProgramCard({ program }: { program: Program }) {
   const shownCategories = program.categories.slice(0, 3)
   const extraCategories = program.categories.length - shownCategories.length
 
-  return (
-    <article className="flex flex-col rounded-lg border border-gray-200 bg-white p-4 hover:border-gray-400 hover:shadow-sm">
-      <h2 className="text-lg font-semibold text-gray-900">
-        <Link href={`/programs/${program.id}`} className="hover:underline">
-          {program.name}
-        </Link>
-      </h2>
-      <p className="mt-1 text-sm text-gray-600">{locationText}</p>
+  const hasRating = program.review_count > 0 && program.average_rating !== null
 
-      {(shownCategories.length > 0 || shownInstruments.length > 0) && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
+  return (
+    <article className="relative flex flex-col rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5 transition hover:shadow-md hover:-translate-y-0.5">
+      {program.offers_scholarship && (
+        <span className="absolute top-4 right-4 rounded-full bg-success-50 px-2.5 py-0.5 text-xs font-medium text-success-700">
+          Scholarship
+        </span>
+      )}
+
+      {shownCategories.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
           {shownCategories.map((c) => (
             <span
               key={c.id}
-              className="rounded-full bg-gray-900 px-2 py-0.5 text-xs font-medium text-white"
+              className="rounded-full bg-tag-50 px-2.5 py-0.5 text-xs font-medium text-tag-700"
             >
               {c.name}
             </span>
           ))}
           {extraCategories > 0 && (
-            <span className="rounded-full bg-gray-700 px-2 py-0.5 text-xs font-medium text-white">
+            <span className="rounded-full bg-tag-50 px-2.5 py-0.5 text-xs font-medium text-tag-700">
               +{extraCategories}
             </span>
           )}
+        </div>
+      )}
+
+      <h2 className="text-base font-semibold text-slate-900 leading-snug mt-2">
+        <Link
+          href={`/programs/${program.id}`}
+          className="hover:text-brand-600 transition-colors"
+        >
+          {program.name}
+        </Link>
+      </h2>
+
+      <p className="text-sm text-slate-500 mt-1">{locationText}</p>
+
+      {shownInstruments.length > 0 && (
+        <div className="mt-2.5 flex flex-wrap gap-1.5">
           {shownInstruments.map((i) => (
             <span
               key={i.id}
-              className="rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-700"
+              className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs text-slate-600"
             >
               {i.name}
             </span>
           ))}
           {extraInstruments > 0 && (
-            <span className="rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-700">
+            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs text-slate-600">
               +{extraInstruments}
             </span>
           )}
         </div>
       )}
 
-      <dl className="mt-4 grid grid-cols-2 gap-2 text-sm">
-        <div>
-          <dt className="text-xs uppercase tracking-wide text-gray-500">Tuition</dt>
-          <dd className="text-gray-900">{formatTuition(program.tuition)}</dd>
-        </div>
-        <div>
-          <dt className="text-xs uppercase tracking-wide text-gray-500">Deadline</dt>
-          <dd className="text-gray-900">{formatDate(program.application_deadline)}</dd>
-        </div>
-      </dl>
-
-      <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3 text-sm">
-        <span className="text-gray-700">
-          {formatRating(program.average_rating, program.review_count)}
-        </span>
-        {program.offers_scholarship && (
-          <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
-            Scholarship
+      <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100">
+        <div className="text-sm">
+          <span className="font-medium text-slate-900">
+            {formatTuition(program.tuition)}
           </span>
-        )}
+          <span className="mx-1.5 text-slate-300">|</span>
+          <span className="text-slate-500">
+            {formatDate(program.application_deadline)}
+          </span>
+        </div>
+        <div className="text-sm">
+          {hasRating ? (
+            <span className="inline-flex items-center gap-1">
+              <span className="text-accent-500">&#9733;</span>
+              <span className="font-medium text-slate-700">
+                {program.average_rating!.toFixed(1)}
+              </span>
+              <span className="text-slate-400">
+                ({program.review_count})
+              </span>
+            </span>
+          ) : (
+            <span className="text-slate-400">No reviews</span>
+          )}
+        </div>
       </div>
     </article>
   )

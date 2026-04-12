@@ -1,6 +1,126 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   PALETTE — swap the active block to change entire site color scheme.
+   Only ONE palette should be uncommented at a time.
+
+   Token roles:
+     brand-*    → logo, buttons, primary links, CTAs
+     brand-900  → footer / dark surfaces (near-black with brand hue)
+     accent-*   → star ratings, attention highlights
+     tag-*      → category / instrument badges
+     success-*  → scholarship badges, availability
+   ========================================================================== */
+
+/* ---------- 1. Curtain Call  (plum + gold + rose + sage) ---------- */
+/*
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-brand-50:  #f5f0f7;
+  --color-brand-500: #7b4b94;
+  --color-brand-600: #5b2c6f;
+  --color-brand-700: #4a2360;
+  --color-brand-900: #1e1226;
+  --color-accent-500: #c9a84c;
+  --color-tag-50:    #fdf0f3;
+  --color-tag-700:   #9b4064;
+  --color-success-50:  #edf5f0;
+  --color-success-600: #5a8f6d;
+  --color-success-700: #4a7c59;
+}
+*/
+
+/* ---------- 2. Score & Quill  (ink + burnt orange + slate-blue + olive) ---------- */
+/*
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-brand-50:  #eef1f5;
+  --color-brand-500: #3d5a80;
+  --color-brand-600: #2c3e50;
+  --color-brand-700: #1f2e3d;
+  --color-brand-900: #101820;
+  --color-accent-500: #d35400;
+  --color-tag-50:    #eef2f7;
+  --color-tag-700:   #4a6a8a;
+  --color-success-50:  #f0f4ee;
+  --color-success-600: #5c7a52;
+  --color-success-700: #4a6b42;
+}
+*/
+
+/* ---------- 3. Steinway  (rich black + brass + walnut + forest) ---------- */
+/*
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-brand-50:  #f0f0f4;
+  --color-brand-500: #2d2d4e;
+  --color-brand-600: #1a1a2e;
+  --color-brand-700: #121224;
+  --color-brand-900: #0a0a14;
+  --color-accent-500: #b8860b;
+  --color-tag-50:    #f7f2ec;
+  --color-tag-700:   #6d5434;
+  --color-success-50:  #edf5f0;
+  --color-success-600: #4a7c59;
+  --color-success-700: #3b6347;
+}
+*/
+
+/* ---------- 4. Aix-en-Provence  (terracotta + saffron + lavender + olive) ---------- */
+/*
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-brand-50:  #fef3ed;
+  --color-brand-500: #b85c3a;
+  --color-brand-600: #a0522d;
+  --color-brand-700: #853f1e;
+  --color-brand-900: #2a1610;
+  --color-accent-500: #e5a100;
+  --color-tag-50:    #f3f0f8;
+  --color-tag-700:   #7056a0;
+  --color-success-50:  #f2f5ec;
+  --color-success-600: #6b8e23;
+  --color-success-700: #5a7a1c;
+}
+*/
+
+/* ---------- 5. Philharmonic  (teal + coral + ochre + emerald) ---------- */
+/*
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-brand-50:  #eefbf7;
+  --color-brand-500: #148a7c;
+  --color-brand-600: #0f766e;
+  --color-brand-700: #0c5e58;
+  --color-brand-900: #0a1f1d;
+  --color-accent-500: #e07a5f;
+  --color-tag-50:    #fdf4ec;
+  --color-tag-700:   #9a6b3a;
+  --color-success-50:  #ecfdf5;
+  --color-success-600: #059669;
+  --color-success-700: #047857;
+}
+*/
+
+/* ---------- ACTIVE PALETTE ---------- */
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  /* Aix-en-Provence (terracotta + saffron + lavender + olive) — active */
+  --color-brand-50:  #fef3ed;
+  --color-brand-500: #b85c3a;
+  --color-brand-600: #a0522d;
+  --color-brand-700: #853f1e;
+  --color-brand-900: #2a1610;
+  --color-accent-500: #e5a100;
+  --color-tag-50:    #f3f0f8;
+  --color-tag-700:   #7056a0;
+  --color-success-50:  #f2f5ec;
+  --color-success-600: #6b8e23;
+  --color-success-700: #5a7a1c;
 }
