@@ -421,8 +421,8 @@ export default async function ProgramsPage({
             </select>
           </div>
 
-          <div className="flex items-end pb-0.5">
-            <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+          <div className="flex items-center pt-6">
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
               <input
                 type="checkbox"
                 name="offers_scholarship"
