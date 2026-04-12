@@ -78,6 +78,13 @@ export default async function AdminImportPage({
           </h1>
           <div className="flex items-center gap-4">
             <Link
+              href="/admin/data"
+              prefetch={false}
+              className="text-sm text-gray-600 hover:text-gray-900 underline"
+            >
+              Data
+            </Link>
+            <Link
               href="/"
               prefetch={false}
               className="text-sm text-gray-600 hover:text-gray-900 underline"
