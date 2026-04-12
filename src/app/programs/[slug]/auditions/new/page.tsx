@@ -6,11 +6,11 @@ import { AuditionForm } from './audition-form'
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ program_id: string }>
+  params: Promise<{ slug: string }>
 }) {
-  const { program_id } = await params
+  const { slug } = await params
   const program = await prisma.program.findUnique({
-    where: { id: program_id },
+    where: { slug },
     select: { name: true },
   })
   if (!program) return { title: 'Not Found — YACTracker' }
@@ -23,13 +23,13 @@ export async function generateMetadata({
 export default async function NewAuditionPage({
   params,
 }: {
-  params: Promise<{ program_id: string }>
+  params: Promise<{ slug: string }>
 }) {
-  const { program_id } = await params
+  const { slug } = await params
 
   const program = await prisma.program.findUnique({
-    where: { id: program_id },
-    select: { id: true, name: true },
+    where: { slug },
+    select: { id: true, name: true, slug: true },
   })
   if (!program) notFound()
 
@@ -49,7 +49,7 @@ export default async function NewAuditionPage({
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
       <Link
-        href={`/programs/${program.id}`}
+        href={`/programs/${program.slug}`}
         className="inline-flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-700"
       >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">

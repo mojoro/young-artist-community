@@ -2,6 +2,52 @@
 
 import { revalidatePath } from 'next/cache'
 import { apiFetch } from '@/lib/api'
+import { prisma } from '@/lib/prisma'
+
+export interface ReportFormState {
+  message?: string
+  error?: string
+}
+
+export async function submitReport(
+  _prev: ReportFormState | null,
+  formData: FormData,
+): Promise<ReportFormState> {
+  // Honeypot
+  const honeypot = String(formData.get('url_confirm') ?? '').trim()
+  if (honeypot) return { message: 'Thanks for your report.' }
+
+  const program_id = String(formData.get('program_id') ?? '').trim()
+  if (!program_id) return { error: 'Missing program.' }
+
+  const review_id = String(formData.get('review_id') ?? '').trim() || null
+
+  const report_type = String(formData.get('report_type') ?? '').trim()
+  if (!['inaccurate_data', 'inappropriate_content', 'other'].includes(report_type)) {
+    return { error: 'Invalid report type.' }
+  }
+
+  const description = String(formData.get('description') ?? '').trim()
+  if (!description) return { error: 'Description is required.' }
+  if (description.length > 5000) return { error: 'Description is too long (max 5000 characters).' }
+
+  const reporter_email = String(formData.get('reporter_email') ?? '').trim() || null
+  if (reporter_email && reporter_email.length > 254) {
+    return { error: 'Email is too long.' }
+  }
+
+  await prisma.report.create({
+    data: {
+      program_id,
+      review_id,
+      report_type,
+      description,
+      reporter_email,
+    },
+  })
+
+  return { message: 'Thanks for your report. We will review it shortly.' }
+}
 
 export async function submitReview(formData: FormData): Promise<void> {
   // Honeypot
@@ -59,5 +105,10 @@ export async function submitReview(formData: FormData): Promise<void> {
     throw new Error(`Failed to submit review: ${res.status} ${text}`)
   }
 
-  revalidatePath(`/programs/${program_id}`)
+  // Look up slug for revalidation since routes use slugs
+  const prog = await prisma.program.findUnique({
+    where: { id: program_id },
+    select: { slug: true },
+  })
+  if (prog?.slug) revalidatePath(`/programs/${prog.slug}`)
 }

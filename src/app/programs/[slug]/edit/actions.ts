@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { toSlug } from '@/lib/slug'
 
-export interface CreateProgramState {
+export interface EditProgramState {
   error?: string
 }
 
@@ -33,10 +33,13 @@ function parseComboboxItems(raw: string | null): ComboboxItem[] {
   }
 }
 
-export async function createProgram(
-  _prev: CreateProgramState | null,
+export async function editProgram(
+  _prev: EditProgramState | null,
   formData: FormData,
-): Promise<CreateProgramState> {
+): Promise<EditProgramState> {
+  const programId = formData.get('program_id') as string
+  if (!programId) return { error: 'Missing program.' }
+
   const str = (k: string) => (formData.get(k) as string)?.trim() || null
   const num = (k: string) => {
     const v = str(k)
@@ -82,39 +85,32 @@ export async function createProgram(
   const urlPattern = /^https?:\/\//
   if (programUrl && !urlPattern.test(programUrl)) return { error: 'Program URL must start with http:// or https://.' }
   if (applicationUrl && !urlPattern.test(applicationUrl)) return { error: 'Application URL must start with http:// or https://.' }
-  if (programUrl && programUrl.length > 2000) return { error: 'Program URL is too long.' }
-  if (applicationUrl && applicationUrl.length > 2000) return { error: 'Application URL is too long.' }
 
   // Parse combobox selections
   const instrumentItems = parseComboboxItems(formData.get('instruments') as string)
   const categoryItems = parseComboboxItems(formData.get('categories') as string)
   const locationItems = parseComboboxItems(formData.get('locations') as string)
 
-  for (const item of [...instrumentItems, ...categoryItems, ...locationItems]) {
-    if (!item.name.trim()) return { error: 'Empty names are not allowed.' }
-    if (item.name.length > 100) return { error: `Name too long: "${item.name.slice(0, 30)}..." (max 100 characters).` }
+  // Generate slug from (possibly new) name
+  let newSlug = toSlug(name)
+  const slugConflict = await prisma.program.findFirst({
+    where: { slug: newSlug, id: { not: programId } },
+    select: { id: true },
+  })
+  if (slugConflict) {
+    const count = await prisma.program.count({
+      where: { slug: { startsWith: newSlug } },
+    })
+    newSlug = `${newSlug}-${count + 1}`
   }
 
-  let programSlug: string
+  const editSummary = (formData.get('edit_summary') as string)?.trim() || null
 
   try {
-    // Generate unique slug
-    let slug = toSlug(name)
-    const slugConflict = await prisma.program.findUnique({
-      where: { slug },
-      select: { id: true },
-    })
-    if (slugConflict) {
-      const count = await prisma.program.count({
-        where: { slug: { startsWith: slug } },
-      })
-      slug = `${slug}-${count + 1}`
-    }
-    // Resolve instruments — validate existing, create new
+    // Resolve instruments
     const instrumentIds: string[] = []
     for (const item of instrumentItems) {
       if (item.is_new) {
-        // Check if already exists (case-insensitive) before creating
         const existing = await prisma.instrument.findFirst({
           where: { name: { equals: item.name, mode: 'insensitive' } },
           select: { id: true },
@@ -129,11 +125,6 @@ export async function createProgram(
           instrumentIds.push(created.id)
         }
       } else {
-        const exists = await prisma.instrument.findUnique({
-          where: { id: item.id },
-          select: { id: true },
-        })
-        if (!exists) return { error: `Instrument not found: ${item.name}` }
         instrumentIds.push(item.id)
       }
     }
@@ -156,20 +147,14 @@ export async function createProgram(
           categoryIds.push(created.id)
         }
       } else {
-        const exists = await prisma.category.findUnique({
-          where: { id: item.id },
-          select: { id: true },
-        })
-        if (!exists) return { error: `Category not found: ${item.name}` }
         categoryIds.push(item.id)
       }
     }
 
-    // Resolve locations — "City, Country" format for new items
+    // Resolve locations
     const locationIds: string[] = []
     for (const item of locationItems) {
       if (item.is_new) {
-        // name is "City, Country"
         const parts = item.name.split(',').map((s) => s.trim())
         const city = parts[0]
         const country = parts[1]
@@ -192,21 +177,52 @@ export async function createProgram(
           locationIds.push(created.id)
         }
       } else {
-        const exists = await prisma.location.findUnique({
-          where: { id: item.id },
-          select: { id: true },
-        })
-        if (!exists) return { error: `Location not found: ${item.name}` }
         locationIds.push(item.id)
       }
     }
 
-    // Create program + join rows in a transaction
-    const program = await prisma.$transaction(async (tx) => {
-      const prog = await tx.program.create({
+    // Save revision + update in a transaction
+    await prisma.$transaction(async (tx) => {
+      // Snapshot current state before edit
+      const current = await tx.program.findUniqueOrThrow({
+        where: { id: programId },
+        include: {
+          program_instruments: { select: { instrument: { select: { name: true } } } },
+          program_categories: { select: { category: { select: { name: true } } } },
+          program_locations: { select: { location: { select: { city: true, country: true } } } },
+        },
+      })
+
+      await tx.programRevision.create({
+        data: {
+          program_id: programId,
+          edit_summary: editSummary,
+          data: {
+            name: current.name,
+            slug: current.slug,
+            description: current.description,
+            start_date: current.start_date?.toISOString() ?? null,
+            end_date: current.end_date?.toISOString() ?? null,
+            application_deadline: current.application_deadline?.toISOString() ?? null,
+            tuition: current.tuition,
+            application_fee: current.application_fee,
+            age_min: current.age_min,
+            age_max: current.age_max,
+            offers_scholarship: current.offers_scholarship,
+            program_url: current.program_url,
+            application_url: current.application_url,
+            instruments: current.program_instruments.map((pi) => pi.instrument.name),
+            categories: current.program_categories.map((pc) => pc.category.name),
+            locations: current.program_locations.map((pl) => `${pl.location.city}, ${pl.location.country}`),
+          },
+        },
+      })
+
+      await tx.program.update({
+        where: { id: programId },
         data: {
           name,
-          slug,
+          slug: newSlug,
           description,
           start_date: date('start_date'),
           end_date: date('end_date'),
@@ -219,46 +235,45 @@ export async function createProgram(
           program_url: programUrl,
           application_url: applicationUrl,
         },
-        select: { id: true, slug: true },
       })
 
+      await tx.programInstrument.deleteMany({ where: { program_id: programId } })
       if (instrumentIds.length > 0) {
         await tx.programInstrument.createMany({
           data: instrumentIds.map((instrument_id) => ({
-            program_id: prog.id,
+            program_id: programId,
             instrument_id,
           })),
         })
       }
 
+      await tx.programCategory.deleteMany({ where: { program_id: programId } })
       if (categoryIds.length > 0) {
         await tx.programCategory.createMany({
           data: categoryIds.map((category_id) => ({
-            program_id: prog.id,
+            program_id: programId,
             category_id,
           })),
         })
       }
 
+      await tx.programLocation.deleteMany({ where: { program_id: programId } })
       if (locationIds.length > 0) {
         await tx.programLocation.createMany({
           data: locationIds.map((location_id) => ({
-            program_id: prog.id,
+            program_id: programId,
             location_id,
           })),
         })
       }
-
-      return prog
     })
-
-    programSlug = program.slug!
   } catch (e) {
-    console.error('[public] createProgram failed:', e)
+    console.error('[public] editProgram failed:', e)
     return { error: e instanceof Error ? e.message : String(e) }
   }
 
+  revalidatePath(`/programs/${newSlug}`)
   revalidatePath('/programs')
   revalidatePath('/')
-  redirect(`/programs/${programSlug}`)
+  redirect(`/programs/${newSlug}`)
 }

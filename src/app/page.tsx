@@ -39,6 +39,7 @@ function formatProgram(
 ): Program {
   return {
     id: row.id,
+    slug: row.slug,
     name: row.name,
     description: row.description,
     start_date: row.start_date ? row.start_date.toISOString() : null,
@@ -146,7 +147,7 @@ function ProgramCard({ program }: { program: Program }) {
 
         <h3 className="mt-3 text-base font-semibold leading-snug text-slate-900">
           <Link
-            href={`/programs/${program.id}`}
+            href={`/programs/${program.slug}`}
             className="hover:text-brand-600 transition-colors"
           >
             {program.name}
@@ -242,18 +243,18 @@ export default async function Home() {
           </form>
 
           {/* Interest signup CTA */}
-          <div className="mt-10 rounded-xl bg-brand-50 p-8 sm:p-10 text-center">
+          <div className="mt-10 rounded-xl bg-brand-50 p-8 sm:p-10 text-left sm:text-center">
             <h2 className="text-2xl font-bold tracking-tight text-slate-900">
               Should we keep building this?
             </h2>
-            <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-slate-600">
+            <p className="sm:mx-auto mt-3 max-w-lg text-sm leading-relaxed text-slate-600">
               YACTracker is an early-stage project. We're trying to figure out
               if the young artist community actually wants a dedicated directory
               and review platform. If this is something you'd use, please drop your
               email below. It helps us know there's real interest and whether
               it's worth continuing development.
             </p>
-            <div className="mx-auto mt-6 max-w-sm">
+            <div className="sm:mx-auto mt-6 max-w-sm">
               <SubscribeForm variant="light" />
             </div>
           </div>

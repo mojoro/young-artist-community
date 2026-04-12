@@ -4,6 +4,7 @@ import type { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import type { Audition, Review } from '@/lib/types'
 import { submitReview } from './actions'
+import { ReportButton } from './report-form'
 
 function formatTuition(n: number | null): string {
   if (n === null) return '—'
@@ -178,20 +179,23 @@ function AuditionCard({ audition }: { audition: Audition }) {
   )
 }
 
-function ReviewCard({ review }: { review: Review }) {
+function ReviewCard({ review, programId }: { review: Review; programId: string }) {
   return (
     <li className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5">
-      <div className="flex items-center gap-1">
-        {Array.from({ length: 5 }, (_, i) => (
-          <svg
-            key={i}
-            className={`h-4 w-4 ${i < review.rating ? 'text-accent-500' : 'text-slate-200'}`}
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-        ))}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1">
+          {Array.from({ length: 5 }, (_, i) => (
+            <svg
+              key={i}
+              className={`h-4 w-4 ${i < review.rating ? 'text-accent-500' : 'text-slate-200'}`}
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          ))}
+        </div>
+        <ReportButton programId={programId} reviewId={review.id} />
       </div>
       {review.title && (
         <h4 className="mt-2 font-semibold text-slate-900">{review.title}</h4>
@@ -210,15 +214,17 @@ function ReviewCard({ review }: { review: Review }) {
 export default async function ProgramDetailPage({
   params,
 }: {
-  params: Promise<{ program_id: string }>
+  params: Promise<{ slug: string }>
 }) {
-  const { program_id } = await params
+  const { slug } = await params
 
   const programRow = await prisma.program.findUnique({
-    where: { id: program_id },
+    where: { slug },
     include: PROGRAM_INCLUDE,
   })
   if (!programRow) notFound()
+
+  const program_id = programRow.id
 
   const [ratingAgg, reviewRows, auditionRows] = await Promise.all([
     prisma.review.aggregate({
@@ -345,8 +351,16 @@ export default async function ProgramDetailPage({
           </div>
         )}
 
-        {(program.program_url || program.application_url) && (
-          <div className="mt-5 flex flex-wrap gap-3">
+        <div className="mt-5 flex flex-wrap gap-3">
+            <Link
+              href={`/programs/${slug}/edit`}
+              className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-slate-900/10 hover:bg-slate-50 transition-colors"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+              </svg>
+              Edit
+            </Link>
             {program.program_url && (
               <a
                 href={program.program_url}
@@ -374,7 +388,6 @@ export default async function ProgramDetailPage({
               </a>
             )}
           </div>
-        )}
       </div>
 
       {/* Key facts */}
@@ -412,6 +425,9 @@ export default async function ProgramDetailPage({
         <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-700">
           {program.description ?? '—'}
         </p>
+        <div className="mt-4 border-t border-slate-100 pt-3">
+          <ReportButton programId={program_id} label="Report inaccurate information" />
+        </div>
       </section>
 
       {/* Auditions */}
@@ -419,7 +435,7 @@ export default async function ProgramDetailPage({
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">Auditions</h2>
           <Link
-            href={`/programs/${program_id}/auditions/new`}
+            href={`/programs/${slug}/auditions/new`}
             className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -465,7 +481,7 @@ export default async function ProgramDetailPage({
         {reviews.length > 0 && (
           <ul className="mt-4 space-y-4">
             {reviews.map((r) => (
-              <ReviewCard key={r.id} review={r} />
+              <ReviewCard key={r.id} review={r} programId={program_id} />
             ))}
           </ul>
         )}

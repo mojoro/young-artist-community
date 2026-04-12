@@ -40,6 +40,7 @@ function formatProgram(
 ): Program {
   return {
     id: row.id,
+    slug: row.slug,
     name: row.name,
     description: row.description,
     start_date: row.start_date ? row.start_date.toISOString() : null,
@@ -687,7 +688,7 @@ function ProgramCard({ program }: { program: Program }) {
 
       <h2 className="text-base font-semibold text-slate-900 leading-snug mt-2">
         <Link
-          href={`/programs/${program.id}`}
+          href={`/programs/${program.slug}`}
           className="hover:text-brand-600 transition-colors"
         >
           {program.name}
@@ -769,7 +770,7 @@ function ProgramRow({ program }: { program: Program }) {
       <td className="px-4 py-3">
         <div className="flex items-center gap-2">
           <Link
-            href={`/programs/${program.id}`}
+            href={`/programs/${program.slug}`}
             className="font-medium text-slate-900 hover:text-brand-600 transition-colors"
           >
             {program.name}
