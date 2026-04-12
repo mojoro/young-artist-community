@@ -124,6 +124,35 @@ export default function RootLayout({
                   <SubscribeForm variant="dark" />
                 </div>
               </div>
+            </div>
+            <div className="mt-8 border-t border-white/15 pt-6">
+              <div className="flex flex-col sm:flex-row justify-between gap-6">
+                <div>
+                  <p className="text-sm font-medium text-slate-300">
+                    Built by John Moorman
+                  </p>
+                  <p className="mt-1.5 max-w-sm text-xs leading-relaxed text-slate-500">
+                    If anything about this project interests you or you'd like
+                    to help out, please reach out.
+                  </p>
+                  <div className="mt-3 flex items-center gap-4 text-sm text-slate-400">
+                    <a
+                      href="mailto:john@johnmoorman.com"
+                      className="transition-colors hover:text-white"
+                    >
+                      john@johnmoorman.com
+                    </a>
+                    <a
+                      href="https://www.linkedin.com/in/john-moorman/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="transition-colors hover:text-white"
+                    >
+                      LinkedIn
+                    </a>
+                  </div>
+                </div>
+              </div>
               <p className="mt-6 text-xs text-slate-500">
                 &copy; {new Date().getFullYear()} YACTracker
               </p>

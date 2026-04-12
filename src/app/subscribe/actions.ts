@@ -13,7 +13,7 @@ export async function subscribe(
 ): Promise<SubscribeState> {
   // Honeypot
   const honeypot = (formData.get('url_confirm') as string)?.trim()
-  if (honeypot) return { message: "You're on the list! We'll be in touch." }
+  if (honeypot) return { message: "Thanks for expressing interest! We'll be in touch." }
 
   const email = (formData.get('email') as string)?.trim().toLowerCase()
 
@@ -26,7 +26,7 @@ export async function subscribe(
 
   try {
     await prisma.subscriber.create({ data: { email } })
-    return { message: "You're on the list! We'll be in touch." }
+    return { message: "Thanks for expressing interest! We'll be in touch" }
   } catch (e: unknown) {
     if (
       typeof e === 'object' &&
