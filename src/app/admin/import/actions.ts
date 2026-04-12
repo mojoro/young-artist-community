@@ -68,28 +68,42 @@ export async function rejectCandidate(formData: FormData) {
   revalidatePath('/admin/import')
 }
 
+export interface ScrapeState {
+  summary?: string
+  error?: string
+}
+
 /**
  * Run fetch+extract for all active ImportSources.
- * Returns a summary string shown via the page's search params.
+ * Returns summary for useActionState display.
  */
-export async function runScrape() {
-  const sources = await prisma.importSource.findMany({
-    where: { status: 'active' },
-    orderBy: { last_fetched_at: { sort: 'asc', nulls: 'first' } },
-  })
+export async function runScrape(
+  _prev: ScrapeState | null,
+): Promise<ScrapeState> {
+  try {
+    const sources = await prisma.importSource.findMany({
+      where: { status: 'active' },
+      orderBy: { last_fetched_at: { sort: 'asc', nulls: 'first' } },
+    })
 
-  if (sources.length === 0) {
+    if (sources.length === 0) {
+      revalidatePath('/admin/import')
+      return { summary: 'No active sources.' }
+    }
+
+    const results = { success: 0, unchanged: 0, error: 0 }
+    for (const source of sources) {
+      const r = await runFetchForSource(source, { extract: true })
+      if (r.result === 'success') results.success++
+      else if (r.result === 'unchanged') results.unchanged++
+      else results.error++
+    }
+
     revalidatePath('/admin/import')
-    return
+    return {
+      summary: `Done: ${results.success} new, ${results.unchanged} unchanged, ${results.error} errors.`,
+    }
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : String(e) }
   }
-
-  const results = { success: 0, unchanged: 0, error: 0 }
-  for (const source of sources) {
-    const r = await runFetchForSource(source, { extract: true })
-    if (r.result === 'success') results.success++
-    else if (r.result === 'unchanged') results.unchanged++
-    else results.error++
-  }
-
-  revalidatePath('/admin/import')
 }
