@@ -110,47 +110,62 @@ export async function addSource(
   return {}
 }
 
+export interface ReExtractState {
+  message?: string
+  error?: string
+}
+
 /**
  * Re-run LLM extraction on a source's latest stored HTML.
  * Useful when fetch succeeded but extraction failed or was skipped.
  */
-export async function reExtractSource(formData: FormData) {
+export async function reExtractSource(
+  _prev: ReExtractState | null,
+  formData: FormData,
+): Promise<ReExtractState> {
   const sourceId = formData.get('source_id') as string
-  if (!sourceId) throw new Error('Missing source_id')
+  if (!sourceId) return { error: 'Missing source_id' }
 
-  const run = await prisma.importRun.findFirst({
-    where: {
-      import_source_id: sourceId,
-      result: { in: ['success', 'extraction_error'] },
-      raw_html_gz: { not: null },
-    },
-    orderBy: { started_at: 'desc' },
-    select: { id: true, raw_html_gz: true },
-  })
+  try {
+    const run = await prisma.importRun.findFirst({
+      where: {
+        import_source_id: sourceId,
+        result: { in: ['success', 'extraction_error'] },
+        raw_html_gz: { not: null },
+      },
+      orderBy: { started_at: 'desc' },
+      select: { id: true, raw_html_gz: true },
+    })
 
-  if (!run || !run.raw_html_gz) {
-    throw new Error('No stored HTML found for this source. Run a fresh scrape first.')
+    if (!run || !run.raw_html_gz) {
+      return { error: 'No stored HTML found. Run a fresh scrape first.' }
+    }
+
+    const html = gunzipSync(Buffer.from(run.raw_html_gz)).toString('utf8')
+    const extraction = await extractProgram(html)
+
+    await prisma.importRun.update({
+      where: { id: run.id },
+      data: {
+        extraction_model: extraction.model,
+        extraction_tokens_in: extraction.tokens_in,
+        extraction_tokens_out: extraction.tokens_out,
+        result: extraction.kind === 'success' ? 'success' : 'extraction_error',
+        error_message: extraction.kind === 'error' ? extraction.message : null,
+      },
+    })
+
+    if (extraction.kind === 'success') {
+      await createCandidate(extraction, sourceId, run.id)
+      revalidatePath('/admin/import')
+      return { message: 'Extraction succeeded — candidate created.' }
+    }
+
+    revalidatePath('/admin/import')
+    return { error: `Extraction failed: ${extraction.message}` }
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : String(e) }
   }
-
-  const html = gunzipSync(Buffer.from(run.raw_html_gz)).toString('utf8')
-  const extraction = await extractProgram(html)
-
-  await prisma.importRun.update({
-    where: { id: run.id },
-    data: {
-      extraction_model: extraction.model,
-      extraction_tokens_in: extraction.tokens_in,
-      extraction_tokens_out: extraction.tokens_out,
-      result: extraction.kind === 'success' ? 'success' : 'extraction_error',
-      error_message: extraction.kind === 'error' ? extraction.message : null,
-    },
-  })
-
-  if (extraction.kind === 'success') {
-    await createCandidate(extraction, sourceId, run.id)
-  }
-
-  revalidatePath('/admin/import')
 }
 
 export interface ScrapeState {

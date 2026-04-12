@@ -2,9 +2,10 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { isAdminAuthenticated, adminLogout } from '../actions'
-import { approveCandidate, rejectCandidate, reExtractSource } from './actions'
+import { approveCandidate, rejectCandidate } from './actions'
 import { ScrapeButton } from './scrape-button'
 import { AddSourceForm } from './add-source-form'
+import { ReExtractButton } from './re-extract-button'
 
 type SearchParams = { [key: string]: string | string[] | undefined }
 
@@ -203,15 +204,7 @@ export default async function AdminImportPage({
                         : 'Never'}
                     </td>
                     <td className="py-2">
-                      <form action={reExtractSource}>
-                        <input type="hidden" name="source_id" value={s.id} />
-                        <button
-                          type="submit"
-                          className="rounded border border-gray-300 px-2 py-0.5 text-xs text-gray-700 hover:bg-gray-50"
-                        >
-                          Re-extract
-                        </button>
-                      </form>
+                      <ReExtractButton sourceId={s.id} />
                     </td>
                   </tr>
                 ))}
