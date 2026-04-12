@@ -24,7 +24,8 @@ yactracker/
 │   └── seed.ts                # seed script: reference data, programs, import sources
 ├── src/
 │   ├── app/
-│   │   ├── layout.tsx         # root layout w/ header nav, footer
+│   │   ├── layout.tsx         # root layout w/ header nav, footer, tuning fork logo SVG
+│   │   ├── icon.svg           # favicon — tuning fork mark
 │   │   ├── page.tsx           # landing — featured programs, search, category chips
 │   │   ├── programs/
 │   │   │   ├── page.tsx       # browsable/filterable program directory
@@ -153,6 +154,25 @@ Flow: `ImportSource` → fetch HTML → hash diff → LLM extract (OpenRouter, C
 - `OPENROUTER_API_KEY` — for LLM extraction
 - `CRON_SECRET` — Vercel cron auth (auto-sent as Bearer token)
 
+## Design system
+
+**Logo:** Resonating tuning fork (U-shaped, parallel prongs, vibration arcs). Inline SVG in `layout.tsx`, uses `fill-brand-*` classes so it follows the palette. Favicon is `src/app/icon.svg`.
+
+**Palette token system** (`globals.css` `@theme inline`). Four color roles, all swappable:
+
+| Token | Role | Usage |
+|-------|------|-------|
+| `brand-50/500/600/700/900` | Primary | Logo bg, buttons, links, CTAs, footer |
+| `accent-500` | Rating | Star icons, rating numbers |
+| `tag-50/700` | Categories | Category badge bg + text |
+| `success-50/600/700` | Financial aid | Scholarship/aid badges |
+
+Five named palettes in `globals.css` (one active, rest commented). Active: **Aix-en-Provence** (terracotta + saffron + lavender + olive). Swap = change one block.
+
+**Card pattern:** `rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5 transition hover:shadow-md hover:-translate-y-0.5`
+
+**Page background:** `bg-slate-50` (body), white cards on top for depth.
+
 ## Tailwind v4 rules (IMPORTANT)
 
 - **Only** `@import "tailwindcss"` in `src/app/globals.css`. No `@tailwind` directives (v3).
@@ -160,6 +180,7 @@ Flow: `ImportSource` → fetch HTML → hash diff → LLM extract (OpenRouter, C
 - No `prefers-color-scheme: dark` blocks. POC palette is light.
 - Design tokens in `@theme inline { ... }`.
 - Never write raw `font-family` in globals.css — Geist loaded via `next/font`.
+- Use `brand-*`, `accent-*`, `tag-*`, `success-*` tokens for colors — never hardcode `indigo-*`, `amber-*`, `emerald-*` in public pages.
 
 ## Important constraints
 
