@@ -40,7 +40,7 @@ export default async function AdminImportPage({
     },
   })
 
-  const [countRows, sources] = await Promise.all([
+  const [countRows, sources, programs] = await Promise.all([
     prisma.programCandidate.groupBy({ by: ['status'], _count: true }),
     prisma.importSource.findMany({
       orderBy: { name: 'asc' },
@@ -52,6 +52,10 @@ export default async function AdminImportPage({
         last_fetched_at: true,
         program: { select: { id: true, name: true } },
       },
+    }),
+    prisma.program.findMany({
+      orderBy: { name: 'asc' },
+      select: { id: true, name: true },
     }),
   ])
   const countMap: Record<string, number> = {}
@@ -233,13 +237,17 @@ export default async function AdminImportPage({
               <label htmlFor="source_program_id" className="block text-xs text-gray-600">
                 Link to program (optional)
               </label>
-              <input
+              <select
                 id="source_program_id"
                 name="program_id"
-                type="text"
-                placeholder="Program UUID"
-                className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
-              />
+                defaultValue=""
+                className="mt-1 w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm"
+              >
+                <option value="">None — new program</option>
+                {programs.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
             </div>
           </div>
           <button
