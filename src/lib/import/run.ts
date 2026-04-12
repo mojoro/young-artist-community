@@ -1,7 +1,7 @@
 import type { ImportSource } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { fetchSource, type FetchResult } from './fetcher'
-import { extractProgram, type ExtractionResult } from './extractor'
+import { extractProgram, extractProgramFromMultipleSources, type ExtractionResult } from './extractor'
 import { createCandidate, type CreateCandidateResult } from './candidate'
 
 export interface RunSourceResult {
@@ -111,4 +111,110 @@ export async function runFetchForSource(
     select: { id: true },
   })
   return { import_run_id: run.id, source_id: source.id, result: 'fetch_error', fetch }
+}
+
+// ---------------------------------------------------------------------------
+// Multi-source fetch + combined extraction for a single program
+// ---------------------------------------------------------------------------
+
+export interface RunProgramResult {
+  program_id: string
+  sources_fetched: number
+  sources_changed: number
+  sources_failed: number
+  extraction?: ExtractionResult
+  candidate?: CreateCandidateResult
+}
+
+/**
+ * Fetch all ImportSources linked to a program, then run a single combined
+ * LLM extraction across all successfully fetched pages. This produces a
+ * more complete picture than extracting each source independently.
+ *
+ * Individual ImportRun rows are still created per source for tracking.
+ * The combined extraction creates one ProgramCandidate linked to the
+ * first source (as a representative anchor).
+ */
+export async function runFetchForProgram(
+  programId: string,
+  sources: ImportSource[],
+): Promise<RunProgramResult> {
+  const result: RunProgramResult = {
+    program_id: programId,
+    sources_fetched: 0,
+    sources_changed: 0,
+    sources_failed: 0,
+  }
+
+  // Fetch each source independently, recording ImportRun rows
+  const fetchedPages: Array<{ label: string; html: string; sourceId: string; runId: string }> = []
+
+  for (const source of sources) {
+    const r = await runFetchForSource(source)
+    result.sources_fetched++
+
+    if (r.result === 'success') {
+      result.sources_changed++
+      // Retrieve the raw HTML from the fetch result
+      if (r.fetch.kind === 'success') {
+        fetchedPages.push({
+          label: source.name,
+          html: r.fetch.raw_html,
+          sourceId: source.id,
+          runId: r.import_run_id,
+        })
+      }
+    } else if (r.result === 'fetch_error') {
+      result.sources_failed++
+    }
+    // unchanged sources: check if we have stored HTML from a previous run
+    if (r.result === 'unchanged') {
+      const lastRun = await prisma.importRun.findFirst({
+        where: { import_source_id: source.id, result: 'success', raw_html_gz: { not: null } },
+        orderBy: { started_at: 'desc' },
+        select: { id: true, raw_html_gz: true },
+      })
+      if (lastRun?.raw_html_gz) {
+        const { gunzipSync } = await import('node:zlib')
+        const html = gunzipSync(Buffer.from(lastRun.raw_html_gz)).toString('utf-8')
+        fetchedPages.push({
+          label: source.name,
+          html,
+          sourceId: source.id,
+          runId: r.import_run_id,
+        })
+      }
+    }
+  }
+
+  // Need at least one page with content to extract
+  if (fetchedPages.length === 0) return result
+
+  // Run combined extraction
+  const extraction = await extractProgramFromMultipleSources(
+    fetchedPages.map((p) => ({ label: p.label, html: p.html })),
+  )
+  result.extraction = extraction
+
+  // Record extraction metadata on the first run that had new content
+  const anchorPage = fetchedPages[0]
+  await prisma.importRun.update({
+    where: { id: anchorPage.runId },
+    data: {
+      extraction_model: extraction.model,
+      extraction_tokens_in: extraction.tokens_in,
+      extraction_tokens_out: extraction.tokens_out,
+      ...(extraction.kind === 'error' && {
+        result: 'extraction_error',
+        error_message: extraction.message,
+      }),
+    },
+  })
+
+  if (extraction.kind === 'success') {
+    const candidate = await createCandidate(extraction, anchorPage.sourceId, anchorPage.runId)
+    result.candidate = candidate
+  }
+
+  return result
 }

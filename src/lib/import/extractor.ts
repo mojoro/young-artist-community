@@ -257,6 +257,114 @@ export async function extractProgram(
 }
 
 // ---------------------------------------------------------------------------
+// Multi-source extraction (combines HTML from several pages into one call)
+// ---------------------------------------------------------------------------
+
+/**
+ * Extract program data from multiple HTML sources in a single LLM call.
+ * Each source is labeled so the model knows which page the content came from.
+ * This produces a more complete extraction than single-page calls.
+ */
+export async function extractProgramFromMultipleSources(
+  sources: Array<{ label: string; html: string }>,
+  opts?: { model?: string },
+): Promise<ExtractionResult> {
+  if (sources.length === 0) {
+    return { kind: 'error', message: 'No sources provided', model: null, tokens_in: 0, tokens_out: 0 }
+  }
+  if (sources.length === 1) {
+    return extractProgram(sources[0].html, opts)
+  }
+
+  const model = opts?.model ?? DEFAULT_MODEL
+
+  let apiKey: string
+  try {
+    apiKey = getApiKey()
+  } catch (e) {
+    return { kind: 'error', message: e instanceof Error ? e.message : String(e), model: null, tokens_in: 0, tokens_out: 0 }
+  }
+
+  // Combine sources with labels, budget ~30k chars per source to fit context
+  const perSourceLimit = Math.floor(100_000 / sources.length)
+  const combined = sources
+    .map((s) => `=== SOURCE: ${s.label} ===\n${s.html.slice(0, perSourceLimit)}`)
+    .join('\n\n')
+
+  let body: OpenRouterResponse
+  try {
+    const res = await fetch(OPENROUTER_BASE_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://yactracker.com',
+        'X-Title': 'YACTracker Import Pipeline',
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          {
+            role: 'user',
+            content: `Extract program information by combining data from these ${sources.length} pages about the same program. Each page may have different details — merge them into one complete record.\n\n${combined}`,
+          },
+        ],
+        temperature: 0,
+        response_format: { type: 'json_object' },
+      }),
+    })
+
+    if (!res.ok) {
+      const text = await res.text()
+      console.error(`[extractor] OpenRouter API ${res.status}:`, text.slice(0, 500))
+      return { kind: 'error', message: `OpenRouter API returned ${res.status}`, model, tokens_in: 0, tokens_out: 0 }
+    }
+
+    body = (await res.json()) as OpenRouterResponse
+  } catch (e) {
+    console.error('[extractor] OpenRouter request failed:', e)
+    return { kind: 'error', message: `OpenRouter request failed: ${e instanceof Error ? e.message : String(e)}`, model, tokens_in: 0, tokens_out: 0 }
+  }
+
+  const tokens_in = body.usage?.prompt_tokens ?? 0
+  const tokens_out = body.usage?.completion_tokens ?? 0
+  const raw = body.choices?.[0]?.message?.content
+
+  if (!raw) {
+    return { kind: 'error', message: 'OpenRouter returned no content', model, tokens_in, tokens_out }
+  }
+
+  const cleaned = raw.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim()
+
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(cleaned)
+  } catch {
+    console.error('[extractor] Failed to parse LLM JSON:', raw.slice(0, 500))
+    return { kind: 'error', message: 'LLM returned invalid JSON', model, tokens_in, tokens_out }
+  }
+
+  const maybeEmpty = parsed as { name?: string; confidence?: number }
+  if (maybeEmpty.name === '' || (maybeEmpty.confidence !== undefined && maybeEmpty.confidence < 0.1)) {
+    return { kind: 'error', message: 'Pages do not appear to be a young artist program', model, tokens_in, tokens_out }
+  }
+
+  const result = extractedProgramSchema.safeParse(parsed)
+  if (!result.success) {
+    const issues = result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`)
+    console.error('[extractor] Schema validation failed:', issues)
+    return { kind: 'error', message: 'Extracted data failed schema validation', model, tokens_in, tokens_out }
+  }
+
+  const confidence = typeof (parsed as { confidence?: unknown }).confidence === 'number'
+    ? (parsed as { confidence: number }).confidence
+    : 0.5
+
+  return { kind: 'success', program: result.data, confidence, model, tokens_in, tokens_out }
+}
+
+// ---------------------------------------------------------------------------
 // OpenRouter response shape (minimal typing for what we read)
 // ---------------------------------------------------------------------------
 

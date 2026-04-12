@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { extractProgram, extractedProgramSchema } from '@/lib/import/extractor'
 import { upsertProgramFromExtraction } from '@/lib/import/upsert'
 import { createCandidate } from '@/lib/import/candidate'
-import { runFetchForSource } from '@/lib/import/run'
+import { runFetchForSource, runFetchForProgram } from '@/lib/import/run'
 import { gunzipSync } from 'node:zlib'
 
 /**
@@ -214,7 +214,10 @@ export interface ScrapeState {
 
 /**
  * Run fetch+extract for all active ImportSources.
- * Returns summary for useActionState display.
+ *
+ * Sources linked to the same program are grouped and fetched together,
+ * then a single combined LLM extraction merges data from all pages.
+ * Unlinked sources (program_id = null) are processed individually.
  */
 export async function runScrape(
   _prev: ScrapeState | null,
@@ -230,25 +233,56 @@ export async function runScrape(
       return { summary: 'No active sources.' }
     }
 
-    const results = { success: 0, unchanged: 0, error: 0 }
-    const errors: string[] = []
+    // Group sources by program_id for combined extraction
+    const byProgram = new Map<string, typeof sources>()
+    const unlinked: typeof sources = []
     for (const source of sources) {
+      if (source.program_id) {
+        const group = byProgram.get(source.program_id) ?? []
+        group.push(source)
+        byProgram.set(source.program_id, group)
+      } else {
+        unlinked.push(source)
+      }
+    }
+
+    const results = { programs: 0, candidates: 0, errors: 0 }
+    const errors: string[] = []
+
+    // Process grouped sources (multi-page combined extraction)
+    for (const [programId, programSources] of byProgram) {
+      try {
+        const r = await runFetchForProgram(programId, programSources)
+        results.programs++
+        if (r.candidate) results.candidates++
+        if (r.sources_failed === programSources.length) {
+          results.errors++
+          errors.push(`Program ${programId}: all ${programSources.length} sources failed`)
+        }
+      } catch (e) {
+        results.errors++
+        errors.push(`Program ${programId}: ${e instanceof Error ? e.message : String(e)}`)
+      }
+    }
+
+    // Process unlinked sources individually
+    for (const source of unlinked) {
       try {
         const r = await runFetchForSource(source, { extract: true })
-        if (r.result === 'success') results.success++
-        else if (r.result === 'unchanged') results.unchanged++
-        else {
-          results.error++
+        results.programs++
+        if (r.result === 'success' && r.candidate) results.candidates++
+        else if (r.result !== 'success' && r.result !== 'unchanged') {
+          results.errors++
           errors.push(`${source.name}: ${r.result}`)
         }
       } catch (e) {
-        results.error++
+        results.errors++
         errors.push(`${source.name}: ${e instanceof Error ? e.message : String(e)}`)
       }
     }
 
     revalidatePath('/admin/import')
-    const summary = `Done: ${results.success} new, ${results.unchanged} unchanged, ${results.error} errors.`
+    const summary = `Done: ${results.programs} programs processed, ${results.candidates} candidates created, ${results.errors} errors.`
     return {
       summary: errors.length > 0 ? `${summary}\n${errors.join('\n')}` : summary,
     }
