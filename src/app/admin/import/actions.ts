@@ -68,26 +68,44 @@ export async function rejectCandidate(formData: FormData) {
   revalidatePath('/admin/import')
 }
 
+export interface AddSourceState {
+  error?: string
+}
+
 /**
  * Add a new ImportSource.
  */
-export async function addSource(formData: FormData) {
+export async function addSource(
+  _prev: AddSourceState | null,
+  formData: FormData,
+): Promise<AddSourceState> {
   const name = (formData.get('name') as string)?.trim()
   const url = (formData.get('url') as string)?.trim()
   const programId = (formData.get('program_id') as string)?.trim() || null
 
-  if (!name || !url) throw new Error('Name and URL are required')
+  if (!name || !url) return { error: 'Name and URL are required.' }
 
-  await prisma.importSource.create({
-    data: {
-      name,
-      url,
-      status: 'active',
-      program_id: programId,
-    },
-  })
+  try {
+    await prisma.importSource.create({
+      data: {
+        name,
+        url,
+        status: 'active',
+        program_id: programId,
+      },
+    })
+  } catch (e) {
+    if (
+      typeof e === 'object' && e !== null && 'code' in e &&
+      (e as { code: string }).code === 'P2002'
+    ) {
+      return { error: 'A source with that URL already exists.' }
+    }
+    return { error: e instanceof Error ? e.message : String(e) }
+  }
 
   revalidatePath('/admin/import')
+  return {}
 }
 
 export interface ScrapeState {

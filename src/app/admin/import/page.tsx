@@ -2,8 +2,9 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { isAdminAuthenticated, adminLogout } from '../actions'
-import { approveCandidate, rejectCandidate, addSource } from './actions'
+import { approveCandidate, rejectCandidate } from './actions'
 import { ScrapeButton } from './scrape-button'
+import { AddSourceForm } from './add-source-form'
 
 type SearchParams = { [key: string]: string | string[] | undefined }
 
@@ -207,56 +208,7 @@ export default async function AdminImportPage({
           </div>
         )}
 
-        {/* Add source form */}
-        <form action={addSource} className="mt-6 rounded-lg border border-gray-200 bg-white p-4">
-          <h3 className="text-sm font-medium text-gray-900">Add source</h3>
-          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div>
-              <label htmlFor="source_name" className="block text-xs text-gray-600">Name</label>
-              <input
-                id="source_name"
-                name="name"
-                type="text"
-                required
-                placeholder="e.g. Wolf Trap Opera"
-                className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="source_url" className="block text-xs text-gray-600">URL</label>
-              <input
-                id="source_url"
-                name="url"
-                type="url"
-                required
-                placeholder="https://..."
-                className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="source_program_id" className="block text-xs text-gray-600">
-                Link to program (optional)
-              </label>
-              <select
-                id="source_program_id"
-                name="program_id"
-                defaultValue=""
-                className="mt-1 w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm"
-              >
-                <option value="">None — new program</option>
-                {programs.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <button
-            type="submit"
-            className="mt-3 rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800"
-          >
-            Add source
-          </button>
-        </form>
+        <AddSourceForm programs={programs} />
       </section>
     </div>
   )
