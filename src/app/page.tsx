@@ -192,9 +192,10 @@ export default async function Home() {
   ])
 
   let featured: Program[]
-  if (upcomingRows.length > 0) {
+  if (upcomingRows.length >= 3) {
     featured = await attachRatingStats(upcomingRows)
   } else {
+    // Not enough upcoming deadlines to fill the grid — show recent programs
     const fallbackRows = await prisma.program.findMany({
       orderBy: { created_at: 'desc' },
       take: 6,
