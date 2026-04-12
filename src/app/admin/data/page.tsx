@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { isAdminAuthenticated, adminLogout } from '../actions'
 import { deleteProgram, deleteReview } from './actions'
 import { DeleteButton } from './delete-button'
+import { ProgramEditor } from './program-editor'
 
 type SearchParams = { [key: string]: string | string[] | undefined }
 
@@ -36,20 +37,51 @@ export default async function AdminDataPage({
     created_at: Date
   }> = []
 
+  let fullProgram: {
+    id: string
+    name: string
+    description: string | null
+    start_date: Date | null
+    end_date: Date | null
+    application_deadline: Date | null
+    tuition: number | null
+    application_fee: number | null
+    age_min: number | null
+    age_max: number | null
+    offers_scholarship: boolean
+    application_url: string | null
+    program_url: string | null
+    program_instruments: Array<{ instrument: { name: string } }>
+    program_categories: Array<{ category: { name: string } }>
+    program_locations: Array<{ location: { city: string; country: string } }>
+  } | null = null
+
   if (selectedProgramId) {
-    reviews = await prisma.review.findMany({
-      where: { program_id: selectedProgramId },
-      orderBy: { created_at: 'desc' },
-      select: {
-        id: true,
-        rating: true,
-        reviewer_name: true,
-        title: true,
-        body: true,
-        year_attended: true,
-        created_at: true,
-      },
-    })
+    const [reviewRows, programRow] = await Promise.all([
+      prisma.review.findMany({
+        where: { program_id: selectedProgramId },
+        orderBy: { created_at: 'desc' },
+        select: {
+          id: true,
+          rating: true,
+          reviewer_name: true,
+          title: true,
+          body: true,
+          year_attended: true,
+          created_at: true,
+        },
+      }),
+      prisma.program.findUnique({
+        where: { id: selectedProgramId },
+        include: {
+          program_instruments: { include: { instrument: { select: { name: true } } } },
+          program_categories: { include: { category: { select: { name: true } } } },
+          program_locations: { include: { location: { select: { city: true, country: true } } } },
+        },
+      }),
+    ])
+    reviews = reviewRows
+    fullProgram = programRow
   }
 
   const selectedProgram = selectedProgramId
@@ -137,6 +169,37 @@ export default async function AdminDataPage({
           </table>
         </div>
       </section>
+
+      {/* Edit selected program */}
+      {fullProgram && (
+        <section className="mt-10 border-t border-gray-200 pt-8">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Edit: {fullProgram.name}
+          </h2>
+          <div className="mt-4">
+            <ProgramEditor
+              program={{
+                id: fullProgram.id,
+                name: fullProgram.name,
+                description: fullProgram.description,
+                start_date: fullProgram.start_date?.toISOString().slice(0, 10) ?? null,
+                end_date: fullProgram.end_date?.toISOString().slice(0, 10) ?? null,
+                application_deadline: fullProgram.application_deadline?.toISOString().slice(0, 10) ?? null,
+                tuition: fullProgram.tuition,
+                application_fee: fullProgram.application_fee,
+                age_min: fullProgram.age_min,
+                age_max: fullProgram.age_max,
+                offers_scholarship: fullProgram.offers_scholarship,
+                application_url: fullProgram.application_url,
+                program_url: fullProgram.program_url,
+                instruments: fullProgram.program_instruments.map((pi) => pi.instrument.name).join(', '),
+                categories: fullProgram.program_categories.map((pc) => pc.category.name).join(', '),
+                locations: fullProgram.program_locations.map((pl) => `${pl.location.city}/${pl.location.country}`).join(', '),
+              }}
+            />
+          </div>
+        </section>
+      )}
 
       {/* Reviews for selected program */}
       {selectedProgram && (
