@@ -80,6 +80,12 @@ export interface Audition {
   updated_at: string
 }
 
+export interface Production {
+  id: string
+  title: string
+  composer: string | null
+}
+
 export interface Problem {
   type: string
   title: string

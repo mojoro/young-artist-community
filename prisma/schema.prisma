@@ -27,13 +27,14 @@ model Program {
   created_at           DateTime @default(now())
   updated_at           DateTime @updatedAt
 
-  reviews              Review[]
-  auditions            Audition[]
-  program_instruments  ProgramInstrument[]
-  program_categories   ProgramCategory[]
-  program_locations    ProgramLocation[]
-  import_sources       ImportSource[]
-  program_candidates   ProgramCandidate[]
+  reviews               Review[]
+  auditions             Audition[]
+  program_instruments   ProgramInstrument[]
+  program_categories    ProgramCategory[]
+  program_locations     ProgramLocation[]
+  program_productions   ProgramProduction[]
+  import_sources        ImportSource[]
+  program_candidates    ProgramCandidate[]
 
   @@map("program")
 }
@@ -164,6 +165,46 @@ model AuditionInstrument {
 
   @@unique([audition_id, instrument_id])
   @@map("audition_instrument")
+}
+
+// ---------------------------------------------------------------------------
+// Productions (operas / shows for a program's current season)
+// ---------------------------------------------------------------------------
+
+model Production {
+  id         String   @id @default(uuid())
+  title      String
+  composer   String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  program_productions ProgramProduction[]
+
+  @@map("production")
+}
+
+model ProgramProduction {
+  id            String @id @default(uuid())
+  program_id    String
+  production_id String
+
+  program    Program    @relation(fields: [program_id], references: [id])
+  production Production @relation(fields: [production_id], references: [id])
+
+  @@unique([program_id, production_id])
+  @@map("program_production")
+}
+
+// ---------------------------------------------------------------------------
+// Mailing list
+// ---------------------------------------------------------------------------
+
+model Subscriber {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  subscribed_at DateTime @default(now())
+
+  @@map("subscriber")
 }
 
 // ---------------------------------------------------------------------------
