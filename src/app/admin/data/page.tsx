@@ -2,9 +2,10 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { isAdminAuthenticated, adminLogout } from '../actions'
-import { deleteProgram, deleteReview } from './actions'
+import { deleteProgram, deleteReview, deleteAudition } from './actions'
 import { DeleteButton } from './delete-button'
 import { ProgramEditor } from './program-editor'
+import { AuditionForm } from './audition-form'
 
 type SearchParams = { [key: string]: string | string[] | undefined }
 
@@ -61,8 +62,18 @@ export default async function AdminDataPage({
     program_locations: Array<{ location: { city: string; country: string } }>
   } | null = null
 
+  let auditions: Array<{
+    id: string
+    time_slot: Date | null
+    audition_fee: number | null
+    instructions: string | null
+    registration_url: string | null
+    location: { city: string; country: string }
+    audition_instruments: Array<{ instrument: { name: string } }>
+  }> = []
+
   if (selectedProgramId) {
-    const [reviewRows, programRow] = await Promise.all([
+    const [reviewRows, programRow, auditionRows] = await Promise.all([
       prisma.review.findMany({
         where: { program_id: selectedProgramId },
         orderBy: { created_at: 'desc' },
@@ -84,9 +95,18 @@ export default async function AdminDataPage({
           program_locations: { include: { location: { select: { city: true, country: true } } } },
         },
       }),
+      prisma.audition.findMany({
+        where: { program_id: selectedProgramId },
+        orderBy: { time_slot: { sort: 'asc', nulls: 'last' } },
+        include: {
+          location: { select: { city: true, country: true } },
+          audition_instruments: { include: { instrument: { select: { name: true } } } },
+        },
+      }),
     ])
     reviews = reviewRows
     fullProgram = programRow
+    auditions = auditionRows
   }
 
   const selectedProgram = selectedProgramId
@@ -257,6 +277,87 @@ export default async function AdminDataPage({
               ))}
             </div>
           )}
+        </section>
+      )}
+
+      {/* Auditions for selected program */}
+      {selectedProgram && (
+        <section className="mt-10 border-t border-gray-200 pt-8">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Auditions for {selectedProgram.name} ({auditions.length})
+          </h2>
+
+          {auditions.length > 0 && (
+            <div className="mt-4 space-y-3">
+              {auditions.map((a) => {
+                const locStr = `${a.location.city}/${a.location.country}`
+                const tsStr = a.time_slot
+                  ? a.time_slot.toISOString().slice(0, 16)
+                  : ''
+                const instStr = a.audition_instruments
+                  .map((ai) => ai.instrument.name)
+                  .join(', ')
+
+                return (
+                  <div key={a.id} className="space-y-3">
+                    <div className="flex items-start justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
+                      <div className="text-sm text-gray-700">
+                        <span className="font-medium">{a.location.city}, {a.location.country}</span>
+                        {a.time_slot && (
+                          <span className="ml-2 text-gray-500">
+                            {a.time_slot.toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                              hour: 'numeric',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                        )}
+                        {a.audition_fee !== null && (
+                          <span className="ml-2 text-gray-500">
+                            Fee: ${a.audition_fee}
+                          </span>
+                        )}
+                        {instStr && (
+                          <span className="ml-2 text-gray-400">{instStr}</span>
+                        )}
+                      </div>
+                      <DeleteButton
+                        action={deleteAudition}
+                        name="audition_id"
+                        value={a.id}
+                        confirmMessage="Delete this audition?"
+                      />
+                    </div>
+                    <AuditionForm
+                      programId={selectedProgramId!}
+                      audition={{
+                        id: a.id,
+                        location: locStr,
+                        time_slot: tsStr,
+                        audition_fee: a.audition_fee?.toString() ?? '',
+                        instructions: a.instructions ?? '',
+                        registration_url: a.registration_url ?? '',
+                        instruments: instStr,
+                      }}
+                      validLocations={allLocations.map((l) => `${l.city}/${l.country}`)}
+                      validInstruments={allInstruments.map((i) => i.name)}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Add new audition */}
+          <div className="mt-4">
+            <AuditionForm
+              programId={selectedProgramId!}
+              validLocations={allLocations.map((l) => `${l.city}/${l.country}`)}
+              validInstruments={allInstruments.map((i) => i.name)}
+            />
+          </div>
         </section>
       )}
     </div>

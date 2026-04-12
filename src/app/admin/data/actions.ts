@@ -196,3 +196,162 @@ export async function deleteReview(formData: FormData) {
   revalidatePath('/admin/data')
   revalidatePath(`/programs/${review.program_id}`)
 }
+
+// ---------------------------------------------------------------------------
+// Auditions
+// ---------------------------------------------------------------------------
+
+export interface AuditionFormState {
+  message?: string
+  error?: string
+}
+
+async function parseAuditionForm(formData: FormData) {
+  const str = (k: string) => (formData.get(k) as string)?.trim() || null
+  const num = (k: string) => {
+    const v = str(k)
+    if (v === null) return null
+    const n = Number(v)
+    return Number.isFinite(n) ? n : null
+  }
+  const csvList = (k: string) =>
+    (str(k) ?? '').split(',').map((s) => s.trim()).filter(Boolean)
+
+  const locationStr = str('location')
+  if (!locationStr) return { error: 'Location is required (City/Country).' }
+
+  const [city, country] = locationStr.split('/').map((s) => s.trim())
+  if (!city || !country) return { error: 'Location must be City/Country format.' }
+
+  const location = await prisma.location.findFirst({
+    where: {
+      city: { equals: city, mode: 'insensitive' },
+      country: { equals: country, mode: 'insensitive' },
+    },
+    select: { id: true },
+  })
+  if (!location) return { error: `Unknown location: ${city}/${country}` }
+
+  const instrumentNames = csvList('instruments')
+  const allInstruments = await prisma.instrument.findMany({ select: { id: true, name: true } })
+  const instrumentIds: string[] = []
+  const unknown: string[] = []
+  for (const name of instrumentNames) {
+    const match = allInstruments.find((i) => i.name.toLowerCase() === name.toLowerCase())
+    if (match) instrumentIds.push(match.id)
+    else unknown.push(name)
+  }
+  if (unknown.length > 0) return { error: `Unknown instruments: ${unknown.join(', ')}` }
+
+  const timeSlotStr = str('time_slot')
+  let timeSlot: Date | null = null
+  if (timeSlotStr) {
+    const d = new Date(timeSlotStr)
+    if (Number.isNaN(d.getTime())) return { error: 'Invalid time slot date.' }
+    timeSlot = d
+  }
+
+  return {
+    data: {
+      location_id: location.id,
+      time_slot: timeSlot,
+      audition_fee: num('audition_fee'),
+      instructions: str('instructions'),
+      registration_url: str('registration_url'),
+    },
+    instrumentIds,
+  }
+}
+
+export async function createAudition(
+  _prev: AuditionFormState | null,
+  formData: FormData,
+): Promise<AuditionFormState> {
+  const programId = formData.get('program_id') as string
+  if (!programId) return { error: 'Missing program_id' }
+
+  const parsed = await parseAuditionForm(formData)
+  if ('error' in parsed) return { error: parsed.error }
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const audition = await tx.audition.create({
+        data: { program_id: programId, ...parsed.data },
+        select: { id: true },
+      })
+      if (parsed.instrumentIds.length > 0) {
+        await tx.auditionInstrument.createMany({
+          data: parsed.instrumentIds.map((instrument_id) => ({
+            audition_id: audition.id,
+            instrument_id,
+          })),
+        })
+      }
+    })
+
+    revalidatePath('/admin/data')
+    revalidatePath(`/programs/${programId}`)
+    return { message: 'Audition created.' }
+  } catch (e) {
+    console.error('[admin] createAudition failed:', e)
+    return { error: e instanceof Error ? e.message : String(e) }
+  }
+}
+
+export async function updateAudition(
+  _prev: AuditionFormState | null,
+  formData: FormData,
+): Promise<AuditionFormState> {
+  const auditionId = formData.get('audition_id') as string
+  if (!auditionId) return { error: 'Missing audition_id' }
+
+  const parsed = await parseAuditionForm(formData)
+  if ('error' in parsed) return { error: parsed.error }
+
+  try {
+    const audition = await prisma.audition.findUnique({
+      where: { id: auditionId },
+      select: { program_id: true },
+    })
+    if (!audition) return { error: 'Audition not found' }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.audition.update({
+        where: { id: auditionId },
+        data: parsed.data,
+      })
+      await tx.auditionInstrument.deleteMany({ where: { audition_id: auditionId } })
+      if (parsed.instrumentIds.length > 0) {
+        await tx.auditionInstrument.createMany({
+          data: parsed.instrumentIds.map((instrument_id) => ({
+            audition_id: auditionId,
+            instrument_id,
+          })),
+        })
+      }
+    })
+
+    revalidatePath('/admin/data')
+    revalidatePath(`/programs/${audition.program_id}`)
+    return { message: 'Audition saved.' }
+  } catch (e) {
+    console.error('[admin] updateAudition failed:', e)
+    return { error: e instanceof Error ? e.message : String(e) }
+  }
+}
+
+export async function deleteAudition(formData: FormData) {
+  const id = formData.get('audition_id') as string
+  if (!id) throw new Error('Missing audition_id')
+
+  const audition = await prisma.audition.findUnique({
+    where: { id },
+    select: { program_id: true },
+  })
+
+  await prisma.auditionInstrument.deleteMany({ where: { audition_id: id } })
+  await prisma.audition.delete({ where: { id } })
+
+  revalidatePath('/admin/data')
+  if (audition) revalidatePath(`/programs/${audition.program_id}`)
+}
