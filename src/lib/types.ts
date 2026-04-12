@@ -33,6 +33,7 @@ export interface Location {
 
 export interface Program {
   id: string
+  slug: string
   name: string
   description: string | null
   start_date: string | null
