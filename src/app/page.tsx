@@ -101,12 +101,13 @@ export default async function Home() {
       <section className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="max-w-3xl text-4xl sm:text-5xl font-bold tracking-tight text-slate-900">
-            Find and review young artist programs in classical music and opera
+            A free, community-built directory of young artist programs
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-slate-600">
-            A community directory where singers and instrumentalists browse
-            summer festivals, academies, and young artist programs, with
-            honest reviews from past participants.
+            No ads, no paid placements, no paywalls. Just honest information
+            and reviews from singers and instrumentalists who&apos;ve been
+            through these programs. Browse summer festivals, academies, and
+            YAPs&nbsp;&mdash; and help others by sharing your experience.
           </p>
 
           <form
@@ -131,19 +132,42 @@ export default async function Home() {
               Search
             </button>
           </form>
+        </div>
+      </section>
 
-          {/* Interest signup CTA */}
-          <div className="mt-10 rounded-xl bg-brand-50 p-8 sm:p-10 text-left sm:text-center">
+      {/* Community contribution CTA */}
+      <section className="bg-brand-50">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-14">
+          <div className="text-left sm:text-center">
             <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-              Should we keep building this?
+              This directory grows when you contribute
             </h2>
-            <p className="sm:mx-auto mt-3 max-w-lg text-sm leading-relaxed text-slate-600">
-              This is an early-stage project. We're trying to figure out
-              if the young artist community actually wants a dedicated directory
-              and review platform. If this is something you'd use, drop your
-              email below. It helps us know there's real interest.
+            <p className="sm:mx-auto mt-3 max-w-xl text-sm leading-relaxed text-slate-600">
+              Every review and program listing here comes from the community.
+              If you&apos;ve attended a program, leave a review. If you know
+              of a program that&apos;s missing, let us know. The more people
+              contribute, the more useful this becomes for everyone.
             </p>
-            <div className="sm:mx-auto mt-6 max-w-sm">
+            <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center sm:justify-center gap-3">
+              <Link
+                href="/programs"
+                className="rounded-full bg-brand-600 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
+              >
+                Write a review
+              </Link>
+              <a
+                href="mailto:john@johnmoorman.com?subject=Program%20suggestion%20for%20Young%20Artist%20Community"
+                className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition"
+              >
+                Suggest a program
+              </a>
+            </div>
+          </div>
+          <div className="mt-8 border-t border-brand-600/10 pt-6 text-left sm:text-center">
+            <p className="text-sm font-medium text-slate-600">
+              Want to stay in the loop?
+            </p>
+            <div className="sm:mx-auto mt-3 max-w-sm">
               <SubscribeForm variant="light" />
             </div>
           </div>
