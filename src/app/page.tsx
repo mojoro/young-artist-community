@@ -80,12 +80,9 @@ async function attachRatingStats(
 
 
 export default async function Home() {
-  const today = new Date()
-
-  const [upcomingRows, categoryRows] = await Promise.all([
+  const [recentRows, categoryRows] = await Promise.all([
     prisma.program.findMany({
-      where: { application_deadline: { gte: today } },
-      orderBy: { application_deadline: 'asc' },
+      orderBy: { updated_at: 'desc' },
       take: 6,
       include: PROGRAM_INCLUDE,
     }),
@@ -95,19 +92,7 @@ export default async function Home() {
     }),
   ])
 
-  let featured: Program[]
-  if (upcomingRows.length >= 3) {
-    featured = await attachRatingStats(upcomingRows)
-  } else {
-    // Not enough upcoming deadlines to fill the grid — show recent programs
-    const fallbackRows = await prisma.program.findMany({
-      orderBy: { created_at: 'desc' },
-      take: 6,
-      include: PROGRAM_INCLUDE,
-    })
-    featured = await attachRatingStats(fallbackRows)
-  }
-
+  const recent = await attachRatingStats(recentRows)
   const categories = categoryRows
 
   return (
@@ -165,12 +150,12 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Featured programs */}
+      {/* Recently added / updated */}
       <section className="py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between">
             <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-              Featured programs
+              Recently updated
             </h2>
             <Link
               href="/programs"
@@ -180,11 +165,11 @@ export default async function Home() {
             </Link>
           </div>
 
-          {featured.length === 0 ? (
+          {recent.length === 0 ? (
             <p className="mt-6 text-sm text-slate-500">No programs available yet.</p>
           ) : (
             <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {featured.map((program) => (
+              {recent.map((program) => (
                 <ProgramCard key={program.id} program={program} />
               ))}
             </div>
