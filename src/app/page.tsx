@@ -133,8 +133,18 @@ export default async function Home() {
                 className="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-brand-600 hover:bg-brand-700 transition-colors"
                 aria-label="Search"
               >
-                <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                <svg
+                  className="h-4 w-4 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                  />
                 </svg>
               </button>
             </div>
@@ -166,10 +176,10 @@ export default async function Home() {
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-slate-600">
               Every review and program listing here comes from the community. If
-              you&apos;ve attended a program, leave a review. If you know of a
-              program that&apos;s missing or see a field that needs updating,
-              please feel free to add it! The more people contribute, the more
-              useful this becomes for everyone.
+              you&apos;ve attended a program, please leave a review. If you know
+              of a program that&apos;s missing or see a field that needs
+              updating, please feel free to add it! The more people contribute,
+              the more useful this becomes for everyone.
             </p>
             <div className="mt-6 flex flex-row justify-center sm:justify-start gap-3">
               <Link
