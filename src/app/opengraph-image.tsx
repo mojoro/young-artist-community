@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'nodejs'
+export const revalidate = 86400
 export const alt = 'Young Artist Community'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
@@ -21,7 +22,7 @@ export default function OGImage() {
         }}
       >
         {/* Tuning fork icon */}
-        <svg width="80" height="80" viewBox="0 0 32 32" fill="none">
+        <svg width="120" height="120" viewBox="0 0 32 32" fill="none">
           <rect width="32" height="32" rx="8" fill="rgba(255,255,255,0.2)" />
           <path d="M13 4 L13 17 Q13 21 16 21 Q19 21 19 17 L19 4" stroke="white" strokeWidth="2.8" strokeLinecap="round" fill="none" />
           <path d="M16 21 L16 28" stroke="white" strokeWidth="2.8" strokeLinecap="round" />
@@ -38,7 +39,7 @@ export default function OGImage() {
         >
           <div
             style={{
-              fontSize: 56,
+              fontSize: 84,
               fontWeight: 800,
               color: 'white',
               lineHeight: 1.1,
@@ -49,7 +50,7 @@ export default function OGImage() {
           </div>
           <div
             style={{
-              fontSize: 24,
+              fontSize: 36,
               fontWeight: 400,
               color: 'rgba(255,255,255,0.8)',
               marginTop: 16,
@@ -76,7 +77,7 @@ export default function OGImage() {
                 borderRadius: 999,
                 background: 'rgba(255,255,255,0.15)',
                 color: 'rgba(255,255,255,0.9)',
-                fontSize: 16,
+                fontSize: 24,
                 fontWeight: 500,
               }}
             >
@@ -89,7 +90,7 @@ export default function OGImage() {
           style={{
             position: 'absolute',
             bottom: 32,
-            fontSize: 16,
+            fontSize: 24,
             color: 'rgba(255,255,255,0.5)',
           }}
         >
