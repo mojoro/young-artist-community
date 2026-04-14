@@ -1,0 +1,206 @@
+erDiagram
+    PROGRAM ||--o{ REVIEW : has
+    PROGRAM ||--o{ AUDITION : holds
+    PROGRAM ||--o{ REPORT : "flagged by"
+    PROGRAM ||--o{ PROGRAM_REVISION : "versioned by"
+    PROGRAM ||--o{ PROGRAM_INSTRUMENT : offers
+    PROGRAM ||--o{ PROGRAM_CATEGORY : "classified as"
+    PROGRAM ||--o{ PROGRAM_LOCATION : "hosted in"
+    PROGRAM ||--o{ PROGRAM_PRODUCTION : stages
+    PROGRAM ||--o{ IMPORT_SOURCE : "sourced from"
+    PROGRAM ||--o{ PROGRAM_CANDIDATE : "matched to"
+
+    REVIEW ||--o{ REPORT : "flagged by"
+
+    INSTRUMENT ||--o{ PROGRAM_INSTRUMENT : "offered by"
+    INSTRUMENT ||--o{ AUDITION_INSTRUMENT : "screened in"
+
+    CATEGORY ||--o{ PROGRAM_CATEGORY : classifies
+
+    LOCATION ||--o{ PROGRAM_LOCATION : hosts
+    LOCATION ||--o{ AUDITION : hosts
+
+    AUDITION ||--o{ AUDITION_INSTRUMENT : "screens for"
+
+    PRODUCTION ||--o{ PROGRAM_PRODUCTION : "performed in"
+
+    IMPORT_SOURCE ||--o{ IMPORT_RUN : triggers
+    IMPORT_SOURCE ||--o{ PROGRAM_CANDIDATE : produces
+
+    IMPORT_RUN ||--o{ PROGRAM_CANDIDATE : generates
+
+    PROGRAM {
+        uuid id PK
+        string name
+        string slug UK
+        string description
+        date start_date
+        date end_date
+        date application_deadline
+        float tuition
+        float application_fee
+        int age_min
+        int age_max
+        bool offers_scholarship
+        string application_url
+        string program_url
+        datetime created_at
+        datetime updated_at
+    }
+
+    REVIEW {
+        uuid id PK
+        uuid program_id FK
+        int rating
+        int year_attended
+        string reviewer_name
+        string title
+        string body
+        datetime created_at
+        datetime updated_at
+    }
+
+    AUDITION {
+        uuid id PK
+        uuid program_id FK
+        uuid location_id FK
+        datetime time_slot
+        float audition_fee
+        string instructions
+        string registration_url
+        datetime created_at
+        datetime updated_at
+    }
+
+    LOCATION {
+        uuid id PK
+        string city
+        string country
+        string state
+        string address
+        datetime created_at
+        datetime updated_at
+    }
+
+    CATEGORY {
+        uuid id PK
+        string name UK
+        datetime created_at
+        datetime updated_at
+    }
+
+    INSTRUMENT {
+        uuid id PK
+        string name UK
+        datetime created_at
+        datetime updated_at
+    }
+
+    PRODUCTION {
+        uuid id PK
+        string title
+        string composer
+        datetime created_at
+        datetime updated_at
+    }
+
+    SUBSCRIBER {
+        uuid id PK
+        string email UK
+        datetime subscribed_at
+    }
+
+    PROGRAM_REVISION {
+        uuid id PK
+        uuid program_id FK
+        json data
+        string edit_summary
+        datetime created_at
+    }
+
+    REPORT {
+        uuid id PK
+        uuid program_id FK
+        uuid review_id FK
+        string report_type
+        string description
+        string reporter_email
+        string status
+        string admin_notes
+        datetime created_at
+        datetime updated_at
+    }
+
+    PROGRAM_INSTRUMENT {
+        uuid id PK
+        uuid program_id FK
+        uuid instrument_id FK
+    }
+
+    PROGRAM_CATEGORY {
+        uuid id PK
+        uuid program_id FK
+        uuid category_id FK
+    }
+
+    PROGRAM_LOCATION {
+        uuid id PK
+        uuid program_id FK
+        uuid location_id FK
+    }
+
+    PROGRAM_PRODUCTION {
+        uuid id PK
+        uuid program_id FK
+        uuid production_id FK
+    }
+
+    AUDITION_INSTRUMENT {
+        uuid id PK
+        uuid audition_id FK
+        uuid instrument_id FK
+    }
+
+    IMPORT_SOURCE {
+        uuid id PK
+        string name
+        string url UK
+        string status
+        string schedule
+        uuid program_id FK
+        datetime last_fetched_at
+        string last_content_hash
+        string notes
+        datetime created_at
+        datetime updated_at
+    }
+
+    IMPORT_RUN {
+        uuid id PK
+        uuid import_source_id FK
+        datetime started_at
+        datetime finished_at
+        string result
+        string error_message
+        int http_status
+        string content_hash
+        bytes raw_html_gz
+        int raw_html_size
+        string extraction_model
+        int extraction_tokens_in
+        int extraction_tokens_out
+    }
+
+    PROGRAM_CANDIDATE {
+        uuid id PK
+        uuid import_source_id FK
+        uuid import_run_id FK
+        uuid program_id FK
+        json extracted_json
+        float confidence
+        string status
+        string reviewer_notes
+        datetime approved_at
+        datetime created_at
+        datetime updated_at
+    }
