@@ -58,6 +58,13 @@ jobs:
             DEPLOY_ID=$(gh api "repos/${{ github.repository }}/deployments?sha=${SHA}&environment=Preview" \
               --jq '.[0].id // empty' 2>/dev/null || true)
             if [ -n "$DEPLOY_ID" ]; then
+              # Check for failed deployment
+              FAILED=$(gh api "repos/${{ github.repository }}/deployments/${DEPLOY_ID}/statuses" \
+                --jq '[.[] | select(.state == "failure" or .state == "error")][0].state // empty' 2>/dev/null || true)
+              if [ -n "$FAILED" ]; then
+                echo "::error::Vercel deployment $DEPLOY_ID failed with state: $FAILED"
+                exit 1
+              fi
               URL=$(gh api "repos/${{ github.repository }}/deployments/${DEPLOY_ID}/statuses" \
                 --jq '[.[] | select(.state == "success")][0].environment_url // empty' 2>/dev/null || true)
               if [ -n "$URL" ]; then
