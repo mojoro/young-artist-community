@@ -51,7 +51,10 @@ export function FeedbackCard({
 
           {feedback.email && (
             <p className="mt-1 text-xs text-gray-400">
-              From: <a href={`mailto:${feedback.email}`} className="underline">{feedback.email}</a>
+              From:{' '}
+              <a href={`mailto:${feedback.email}`} className="underline">
+                {feedback.email}
+              </a>
             </p>
           )}
         </div>

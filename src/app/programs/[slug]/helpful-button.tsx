@@ -55,9 +55,7 @@ export function HelpfulButton({
           />
         </svg>
       )}
-      <span>
-        {optimistic.count > 0 ? `Helpful (${optimistic.count})` : 'Helpful'}
-      </span>
+      <span>{optimistic.count > 0 ? `Helpful (${optimistic.count})` : 'Helpful'}</span>
     </button>
   )
 }

@@ -224,7 +224,11 @@ function ReviewCard({
       <p className="mt-3 text-sm leading-relaxed whitespace-pre-line text-slate-700">
         {review.body}
       </p>
-      <HelpfulButton reviewId={review.id} initialCount={review.helpful_count} initialLiked={liked} />
+      <HelpfulButton
+        reviewId={review.id}
+        initialCount={review.helpful_count}
+        initialLiked={liked}
+      />
     </li>
   )
 }

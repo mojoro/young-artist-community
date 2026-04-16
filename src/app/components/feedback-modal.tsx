@@ -28,11 +28,7 @@ export function FeedbackModal() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={open}
-        className="feedback-trigger"
-      >
+      <button type="button" onClick={open} className="feedback-trigger">
         Feedback
       </button>
 
@@ -52,7 +48,13 @@ export function FeedbackModal() {
               className="rounded-lg p-1 text-slate-400 transition-colors hover:text-slate-600"
               aria-label="Close"
             >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
               </svg>
             </button>

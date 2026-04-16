@@ -9,7 +9,10 @@ test.describe('feedback modal', () => {
 
   test('clicking feedback button opens modal', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('banner').getByRole('button', { name: /feedback/i }).click()
+    await page
+      .getByRole('banner')
+      .getByRole('button', { name: /feedback/i })
+      .click()
 
     const dialog = page.getByRole('dialog')
     await expect(dialog).toBeVisible()
@@ -18,7 +21,10 @@ test.describe('feedback modal', () => {
 
   test('submitting empty form shows validation', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('banner').getByRole('button', { name: /feedback/i }).click()
+    await page
+      .getByRole('banner')
+      .getByRole('button', { name: /feedback/i })
+      .click()
 
     const dialog = page.getByRole('dialog')
     await dialog.getByRole('button', { name: /send feedback/i }).click()
@@ -30,7 +36,10 @@ test.describe('feedback modal', () => {
 
   test('submitting with message succeeds', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('banner').getByRole('button', { name: /feedback/i }).click()
+    await page
+      .getByRole('banner')
+      .getByRole('button', { name: /feedback/i })
+      .click()
 
     const dialog = page.getByRole('dialog')
     await dialog.getByLabel(/message/i).fill('This is a test feedback message from E2E.')
@@ -41,7 +50,10 @@ test.describe('feedback modal', () => {
 
   test('submitting with message and email succeeds', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('banner').getByRole('button', { name: /feedback/i }).click()
+    await page
+      .getByRole('banner')
+      .getByRole('button', { name: /feedback/i })
+      .click()
 
     const dialog = page.getByRole('dialog')
     await dialog.getByLabel(/message/i).fill('Feedback with email from E2E.')
