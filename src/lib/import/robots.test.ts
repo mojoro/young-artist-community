@@ -50,7 +50,7 @@ describe('isAllowed', () => {
     await isAllowed('https://cached.com/a')
     await isAllowed('https://cached.com/b')
     const calls = fetchMock.mock.calls.filter(
-      (c: [string]) => typeof c[0] === 'string' && c[0].includes('cached.com'),
+      (c) => typeof c[0] === 'string' && c[0].includes('cached.com'),
     )
     expect(calls).toHaveLength(1)
   })
