@@ -41,8 +41,12 @@ export async function apiGetOrNull<T>(path: string): Promise<T | null> {
   return (await res.json()) as T
 }
 
-export function buildQuery(params: Record<string, string | number | boolean | undefined | null>): string {
-  const entries = Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== '')
+export function buildQuery(
+  params: Record<string, string | number | boolean | undefined | null>,
+): string {
+  const entries = Object.entries(params).filter(
+    ([, v]) => v !== undefined && v !== null && v !== '',
+  )
   if (entries.length === 0) return ''
   const qs = new URLSearchParams()
   for (const [k, v] of entries) {
@@ -65,7 +69,10 @@ export function listProgramReviews(id: string, query: string = ''): Promise<List
   return apiGet<ListResponse<Review>>(`/api/programs/${id}/reviews${query}`)
 }
 
-export function listProgramAuditions(id: string, query: string = ''): Promise<ListResponse<Audition>> {
+export function listProgramAuditions(
+  id: string,
+  query: string = '',
+): Promise<ListResponse<Audition>> {
   return apiGet<ListResponse<Audition>>(`/api/programs/${id}/auditions${query}`)
 }
 

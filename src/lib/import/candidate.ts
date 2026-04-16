@@ -50,9 +50,7 @@ export async function createCandidate(
  *
  * Returns the matched program ID or null if no match.
  */
-async function findMatchingProgram(
-  extraction: ExtractionSuccess,
-): Promise<string | null> {
+async function findMatchingProgram(extraction: ExtractionSuccess): Promise<string | null> {
   const name = normalize(extraction.program.name)
   if (!name) return null
 
@@ -77,15 +75,11 @@ async function findMatchingProgram(
   if (candidates.length === 1) return candidates[0].id
 
   // Multiple name matches — score by city overlap
-  const extractedCities = new Set(
-    extraction.program.locations.map((l) => normalize(l.city)),
-  )
+  const extractedCities = new Set(extraction.program.locations.map((l) => normalize(l.city)))
 
   if (extractedCities.size > 0) {
     const withCityMatch = candidates.filter((c) =>
-      c.program_locations.some((pl) =>
-        extractedCities.has(normalize(pl.location.city)),
-      ),
+      c.program_locations.some((pl) => extractedCities.has(normalize(pl.location.city))),
     )
     if (withCityMatch.length === 1) return withCityMatch[0].id
     if (withCityMatch.length > 1) {

@@ -46,7 +46,14 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
   return (
     <form action={formAction}>
       <input type="hidden" name="program_id" value={program.id} />
-      <input type="text" name="url_confirm" tabIndex={-1} autoComplete="off" aria-hidden="true" className="sr-only" />
+      <input
+        type="text"
+        name="url_confirm"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="sr-only"
+      />
 
       {state?.error && (
         <div className="mb-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-200">
@@ -56,7 +63,10 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
 
       {/* Name */}
       <div>
-        <label htmlFor="name" className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5">
+        <label
+          htmlFor="name"
+          className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+        >
           Program name <span className="text-red-500">*</span>
         </label>
         <input
@@ -65,13 +75,16 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
           type="text"
           required
           defaultValue={program.name}
-          className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+          className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
         />
       </div>
 
       {/* Description */}
       <div className="mt-5">
-        <label htmlFor="description" className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5">
+        <label
+          htmlFor="description"
+          className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+        >
           Description
         </label>
         <textarea
@@ -79,14 +92,17 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
           name="description"
           rows={4}
           defaultValue={program.description ?? ''}
-          className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+          className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
         />
       </div>
 
       {/* Dates */}
       <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
-          <label htmlFor="start_date" className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5">
+          <label
+            htmlFor="start_date"
+            className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+          >
             Start date
           </label>
           <input
@@ -94,11 +110,14 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
             name="start_date"
             type="date"
             defaultValue={toDateInput(program.start_date)}
-            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
-          <label htmlFor="end_date" className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5">
+          <label
+            htmlFor="end_date"
+            className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+          >
             End date
           </label>
           <input
@@ -106,11 +125,14 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
             name="end_date"
             type="date"
             defaultValue={toDateInput(program.end_date)}
-            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
-          <label htmlFor="application_deadline" className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5">
+          <label
+            htmlFor="application_deadline"
+            className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+          >
             Application deadline
           </label>
           <input
@@ -118,7 +140,7 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
             name="application_deadline"
             type="date"
             defaultValue={toDateInput(program.application_deadline)}
-            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />
         </div>
       </div>
@@ -126,7 +148,10 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
       {/* Financial */}
       <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="tuition" className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5">
+          <label
+            htmlFor="tuition"
+            className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+          >
             Tuition (USD)
           </label>
           <input
@@ -137,11 +162,14 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
             step="1"
             placeholder="0 = free"
             defaultValue={program.tuition ?? ''}
-            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
-          <label htmlFor="application_fee" className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5">
+          <label
+            htmlFor="application_fee"
+            className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+          >
             Application fee (USD)
           </label>
           <input
@@ -151,7 +179,7 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
             min="0"
             step="1"
             defaultValue={program.application_fee ?? ''}
-            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />
         </div>
       </div>
@@ -159,7 +187,10 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
       {/* Age range */}
       <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="age_min" className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5">
+          <label
+            htmlFor="age_min"
+            className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+          >
             Age min
           </label>
           <input
@@ -169,11 +200,14 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
             min="0"
             max="100"
             defaultValue={program.age_min ?? ''}
-            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
-          <label htmlFor="age_max" className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5">
+          <label
+            htmlFor="age_max"
+            className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+          >
             Age max
           </label>
           <input
@@ -183,14 +217,14 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
             min="0"
             max="100"
             defaultValue={program.age_max ?? ''}
-            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />
         </div>
       </div>
 
       {/* Scholarship */}
       <div className="mt-5 flex items-center pt-2">
-        <label className="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
+        <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
           <input
             type="checkbox"
             name="offers_scholarship"
@@ -205,7 +239,10 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
       {/* URLs */}
       <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="program_url" className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5">
+          <label
+            htmlFor="program_url"
+            className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+          >
             Program URL
           </label>
           <input
@@ -214,11 +251,14 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
             type="url"
             placeholder="https://..."
             defaultValue={program.program_url ?? ''}
-            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
-          <label htmlFor="application_url" className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5">
+          <label
+            htmlFor="application_url"
+            className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+          >
             Application URL
           </label>
           <input
@@ -227,7 +267,7 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
             type="url"
             placeholder="https://..."
             defaultValue={program.application_url ?? ''}
-            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />
         </div>
       </div>
@@ -267,7 +307,10 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
 
       {/* Edit summary */}
       <div className="mt-5">
-        <label htmlFor="edit_summary" className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5">
+        <label
+          htmlFor="edit_summary"
+          className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+        >
           Edit summary (optional)
         </label>
         <input
@@ -275,7 +318,7 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
           name="edit_summary"
           type="text"
           placeholder="Briefly describe what you changed..."
-          className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+          className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
         />
       </div>
 
@@ -284,7 +327,7 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
         <button
           type="submit"
           disabled={pending}
-          className="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {pending ? 'Saving...' : 'Save changes'}
         </button>

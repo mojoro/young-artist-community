@@ -66,25 +66,32 @@ export async function editProgram(
   if (name.length > 200) return { error: 'Program name is too long (max 200 characters).' }
 
   const description = str('description')
-  if (description && description.length > 5000) return { error: 'Description is too long (max 5000 characters).' }
+  if (description && description.length > 5000)
+    return { error: 'Description is too long (max 5000 characters).' }
 
   const tuition = num('tuition')
   if (tuition !== null && tuition < 0) return { error: 'Tuition cannot be negative.' }
 
   const applicationFee = num('application_fee')
-  if (applicationFee !== null && applicationFee < 0) return { error: 'Application fee cannot be negative.' }
+  if (applicationFee !== null && applicationFee < 0)
+    return { error: 'Application fee cannot be negative.' }
 
   const ageMin = int('age_min')
   const ageMax = int('age_max')
-  if (ageMin !== null && (ageMin < 0 || ageMin > 100)) return { error: 'Age min must be between 0 and 100.' }
-  if (ageMax !== null && (ageMax < 0 || ageMax > 100)) return { error: 'Age max must be between 0 and 100.' }
-  if (ageMin !== null && ageMax !== null && ageMin > ageMax) return { error: 'Age min cannot exceed age max.' }
+  if (ageMin !== null && (ageMin < 0 || ageMin > 100))
+    return { error: 'Age min must be between 0 and 100.' }
+  if (ageMax !== null && (ageMax < 0 || ageMax > 100))
+    return { error: 'Age max must be between 0 and 100.' }
+  if (ageMin !== null && ageMax !== null && ageMin > ageMax)
+    return { error: 'Age min cannot exceed age max.' }
 
   const programUrl = str('program_url')
   const applicationUrl = str('application_url')
   const urlPattern = /^https?:\/\//
-  if (programUrl && !urlPattern.test(programUrl)) return { error: 'Program URL must start with http:// or https://.' }
-  if (applicationUrl && !urlPattern.test(applicationUrl)) return { error: 'Application URL must start with http:// or https://.' }
+  if (programUrl && !urlPattern.test(programUrl))
+    return { error: 'Program URL must start with http:// or https://.' }
+  if (applicationUrl && !urlPattern.test(applicationUrl))
+    return { error: 'Application URL must start with http:// or https://.' }
 
   // Parse combobox selections
   const instrumentItems = parseComboboxItems(formData.get('instruments') as string)
@@ -158,7 +165,8 @@ export async function editProgram(
         const parts = item.name.split(',').map((s) => s.trim())
         const city = parts[0]
         const country = parts[1]
-        if (!city || !country) return { error: `Invalid location format: ${item.name}. Use "City, Country".` }
+        if (!city || !country)
+          return { error: `Invalid location format: ${item.name}. Use "City, Country".` }
 
         const existing = await prisma.location.findFirst({
           where: {
@@ -213,7 +221,9 @@ export async function editProgram(
             application_url: current.application_url,
             instruments: current.program_instruments.map((pi) => pi.instrument.name),
             categories: current.program_categories.map((pc) => pc.category.name),
-            locations: current.program_locations.map((pl) => `${pl.location.city}, ${pl.location.country}`),
+            locations: current.program_locations.map(
+              (pl) => `${pl.location.city}, ${pl.location.country}`,
+            ),
           },
         },
       })

@@ -117,36 +117,31 @@ export default async function AdminDataPage({
     <div className="mx-auto max-w-6xl px-4 py-8">
       <header className="mb-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-gray-900">
-            Manage data
-          </h1>
+          <h1 className="text-2xl font-semibold text-gray-900">Manage data</h1>
           <div className="flex items-center gap-4">
             <Link
               href="/admin/import"
               prefetch={false}
-              className="text-sm text-gray-600 hover:text-gray-900 underline"
+              className="text-sm text-gray-600 underline hover:text-gray-900"
             >
               Import
             </Link>
             <Link
               href="/admin/reports"
               prefetch={false}
-              className="text-sm text-gray-600 hover:text-gray-900 underline"
+              className="text-sm text-gray-600 underline hover:text-gray-900"
             >
               Reports
             </Link>
             <Link
               href="/"
               prefetch={false}
-              className="text-sm text-gray-600 hover:text-gray-900 underline"
+              className="text-sm text-gray-600 underline hover:text-gray-900"
             >
               Back to site
             </Link>
             <form action={adminLogout}>
-              <button
-                type="submit"
-                className="text-sm text-gray-500 hover:text-gray-900 underline"
-              >
+              <button type="submit" className="text-sm text-gray-500 underline hover:text-gray-900">
                 Logout
               </button>
             </form>
@@ -156,16 +151,14 @@ export default async function AdminDataPage({
 
       {/* Programs table */}
       <section>
-        <h2 className="text-lg font-semibold text-gray-900">
-          Programs ({programs.length})
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900">Programs ({programs.length})</h2>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200 text-left text-xs uppercase tracking-wide text-gray-500">
-                <th className="pb-2 pr-4">Name</th>
-                <th className="pb-2 pr-4">Reviews</th>
-                <th className="pb-2 pr-4">Auditions</th>
+              <tr className="border-b border-gray-200 text-left text-xs tracking-wide text-gray-500 uppercase">
+                <th className="pr-4 pb-2">Name</th>
+                <th className="pr-4 pb-2">Reviews</th>
+                <th className="pr-4 pb-2">Auditions</th>
                 <th className="pb-2"></th>
               </tr>
             </thead>
@@ -178,10 +171,7 @@ export default async function AdminDataPage({
                   }`}
                 >
                   <td className="py-2 pr-4 font-medium text-gray-900">
-                    <a
-                      href={`/admin/data?program=${p.id}`}
-                      className="hover:underline"
-                    >
+                    <a href={`/admin/data?program=${p.id}`} className="hover:underline">
                       {p.name}
                     </a>
                   </td>
@@ -205,9 +195,7 @@ export default async function AdminDataPage({
       {/* Edit selected program */}
       {fullProgram && (
         <section className="mt-10 border-t border-gray-200 pt-8">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Edit: {fullProgram.name}
-          </h2>
+          <h2 className="text-lg font-semibold text-gray-900">Edit: {fullProgram.name}</h2>
           <div className="mt-4">
             <ProgramEditor
               program={{
@@ -216,7 +204,8 @@ export default async function AdminDataPage({
                 description: fullProgram.description,
                 start_date: fullProgram.start_date?.toISOString().slice(0, 10) ?? null,
                 end_date: fullProgram.end_date?.toISOString().slice(0, 10) ?? null,
-                application_deadline: fullProgram.application_deadline?.toISOString().slice(0, 10) ?? null,
+                application_deadline:
+                  fullProgram.application_deadline?.toISOString().slice(0, 10) ?? null,
                 tuition: fullProgram.tuition,
                 application_fee: fullProgram.application_fee,
                 age_min: fullProgram.age_min,
@@ -224,9 +213,13 @@ export default async function AdminDataPage({
                 offers_scholarship: fullProgram.offers_scholarship,
                 application_url: fullProgram.application_url,
                 program_url: fullProgram.program_url,
-                instruments: fullProgram.program_instruments.map((pi) => pi.instrument.name).join(', '),
+                instruments: fullProgram.program_instruments
+                  .map((pi) => pi.instrument.name)
+                  .join(', '),
                 categories: fullProgram.program_categories.map((pc) => pc.category.name).join(', '),
-                locations: fullProgram.program_locations.map((pl) => `${pl.location.city}/${pl.location.country}`).join(', '),
+                locations: fullProgram.program_locations
+                  .map((pl) => `${pl.location.city}/${pl.location.country}`)
+                  .join(', '),
               }}
               validInstruments={allInstruments.map((i) => i.name)}
               validCategories={allCategories.map((c) => c.name)}
@@ -254,13 +247,12 @@ export default async function AdminDataPage({
                   <div className="flex-1">
                     <div className="flex items-center gap-2 text-sm">
                       <span className="text-yellow-500">
-                        {'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}
+                        {'★'.repeat(r.rating)}
+                        {'☆'.repeat(5 - r.rating)}
                       </span>
-                      {r.title && (
-                        <span className="font-medium text-gray-900">{r.title}</span>
-                      )}
+                      {r.title && <span className="font-medium text-gray-900">{r.title}</span>}
                     </div>
-                    <p className="mt-1 text-sm text-gray-700 line-clamp-2">{r.body}</p>
+                    <p className="mt-1 line-clamp-2 text-sm text-gray-700">{r.body}</p>
                     <p className="mt-1 text-xs text-gray-500">
                       {r.reviewer_name ?? 'Anonymous'}
                       {r.year_attended ? ` · ${r.year_attended}` : ''}
@@ -298,18 +290,16 @@ export default async function AdminDataPage({
             <div className="mt-4 space-y-3">
               {auditions.map((a) => {
                 const locStr = `${a.location.city}/${a.location.country}`
-                const tsStr = a.time_slot
-                  ? a.time_slot.toISOString().slice(0, 16)
-                  : ''
-                const instStr = a.audition_instruments
-                  .map((ai) => ai.instrument.name)
-                  .join(', ')
+                const tsStr = a.time_slot ? a.time_slot.toISOString().slice(0, 16) : ''
+                const instStr = a.audition_instruments.map((ai) => ai.instrument.name).join(', ')
 
                 return (
                   <div key={a.id} className="space-y-3">
                     <div className="flex items-start justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
                       <div className="text-sm text-gray-700">
-                        <span className="font-medium">{a.location.city}, {a.location.country}</span>
+                        <span className="font-medium">
+                          {a.location.city}, {a.location.country}
+                        </span>
                         {a.time_slot && (
                           <span className="ml-2 text-gray-500">
                             {a.time_slot.toLocaleDateString('en-US', {
@@ -322,13 +312,9 @@ export default async function AdminDataPage({
                           </span>
                         )}
                         {a.audition_fee !== null && (
-                          <span className="ml-2 text-gray-500">
-                            Fee: ${a.audition_fee}
-                          </span>
+                          <span className="ml-2 text-gray-500">Fee: ${a.audition_fee}</span>
                         )}
-                        {instStr && (
-                          <span className="ml-2 text-gray-400">{instStr}</span>
-                        )}
+                        {instStr && <span className="ml-2 text-gray-400">{instStr}</span>}
                       </div>
                       <DeleteButton
                         action={deleteAudition}

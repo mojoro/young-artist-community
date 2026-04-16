@@ -42,10 +42,7 @@ function sha256(text: string): string {
  *   `unchanged` when the content is byte-identical so the caller can skip
  *   extraction and storage.
  */
-export async function fetchSource(
-  url: string,
-  lastHash: string | null,
-): Promise<FetchResult> {
+export async function fetchSource(url: string, lastHash: string | null): Promise<FetchResult> {
   if (!(await isAllowed(url))) {
     return {
       kind: 'blocked_by_robots',

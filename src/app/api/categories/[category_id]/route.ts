@@ -1,13 +1,7 @@
 import { NextResponse } from 'next/server'
 import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
-import {
-  badRequest,
-  conflict,
-  internalError,
-  notFound,
-  validationError,
-} from '@/lib/problem'
+import { badRequest, conflict, internalError, notFound, validationError } from '@/lib/problem'
 
 export async function PUT(
   request: Request,
@@ -49,10 +43,7 @@ export async function PUT(
     })
     return NextResponse.json(updated)
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError &&
-      e.code === 'P2002'
-    ) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
       return conflict(`Category with name '${trimmed}' already exists.`)
     }
     return internalError('Failed to update category')

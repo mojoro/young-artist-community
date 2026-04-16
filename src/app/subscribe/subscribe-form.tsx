@@ -12,14 +12,26 @@ export function SubscribeForm({ variant = 'light' }: { variant?: 'light' | 'dark
     return (
       <div className="text-center">
         <div className={`flex items-center justify-center gap-2 text-sm font-medium ${textClass}`}>
-          <svg className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+          <svg
+            className="h-5 w-5 shrink-0"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+              clipRule="evenodd"
+            />
           </svg>
           {state.message}
         </div>
         <p className={`mt-2 text-xs ${subtextClass}`}>
           Want to help out? Reach out at{' '}
-          <a href="mailto:john@johnmoorman.com" className={`underline ${variant === 'dark' ? 'hover:text-white' : 'hover:text-slate-700'}`}>
+          <a
+            href="mailto:john@johnmoorman.com"
+            className={`underline ${variant === 'dark' ? 'hover:text-white' : 'hover:text-slate-700'}`}
+          >
             john@johnmoorman.com
           </a>
         </p>
@@ -39,7 +51,14 @@ export function SubscribeForm({ variant = 'light' }: { variant?: 'light' | 'dark
 
   return (
     <form action={action}>
-      <input type="text" name="url_confirm" tabIndex={-1} autoComplete="off" aria-hidden="true" className="sr-only" />
+      <input
+        type="text"
+        name="url_confirm"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="sr-only"
+      />
       <div className="flex gap-2">
         <label htmlFor={`email-${variant}`} className="sr-only">
           Email address
@@ -56,9 +75,25 @@ export function SubscribeForm({ variant = 'light' }: { variant?: 'light' | 'dark
         <button type="submit" disabled={pending} className={buttonClass}>
           {pending ? (
             <span className="flex items-center gap-2">
-              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              <svg
+                className="h-4 w-4 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
               </svg>
               Joining...
             </span>
@@ -67,9 +102,7 @@ export function SubscribeForm({ variant = 'light' }: { variant?: 'light' | 'dark
           )}
         </button>
       </div>
-      {state?.error && (
-        <p className="mt-2 text-sm text-red-500">{state.error}</p>
-      )}
+      {state?.error && <p className="mt-2 text-sm text-red-500">{state.error}</p>}
     </form>
   )
 }

@@ -62,11 +62,14 @@ export async function createAudition(
   if (auditionFee !== null && auditionFee < 0) return { error: 'Audition fee cannot be negative.' }
 
   const instructions = str('instructions')
-  if (instructions && instructions.length > 5000) return { error: 'Instructions too long (max 5000 characters).' }
+  if (instructions && instructions.length > 5000)
+    return { error: 'Instructions too long (max 5000 characters).' }
 
   const registrationUrl = str('registration_url')
-  if (registrationUrl && !/^https?:\/\//.test(registrationUrl)) return { error: 'Registration URL must start with http:// or https://.' }
-  if (registrationUrl && registrationUrl.length > 2000) return { error: 'Registration URL is too long.' }
+  if (registrationUrl && !/^https?:\/\//.test(registrationUrl))
+    return { error: 'Registration URL must start with http:// or https://.' }
+  if (registrationUrl && registrationUrl.length > 2000)
+    return { error: 'Registration URL is too long.' }
 
   // Location — required, single selection
   const locationItems = parseComboboxItems(formData.get('location') as string)
@@ -78,7 +81,8 @@ export async function createAudition(
     const parts = locItem.name.split(',').map((s) => s.trim())
     const city = parts[0]
     const country = parts[1]
-    if (!city || !country) return { error: `Invalid location format: ${locItem.name}. Use "City, Country".` }
+    if (!city || !country)
+      return { error: `Invalid location format: ${locItem.name}. Use "City, Country".` }
 
     const existing = await prisma.location.findFirst({
       where: {
@@ -109,7 +113,8 @@ export async function createAudition(
   const instrumentItems = parseComboboxItems(formData.get('instruments') as string)
   for (const item of [...instrumentItems, locItem]) {
     if (!item.name.trim()) return { error: 'Empty names are not allowed.' }
-    if (item.name.length > 100) return { error: `Name too long: "${item.name.slice(0, 30)}..." (max 100 characters).` }
+    if (item.name.length > 100)
+      return { error: `Name too long: "${item.name.slice(0, 30)}..." (max 100 characters).` }
   }
   const instrumentIds: string[] = []
   for (const item of instrumentItems) {

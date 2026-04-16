@@ -7,7 +7,7 @@ describe('toSlug', () => {
   })
 
   it('strips diacritics', () => {
-    expect(toSlug('Académie du Festival d\'Aix')).toBe('academie-du-festival-daix')
+    expect(toSlug("Académie du Festival d'Aix")).toBe('academie-du-festival-daix')
   })
 
   it('handles curly apostrophes', () => {

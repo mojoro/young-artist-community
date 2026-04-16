@@ -198,7 +198,10 @@ export async function extractProgram(
   }
 
   // Strip markdown fences if the model wraps the response
-  const cleaned = raw.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim()
+  const cleaned = raw
+    .replace(/^```(?:json)?\s*\n?/i, '')
+    .replace(/\n?```\s*$/i, '')
+    .trim()
 
   // Parse and validate the JSON output
   let parsed: unknown
@@ -217,7 +220,10 @@ export async function extractProgram(
 
   // Check for low-confidence "not a program" response
   const maybeEmpty = parsed as { name?: string; confidence?: number }
-  if (maybeEmpty.name === '' || (maybeEmpty.confidence !== undefined && maybeEmpty.confidence < 0.1)) {
+  if (
+    maybeEmpty.name === '' ||
+    (maybeEmpty.confidence !== undefined && maybeEmpty.confidence < 0.1)
+  ) {
     return {
       kind: 'error',
       message: 'Page does not appear to be a young artist program',
@@ -242,9 +248,10 @@ export async function extractProgram(
 
   // Extract confidence from the raw parsed object (not in the zod schema since
   // it's metadata about the extraction, not about the program itself)
-  const confidence = typeof (parsed as { confidence?: unknown }).confidence === 'number'
-    ? (parsed as { confidence: number }).confidence
-    : 0.5
+  const confidence =
+    typeof (parsed as { confidence?: unknown }).confidence === 'number'
+      ? (parsed as { confidence: number }).confidence
+      : 0.5
 
   return {
     kind: 'success',
@@ -270,7 +277,13 @@ export async function extractProgramFromMultipleSources(
   opts?: { model?: string },
 ): Promise<ExtractionResult> {
   if (sources.length === 0) {
-    return { kind: 'error', message: 'No sources provided', model: null, tokens_in: 0, tokens_out: 0 }
+    return {
+      kind: 'error',
+      message: 'No sources provided',
+      model: null,
+      tokens_in: 0,
+      tokens_out: 0,
+    }
   }
   if (sources.length === 1) {
     return extractProgram(sources[0].html, opts)
@@ -282,7 +295,13 @@ export async function extractProgramFromMultipleSources(
   try {
     apiKey = getApiKey()
   } catch (e) {
-    return { kind: 'error', message: e instanceof Error ? e.message : String(e), model: null, tokens_in: 0, tokens_out: 0 }
+    return {
+      kind: 'error',
+      message: e instanceof Error ? e.message : String(e),
+      model: null,
+      tokens_in: 0,
+      tokens_out: 0,
+    }
   }
 
   // Combine sources with labels, budget ~30k chars per source to fit context
@@ -318,13 +337,25 @@ export async function extractProgramFromMultipleSources(
     if (!res.ok) {
       const text = await res.text()
       console.error(`[extractor] OpenRouter API ${res.status}:`, text.slice(0, 500))
-      return { kind: 'error', message: `OpenRouter API returned ${res.status}`, model, tokens_in: 0, tokens_out: 0 }
+      return {
+        kind: 'error',
+        message: `OpenRouter API returned ${res.status}`,
+        model,
+        tokens_in: 0,
+        tokens_out: 0,
+      }
     }
 
     body = (await res.json()) as OpenRouterResponse
   } catch (e) {
     console.error('[extractor] OpenRouter request failed:', e)
-    return { kind: 'error', message: `OpenRouter request failed: ${e instanceof Error ? e.message : String(e)}`, model, tokens_in: 0, tokens_out: 0 }
+    return {
+      kind: 'error',
+      message: `OpenRouter request failed: ${e instanceof Error ? e.message : String(e)}`,
+      model,
+      tokens_in: 0,
+      tokens_out: 0,
+    }
   }
 
   const tokens_in = body.usage?.prompt_tokens ?? 0
@@ -332,10 +363,19 @@ export async function extractProgramFromMultipleSources(
   const raw = body.choices?.[0]?.message?.content
 
   if (!raw) {
-    return { kind: 'error', message: 'OpenRouter returned no content', model, tokens_in, tokens_out }
+    return {
+      kind: 'error',
+      message: 'OpenRouter returned no content',
+      model,
+      tokens_in,
+      tokens_out,
+    }
   }
 
-  const cleaned = raw.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim()
+  const cleaned = raw
+    .replace(/^```(?:json)?\s*\n?/i, '')
+    .replace(/\n?```\s*$/i, '')
+    .trim()
 
   let parsed: unknown
   try {
@@ -346,20 +386,36 @@ export async function extractProgramFromMultipleSources(
   }
 
   const maybeEmpty = parsed as { name?: string; confidence?: number }
-  if (maybeEmpty.name === '' || (maybeEmpty.confidence !== undefined && maybeEmpty.confidence < 0.1)) {
-    return { kind: 'error', message: 'Pages do not appear to be a young artist program', model, tokens_in, tokens_out }
+  if (
+    maybeEmpty.name === '' ||
+    (maybeEmpty.confidence !== undefined && maybeEmpty.confidence < 0.1)
+  ) {
+    return {
+      kind: 'error',
+      message: 'Pages do not appear to be a young artist program',
+      model,
+      tokens_in,
+      tokens_out,
+    }
   }
 
   const result = extractedProgramSchema.safeParse(parsed)
   if (!result.success) {
     const issues = result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`)
     console.error('[extractor] Schema validation failed:', issues)
-    return { kind: 'error', message: 'Extracted data failed schema validation', model, tokens_in, tokens_out }
+    return {
+      kind: 'error',
+      message: 'Extracted data failed schema validation',
+      model,
+      tokens_in,
+      tokens_out,
+    }
   }
 
-  const confidence = typeof (parsed as { confidence?: unknown }).confidence === 'number'
-    ? (parsed as { confidence: number }).confidence
-    : 0.5
+  const confidence =
+    typeof (parsed as { confidence?: unknown }).confidence === 'number'
+      ? (parsed as { confidence: number }).confidence
+      : 0.5
 
   return { kind: 'success', program: result.data, confidence, model, tokens_in, tokens_out }
 }

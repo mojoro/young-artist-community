@@ -53,7 +53,7 @@ function EditLink({ href }: { href: string }) {
   return (
     <Link
       href={href}
-      className="inline-flex items-center gap-1 text-tag-700 hover:text-brand-600 transition-colors"
+      className="inline-flex items-center gap-1 text-tag-700 transition-colors hover:text-brand-600"
     >
       <span>&mdash;</span>
       <span className="text-xs font-medium">Add</span>
@@ -135,9 +135,7 @@ function formatReviewRow(row: {
 function KeyFact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-        {label}
-      </dt>
+      <dt className="text-xs font-semibold tracking-wide text-slate-400 uppercase">{label}</dt>
       <dd className="mt-1 text-sm font-medium text-slate-900">{children}</dd>
     </div>
   )
@@ -154,9 +152,7 @@ function AuditionCard({ audition }: { audition: Audition }) {
           {audition.time_slot ? formatDate(audition.time_slot, { time: true }) : '—'}
         </div>
       </div>
-      <div className="mt-1 text-sm text-slate-600">
-        Fee: {formatFee(audition.audition_fee)}
-      </div>
+      <div className="mt-1 text-sm text-slate-600">Fee: {formatFee(audition.audition_fee)}</div>
       {audition.instruments.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {audition.instruments.map((inst) => (
@@ -170,9 +166,7 @@ function AuditionCard({ audition }: { audition: Audition }) {
         </div>
       )}
       {audition.instructions && (
-        <p className="mt-3 whitespace-pre-line text-sm text-slate-600">
-          {audition.instructions}
-        </p>
+        <p className="mt-3 text-sm whitespace-pre-line text-slate-600">{audition.instructions}</p>
       )}
       {audition.registration_url && (
         <a
@@ -182,8 +176,18 @@ function AuditionCard({ audition }: { audition: Audition }) {
           className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-700"
         >
           Register
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+            />
           </svg>
         </a>
       )}
@@ -209,25 +213,19 @@ function ReviewCard({ review, programId }: { review: Review; programId: string }
         </div>
         <ReportButton programId={programId} reviewId={review.id} />
       </div>
-      {review.title && (
-        <h4 className="mt-2 font-semibold text-slate-900">{review.title}</h4>
-      )}
+      {review.title && <h4 className="mt-2 font-semibold text-slate-900">{review.title}</h4>}
       <p className="mt-1 text-xs text-slate-400">
         {review.reviewer_name ?? 'Anonymous'}
         {review.year_attended ? ` · ${review.year_attended}` : ''}
       </p>
-      <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-700">
+      <p className="mt-3 text-sm leading-relaxed whitespace-pre-line text-slate-700">
         {review.body}
       </p>
     </li>
   )
 }
 
-export default async function ProgramDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
+export default async function ProgramDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
   const programRow = await prisma.program.findUnique({
@@ -301,9 +299,7 @@ export default async function ProgramDetailPage({
   const reviews: Review[] = reviewRows.map(formatReviewRow)
   const auditions: Audition[] = auditionRows.map(formatAuditionRow)
 
-  const locationLabel = program.locations
-    .map((l) => `${l.city}, ${l.country}`)
-    .join(' • ')
+  const locationLabel = program.locations.map((l) => `${l.city}, ${l.country}`).join(' • ')
 
   const reviewCount = program.review_count
   const avg = program.average_rating
@@ -315,8 +311,18 @@ export default async function ProgramDetailPage({
         href="/programs"
         className="inline-flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-700"
       >
-        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+        <svg
+          className="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+          />
         </svg>
         Back to programs
       </Link>
@@ -326,9 +332,7 @@ export default async function ProgramDetailPage({
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
           {program.name}
         </h1>
-        {locationLabel && (
-          <p className="mt-2 text-base text-slate-500">{locationLabel}</p>
-        )}
+        {locationLabel && <p className="mt-2 text-base text-slate-500">{locationLabel}</p>}
 
         {reviewCount > 0 && avg !== null && (
           <div className="mt-3 flex items-center gap-2">
@@ -364,42 +368,72 @@ export default async function ProgramDetailPage({
         )}
 
         <div className="mt-5 flex flex-wrap gap-3">
-            <Link
-              href={`/programs/${slug}/edit`}
-              className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-slate-900/10 hover:bg-slate-50 transition-colors"
+          <Link
+            href={`/programs/${slug}/edit`}
+            className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-slate-900/10 transition-colors hover:bg-slate-50"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
             >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+              />
+            </svg>
+            Edit
+          </Link>
+          {program.program_url && (
+            <a
+              href={program.program_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-700"
+            >
+              Visit website
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                />
               </svg>
-              Edit
-            </Link>
-            {program.program_url && (
-              <a
-                href={program.program_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
+            </a>
+          )}
+          {program.application_url && (
+            <a
+              href={program.application_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-slate-900/10 transition-colors hover:bg-slate-50"
+            >
+              Apply now
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
               >
-                Visit website
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                </svg>
-              </a>
-            )}
-            {program.application_url && (
-              <a
-                href={program.application_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-slate-900/10 hover:bg-slate-50 transition-colors"
-              >
-                Apply now
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                </svg>
-              </a>
-            )}
-          </div>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                />
+              </svg>
+            </a>
+          )}
+        </div>
       </div>
 
       {/* Key facts */}
@@ -407,10 +441,14 @@ export default async function ProgramDetailPage({
         <h2 className="text-lg font-semibold text-slate-900">Key facts</h2>
         <dl className="mt-4 grid grid-cols-2 gap-6 sm:grid-cols-3">
           <KeyFact label="Dates">
-            {formatDateRange(program.start_date, program.end_date) ?? <EditLink href={`/programs/${slug}/edit`} />}
+            {formatDateRange(program.start_date, program.end_date) ?? (
+              <EditLink href={`/programs/${slug}/edit`} />
+            )}
           </KeyFact>
           <KeyFact label="Application deadline">
-            {formatDate(program.application_deadline) ?? <EditLink href={`/programs/${slug}/edit`} />}
+            {formatDate(program.application_deadline) ?? (
+              <EditLink href={`/programs/${slug}/edit`} />
+            )}
           </KeyFact>
           <KeyFact label="Tuition">
             {formatTuition(program.tuition) ?? <EditLink href={`/programs/${slug}/edit`} />}
@@ -419,7 +457,9 @@ export default async function ProgramDetailPage({
             {formatFee(program.application_fee) ?? <EditLink href={`/programs/${slug}/edit`} />}
           </KeyFact>
           <KeyFact label="Age range">
-            {formatAgeRange(program.age_min, program.age_max) ?? <EditLink href={`/programs/${slug}/edit`} />}
+            {formatAgeRange(program.age_min, program.age_max) ?? (
+              <EditLink href={`/programs/${slug}/edit`} />
+            )}
           </KeyFact>
           <KeyFact label="Scholarship">
             {program.offers_scholarship ? (
@@ -436,7 +476,7 @@ export default async function ProgramDetailPage({
       {/* About */}
       <section className="mt-8 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
         <h2 className="text-lg font-semibold text-slate-900">About</h2>
-        <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-700">
+        <p className="mt-3 text-sm leading-relaxed whitespace-pre-line text-slate-700">
           {program.description ?? <EditLink href={`/programs/${slug}/edit`} />}
         </p>
         <div className="mt-4 border-t border-slate-100 pt-3">
@@ -450,9 +490,15 @@ export default async function ProgramDetailPage({
           <h2 className="text-lg font-semibold text-slate-900">Auditions</h2>
           <Link
             href={`/programs/${slug}/auditions/new`}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-700"
           >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
             Add audition
@@ -506,13 +552,20 @@ export default async function ProgramDetailPage({
         <h2 className="text-lg font-semibold text-slate-900">Share your experience</h2>
         <form action={submitReview} className="mt-5">
           <input type="hidden" name="program_id" value={program_id} />
-          <input type="text" name="url_confirm" tabIndex={-1} autoComplete="off" aria-hidden="true" className="sr-only" />
+          <input
+            type="text"
+            name="url_confirm"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="sr-only"
+          />
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label
                 htmlFor="reviewer_name"
-                className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+                className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
               >
                 Your name
               </label>
@@ -520,14 +573,14 @@ export default async function ProgramDetailPage({
                 id="reviewer_name"
                 name="reviewer_name"
                 type="text"
-                className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+                className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
               <label
                 htmlFor="rating"
-                className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+                className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
               >
                 Rating <span className="text-red-500">*</span>
               </label>
@@ -536,7 +589,7 @@ export default async function ProgramDetailPage({
                 name="rating"
                 required
                 defaultValue=""
-                className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+                className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
               >
                 <option value="" disabled>
                   Select a rating
@@ -552,7 +605,7 @@ export default async function ProgramDetailPage({
             <div>
               <label
                 htmlFor="year_attended"
-                className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+                className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
               >
                 Year attended
               </label>
@@ -563,14 +616,14 @@ export default async function ProgramDetailPage({
                 min={1950}
                 max={2100}
                 step={1}
-                className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+                className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
               <label
                 htmlFor="title"
-                className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+                className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
               >
                 Title
               </label>
@@ -578,7 +631,7 @@ export default async function ProgramDetailPage({
                 id="title"
                 name="title"
                 type="text"
-                className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+                className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
               />
             </div>
           </div>
@@ -586,7 +639,7 @@ export default async function ProgramDetailPage({
           <div className="mt-4">
             <label
               htmlFor="body"
-              className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+              className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
             >
               Review <span className="text-red-500">*</span>
             </label>
@@ -595,14 +648,14 @@ export default async function ProgramDetailPage({
               name="body"
               required
               rows={4}
-              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
           <div className="mt-5">
             <button
               type="submit"
-              className="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
+              className="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-700"
             >
               Submit review
             </button>

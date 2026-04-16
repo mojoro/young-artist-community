@@ -70,7 +70,7 @@ export function ProgramCombobox({ name, options, placeholder }: ProgramComboboxP
     <div ref={wrapperRef}>
       <label
         htmlFor="program-combobox"
-        className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+        className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
       >
         Program <span className="text-red-500">*</span>
       </label>
@@ -80,17 +80,23 @@ export function ProgramCombobox({ name, options, placeholder }: ProgramComboboxP
           <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2.5 ring-1 ring-slate-200">
             <span className="flex-1 text-sm text-slate-900">{selected.name}</span>
             {selected.is_new && (
-              <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-semibold text-brand-600 ring-1 ring-brand-200">
+              <span className="ring-brand-200 rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-semibold text-brand-600 ring-1">
                 new program
               </span>
             )}
             <button
               type="button"
               onClick={handleClear}
-              className="text-slate-400 hover:text-slate-600 transition-colors"
+              className="text-slate-400 transition-colors hover:text-slate-600"
               aria-label="Change program"
             >
-              <svg className="h-4 w-4" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                className="h-4 w-4"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M3 3l6 6M9 3l-6 6" />
               </svg>
             </button>
@@ -108,7 +114,7 @@ export function ProgramCombobox({ name, options, placeholder }: ProgramComboboxP
               }}
               onFocus={() => setOpen(true)}
               placeholder={placeholder}
-              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
               autoComplete="off"
             />
             {open && (filtered.length > 0 || showAddOption) && (
@@ -118,7 +124,7 @@ export function ProgramCombobox({ name, options, placeholder }: ProgramComboboxP
                     <button
                       type="button"
                       onClick={() => handleSelect(opt)}
-                      className="w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-brand-50 hover:text-brand-700 transition-colors"
+                      className="w-full px-3 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-brand-50 hover:text-brand-700"
                     >
                       {opt.name}
                     </button>
@@ -129,7 +135,7 @@ export function ProgramCombobox({ name, options, placeholder }: ProgramComboboxP
                     <button
                       type="button"
                       onClick={handleAddNew}
-                      className="w-full px-3 py-2 text-left text-sm font-medium text-brand-600 hover:bg-brand-50 transition-colors"
+                      className="w-full px-3 py-2 text-left text-sm font-medium text-brand-600 transition-colors hover:bg-brand-50"
                     >
                       + Add &ldquo;{query.trim()}&rdquo; as a new program
                     </button>

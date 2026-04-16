@@ -15,15 +15,11 @@ describe('parseSort', () => {
   })
 
   it('parses a single ascending field', () => {
-    expect(parseSort('name')).toEqual([
-      { field: 'name', direction: 'asc' },
-    ])
+    expect(parseSort('name')).toEqual([{ field: 'name', direction: 'asc' }])
   })
 
   it('parses a single descending field with - prefix', () => {
-    expect(parseSort('-created_at')).toEqual([
-      { field: 'created_at', direction: 'desc' },
-    ])
+    expect(parseSort('-created_at')).toEqual([{ field: 'created_at', direction: 'desc' }])
   })
 
   it('parses multiple comma-separated fields', () => {
@@ -52,10 +48,7 @@ describe('toPrismaOrderBy', () => {
   it('filters to only allowed fields', () => {
     const sort = parseSort('name,-tuition')
     const result = toPrismaOrderBy(sort, ['name', 'tuition'] as const)
-    expect(result).toEqual([
-      { name: 'asc' },
-      { tuition: 'desc' },
-    ])
+    expect(result).toEqual([{ name: 'asc' }, { tuition: 'desc' }])
   })
 
   it('returns fallback when no valid fields are present', () => {
@@ -67,18 +60,12 @@ describe('toPrismaOrderBy', () => {
   it('preserves order of valid fields', () => {
     const sort = parseSort('-tuition,name')
     const result = toPrismaOrderBy(sort, ['name', 'tuition'] as const)
-    expect(result).toEqual([
-      { tuition: 'desc' },
-      { name: 'asc' },
-    ])
+    expect(result).toEqual([{ tuition: 'desc' }, { name: 'asc' }])
   })
 
   it('keeps only valid fields when mixed with invalid ones', () => {
     const sort = parseSort('name,-bogus,tuition')
     const result = toPrismaOrderBy(sort, ['name', 'tuition'] as const)
-    expect(result).toEqual([
-      { name: 'asc' },
-      { tuition: 'asc' },
-    ])
+    expect(result).toEqual([{ name: 'asc' }, { tuition: 'asc' }])
   })
 })

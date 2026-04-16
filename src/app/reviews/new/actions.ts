@@ -62,7 +62,8 @@ export async function submitReviewGeneric(
 
   // Optional fields
   const reviewer_name = ((formData.get('reviewer_name') as string) ?? '').trim() || null
-  if (reviewer_name && reviewer_name.length > 100) return { error: 'Name is too long (max 100 characters).' }
+  if (reviewer_name && reviewer_name.length > 100)
+    return { error: 'Name is too long (max 100 characters).' }
 
   const title = ((formData.get('title') as string) ?? '').trim() || null
   if (title && title.length > 200) return { error: 'Title is too long (max 200 characters).' }
@@ -82,7 +83,8 @@ export async function submitReviewGeneric(
     if (programSelection.is_new) {
       // Create minimal program + review in one transaction
       const programName = programSelection.name.trim()
-      if (programName.length > 200) return { error: 'Program name is too long (max 200 characters).' }
+      if (programName.length > 200)
+        return { error: 'Program name is too long (max 200 characters).' }
 
       let slug = toSlug(programName)
       const slugConflict = await prisma.program.findUnique({

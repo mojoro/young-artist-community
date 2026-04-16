@@ -87,22 +87,26 @@ yactracker/
 Prisma schema at `prisma/schema.prisma`. Models:
 
 **Core entities:**
+
 - `Program` — central entity. Scalar fields: dates, tuition, age range, scholarship, URLs.
 - `Review` — belongs to one Program (FK `program_id`). Fields: rating (int 1-5), year_attended, reviewer_name, title, body.
 - `Audition` — belongs to one Program (FK `program_id`) + one Location (FK `location_id`). Fields: time_slot, fee, instructions, registration URL.
 
 **Reference data:**
+
 - `Instrument` — unique name. Filter dropdowns. Validated on write — never auto-create from user input.
 - `Category` — unique name. Filter dropdowns. Validated on write.
 - `Location` — city, country, state, address. Matched case-insensitively on city+country.
 
 **Join tables (all @@unique on FK pair):**
+
 - `ProgramInstrument` — Program ↔ Instrument (M:N)
 - `ProgramCategory` — Program ↔ Category (M:N)
 - `ProgramLocation` — Program ↔ Location (M:N)
 - `AuditionInstrument` — Audition ↔ Instrument (M:N)
 
 **Import pipeline:**
+
 - `ImportSource` — URL to scrape, links to optional Program. Has status (active/paused/broken).
 - `ImportRun` — one fetch attempt. Stores gzipped HTML, hash, extraction model/tokens, result.
 - `ProgramCandidate` — extracted program data awaiting human approval. Status: pending/approved/rejected/stale.
@@ -160,12 +164,12 @@ Flow: `ImportSource` → fetch HTML → hash diff → LLM extract (OpenRouter, C
 
 **Palette token system** (`globals.css` `@theme inline`). Four color roles, all swappable:
 
-| Token | Role | Usage |
-|-------|------|-------|
-| `brand-50/500/600/700/900` | Primary | Logo bg, buttons, links, CTAs, footer |
-| `accent-500` | Rating | Star icons, rating numbers |
-| `tag-50/700` | Categories | Category badge bg + text |
-| `success-50/600/700` | Financial aid | Scholarship/aid badges |
+| Token                      | Role          | Usage                                 |
+| -------------------------- | ------------- | ------------------------------------- |
+| `brand-50/500/600/700/900` | Primary       | Logo bg, buttons, links, CTAs, footer |
+| `accent-500`               | Rating        | Star icons, rating numbers            |
+| `tag-50/700`               | Categories    | Category badge bg + text              |
+| `success-50/600/700`       | Financial aid | Scholarship/aid badges                |
 
 Five named palettes in `globals.css` (one active, rest commented). Active: **Aix-en-Provence** (terracotta + saffron + lavender + olive). Swap = change one block.
 

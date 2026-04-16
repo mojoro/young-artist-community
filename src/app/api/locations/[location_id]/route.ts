@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import {
-  badRequest,
-  internalError,
-  notFound,
-  validationError,
-} from '@/lib/problem'
+import { badRequest, internalError, notFound, validationError } from '@/lib/problem'
 
 export async function PUT(
   request: Request,
@@ -24,12 +19,7 @@ export async function PUT(
     return badRequest('Body must be an object')
   }
 
-  const {
-    city,
-    country,
-    state,
-    address,
-  } = body as {
+  const { city, country, state, address } = body as {
     city?: unknown
     country?: unknown
     state?: unknown
@@ -45,11 +35,7 @@ export async function PUT(
   if (state !== undefined && state !== null && typeof state !== 'string') {
     return validationError('state must be a string')
   }
-  if (
-    address !== undefined &&
-    address !== null &&
-    typeof address !== 'string'
-  ) {
+  if (address !== undefined && address !== null && typeof address !== 'string') {
     return validationError('address must be a string')
   }
 
@@ -67,14 +53,8 @@ export async function PUT(
       data: {
         city: city.trim(),
         country: country.trim(),
-        state:
-          typeof state === 'string' && state.trim() !== ''
-            ? state.trim()
-            : null,
-        address:
-          typeof address === 'string' && address.trim() !== ''
-            ? address.trim()
-            : null,
+        state: typeof state === 'string' && state.trim() !== '' ? state.trim() : null,
+        address: typeof address === 'string' && address.trim() !== '' ? address.trim() : null,
       },
       select: {
         id: true,

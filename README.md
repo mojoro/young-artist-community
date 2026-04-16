@@ -17,15 +17,15 @@ The platform is free to use, has no ads, no paid placements, and no paywalls. Co
 
 ## Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 16 (App Router, Server Components) |
-| Language | TypeScript (strict mode) |
-| Database | Postgres (Neon serverless) |
-| ORM | Prisma 7 with Neon adapter |
-| Styling | Tailwind CSS v4 |
-| LLM extraction | OpenRouter (Claude Haiku 4.5) |
-| Hosting | Vercel |
+| Layer          | Technology                                 |
+| -------------- | ------------------------------------------ |
+| Framework      | Next.js 16 (App Router, Server Components) |
+| Language       | TypeScript (strict mode)                   |
+| Database       | Postgres (Neon serverless)                 |
+| ORM            | Prisma 7 with Neon adapter                 |
+| Styling        | Tailwind CSS v4                            |
+| LLM extraction | OpenRouter (Claude Haiku 4.5)              |
+| Hosting        | Vercel                                     |
 
 ## Project structure
 
@@ -283,12 +283,12 @@ npm run dev
 
 ### Environment variables
 
-| Variable | Purpose |
-|----------|---------|
-| `DATABASE_URL` | Neon pooled connection string |
-| `ADMIN_TOKEN` | Shared secret for admin panel access |
-| `OPENROUTER_API_KEY` | LLM extraction (import pipeline) |
-| `CRON_SECRET` | Vercel cron authentication |
+| Variable             | Purpose                              |
+| -------------------- | ------------------------------------ |
+| `DATABASE_URL`       | Neon pooled connection string        |
+| `ADMIN_TOKEN`        | Shared secret for admin panel access |
+| `OPENROUTER_API_KEY` | LLM extraction (import pipeline)     |
+| `CRON_SECRET`        | Vercel cron authentication           |
 
 ## Import pipeline
 

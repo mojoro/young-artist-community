@@ -16,7 +16,14 @@ export function ReviewForm({ programs }: Props) {
 
   return (
     <form action={formAction}>
-      <input type="text" name="url_confirm" tabIndex={-1} autoComplete="off" aria-hidden="true" className="sr-only" />
+      <input
+        type="text"
+        name="url_confirm"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="sr-only"
+      />
 
       {state?.error && (
         <div className="mb-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-200">
@@ -34,7 +41,7 @@ export function ReviewForm({ programs }: Props) {
         <div>
           <label
             htmlFor="reviewer_name"
-            className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+            className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
           >
             Your name
           </label>
@@ -42,14 +49,14 @@ export function ReviewForm({ programs }: Props) {
             id="reviewer_name"
             name="reviewer_name"
             type="text"
-            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />
         </div>
 
         <div>
           <label
             htmlFor="rating"
-            className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+            className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
           >
             Rating <span className="text-red-500">*</span>
           </label>
@@ -58,7 +65,7 @@ export function ReviewForm({ programs }: Props) {
             name="rating"
             required
             defaultValue=""
-            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           >
             <option value="" disabled>
               Select a rating
@@ -74,7 +81,7 @@ export function ReviewForm({ programs }: Props) {
         <div>
           <label
             htmlFor="year_attended"
-            className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+            className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
           >
             Year attended
           </label>
@@ -85,14 +92,14 @@ export function ReviewForm({ programs }: Props) {
             min={1950}
             max={2100}
             step={1}
-            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />
         </div>
 
         <div>
           <label
             htmlFor="title"
-            className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+            className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
           >
             Title
           </label>
@@ -100,7 +107,7 @@ export function ReviewForm({ programs }: Props) {
             id="title"
             name="title"
             type="text"
-            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />
         </div>
       </div>
@@ -108,7 +115,7 @@ export function ReviewForm({ programs }: Props) {
       <div className="mt-4">
         <label
           htmlFor="body"
-          className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+          className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
         >
           Review <span className="text-red-500">*</span>
         </label>
@@ -117,7 +124,7 @@ export function ReviewForm({ programs }: Props) {
           name="body"
           required
           rows={4}
-          className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+          className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
         />
       </div>
 
@@ -125,7 +132,7 @@ export function ReviewForm({ programs }: Props) {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {pending ? 'Submitting...' : 'Submit review'}
         </button>

@@ -49,11 +49,9 @@ export async function GET(request: NextRequest, context: RouteContext): Promise<
       where.year_attended = year
     }
 
-    const orderBy = toPrismaOrderBy(
-      parseSort(searchParams.get('sort')),
-      ALLOWED_SORT_FIELDS,
-      { created_at: 'desc' },
-    )
+    const orderBy = toPrismaOrderBy(parseSort(searchParams.get('sort')), ALLOWED_SORT_FIELDS, {
+      created_at: 'desc',
+    })
 
     const [items, totalItems] = await Promise.all([
       prisma.review.findMany({

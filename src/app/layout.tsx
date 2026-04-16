@@ -1,54 +1,51 @@
-import type { Metadata } from "next";
-import Script from "next/script";
-import Link from "next/link";
-import { Geist, Geist_Mono } from "next/font/google";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import "./globals.css";
-import { SubscribeForm } from "./subscribe/subscribe-form";
-import { MobileHeader } from "./components/mobile-header";
+import type { Metadata } from 'next'
+import Script from 'next/script'
+import Link from 'next/link'
+import { Geist, Geist_Mono } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
+import './globals.css'
+import { SubscribeForm } from './subscribe/subscribe-form'
+import { MobileHeader } from './components/mobile-header'
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+})
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
-  title: "Young Artist Community | Classical Music Programs Directory",
+  title: 'Young Artist Community | Classical Music Programs Directory',
   description:
-    "Find and review young artist programs in classical music and opera. A community resource for singers and instrumentalists.",
-  metadataBase: new URL("https://youngartist.community"),
+    'Find and review young artist programs in classical music and opera. A community resource for singers and instrumentalists.',
+  metadataBase: new URL('https://youngartist.community'),
   openGraph: {
-    type: "website",
-    siteName: "Young Artist Community",
-    title: "Young Artist Community",
+    type: 'website',
+    siteName: 'Young Artist Community',
+    title: 'Young Artist Community',
     description:
-      "Browse, compare, and review young artist programs in classical music and opera. Built by the community, for the community.",
-    url: "https://youngartist.community",
+      'Browse, compare, and review young artist programs in classical music and opera. Built by the community, for the community.',
+    url: 'https://youngartist.community',
   },
   twitter: {
-    card: "summary_large_image",
-    title: "Young Artist Community",
+    card: 'summary_large_image',
+    title: 'Young Artist Community',
     description:
-      "Browse, compare, and review young artist programs in classical music and opera. Built by the community, for the community.",
+      'Browse, compare, and review young artist programs in classical music and opera. Built by the community, for the community.',
   },
-};
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <head>
         <Script
           defer
@@ -57,28 +54,18 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
       </head>
-      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900">
+      <body className="flex min-h-full flex-col bg-slate-50 text-slate-900">
         <MobileHeader />
         <main className="flex-1">{children}</main>
         <Analytics />
         <SpeedInsights />
         <footer className="bg-brand-900">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+            <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
               <div>
                 <div className="flex items-center gap-2">
-                  <svg
-                    className="h-7 w-7"
-                    viewBox="0 0 32 32"
-                    fill="none"
-                    aria-hidden="true"
-                  >
-                    <rect
-                      width="32"
-                      height="32"
-                      rx="7"
-                      className="fill-brand-500"
-                    />
+                  <svg className="h-7 w-7" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                    <rect width="32" height="32" rx="7" className="fill-brand-500" />
                     <path
                       d="M13 4 L13 17 Q13 21 16 21 Q19 21 19 17 L19 4"
                       stroke="white"
@@ -110,9 +97,7 @@ export default function RootLayout({
                       opacity="0.35"
                     />
                   </svg>
-                  <span className="text-base font-semibold text-white">
-                    Young Artist Community
-                  </span>
+                  <span className="text-base font-semibold text-white">Young Artist Community</span>
                 </div>
                 <p className="mt-2 max-w-md text-sm text-slate-300">
                   A community directory for classical music and opera programs.
@@ -122,35 +107,24 @@ export default function RootLayout({
                 <Link href="/" className="transition-colors hover:text-white">
                   Home
                 </Link>
-                <Link
-                  href="/about"
-                  className="transition-colors hover:text-white"
-                >
+                <Link href="/about" className="transition-colors hover:text-white">
                   About
                 </Link>
-                <Link
-                  href="/programs"
-                  className="transition-colors hover:text-white"
-                >
+                <Link href="/programs" className="transition-colors hover:text-white">
                   Programs
                 </Link>
-                <Link
-                  href="/programs/new"
-                  className="transition-colors hover:text-white"
-                >
+                <Link href="/programs/new" className="transition-colors hover:text-white">
                   Submit a Program
                 </Link>
               </nav>
             </div>
             <div className="mt-8 border-t border-white/15 pt-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                 <div>
-                  <p className="text-sm font-medium text-slate-300">
-                    Interested in this platform?
-                  </p>
+                  <p className="text-sm font-medium text-slate-300">Interested in this platform?</p>
                   <p className="mt-0.5 text-xs text-slate-300">
-                    Sign up for the mailing list (no spam ever, promise) to let
-                    us know there's demand.
+                    Sign up for the mailing list (no spam ever, promise) to let us know there's
+                    demand.
                   </p>
                 </div>
                 <div className="w-full sm:w-80">
@@ -159,14 +133,12 @@ export default function RootLayout({
               </div>
             </div>
             <div className="mt-8 border-t border-white/15 pt-6">
-              <div className="flex flex-col sm:flex-row justify-between gap-6">
+              <div className="flex flex-col justify-between gap-6 sm:flex-row">
                 <div>
-                  <p className="text-sm font-medium text-slate-300">
-                    Built by John Moorman
-                  </p>
+                  <p className="text-sm font-medium text-slate-300">Built by John Moorman</p>
                   <p className="mt-1.5 max-w-sm text-xs leading-relaxed text-slate-300">
-                    If anything about this project interests you or you'd like
-                    to help out, please reach out.
+                    If anything about this project interests you or you'd like to help out, please
+                    reach out.
                   </p>
                   <div className="mt-3 flex items-center gap-4 text-sm text-slate-300">
                     <a
@@ -202,5 +174,5 @@ export default function RootLayout({
         </footer>
       </body>
     </html>
-  );
+  )
 }

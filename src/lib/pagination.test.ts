@@ -1,10 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import {
-  encodeCursor,
-  decodeCursor,
-  parsePagination,
-  buildMeta,
-} from '@/lib/pagination'
+import { encodeCursor, decodeCursor, parsePagination, buildMeta } from '@/lib/pagination'
 
 describe('encodeCursor / decodeCursor', () => {
   it('round-trips an offset back to the original value', () => {

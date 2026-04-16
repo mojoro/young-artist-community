@@ -73,36 +73,31 @@ export default async function AdminImportPage({
     <div className="mx-auto max-w-6xl px-4 py-8">
       <header className="mb-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-gray-900">
-            Import review
-          </h1>
+          <h1 className="text-2xl font-semibold text-gray-900">Import review</h1>
           <div className="flex items-center gap-4">
             <Link
               href="/admin/data"
               prefetch={false}
-              className="text-sm text-gray-600 hover:text-gray-900 underline"
+              className="text-sm text-gray-600 underline hover:text-gray-900"
             >
               Data
             </Link>
             <Link
               href="/admin/reports"
               prefetch={false}
-              className="text-sm text-gray-600 hover:text-gray-900 underline"
+              className="text-sm text-gray-600 underline hover:text-gray-900"
             >
               Reports
             </Link>
             <Link
               href="/"
               prefetch={false}
-              className="text-sm text-gray-600 hover:text-gray-900 underline"
+              className="text-sm text-gray-600 underline hover:text-gray-900"
             >
               Back to site
             </Link>
             <form action={adminLogout}>
-              <button
-                type="submit"
-                className="text-sm text-gray-500 hover:text-gray-900 underline"
-              >
+              <button type="submit" className="text-sm text-gray-500 underline hover:text-gray-900">
                 Logout
               </button>
             </form>
@@ -141,9 +136,7 @@ export default async function AdminImportPage({
 
       {candidates.length === 0 ? (
         <div className="rounded-lg border border-dashed border-gray-300 bg-white p-12 text-center">
-          <p className="text-gray-700">
-            No {statusFilter} candidates.
-          </p>
+          <p className="text-gray-700">No {statusFilter} candidates.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -171,21 +164,19 @@ export default async function AdminImportPage({
 
       {/* Sources */}
       <section className="mt-10 border-t border-gray-200 pt-8">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Sources ({sources.length})
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900">Sources ({sources.length})</h2>
 
         {sources.length > 0 && (
           <div className="mt-4 overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200 text-left text-xs uppercase tracking-wide text-gray-500">
-                  <th className="pb-2 pr-4">Name</th>
-                  <th className="pb-2 pr-4">URL</th>
-                  <th className="pb-2 pr-4">Status</th>
-                  <th className="pb-2 pr-4">Linked program</th>
-                  <th className="pb-2 pr-4">Last fetched</th>
-                  <th className="pb-2 pr-4">Last run</th>
+                <tr className="border-b border-gray-200 text-left text-xs tracking-wide text-gray-500 uppercase">
+                  <th className="pr-4 pb-2">Name</th>
+                  <th className="pr-4 pb-2">URL</th>
+                  <th className="pr-4 pb-2">Status</th>
+                  <th className="pr-4 pb-2">Linked program</th>
+                  <th className="pr-4 pb-2">Last fetched</th>
+                  <th className="pr-4 pb-2">Last run</th>
                   <th className="pb-2"></th>
                 </tr>
               </thead>
@@ -198,48 +189,64 @@ export default async function AdminImportPage({
                         href={s.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline truncate block max-w-xs"
+                        className="block max-w-xs truncate text-blue-600 hover:underline"
                       >
                         {s.url}
                       </a>
                     </td>
                     <td className="py-2 pr-4">
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                        s.status === 'active'
-                          ? 'bg-green-100 text-green-800'
-                          : s.status === 'paused'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
-                      }`}>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                          s.status === 'active'
+                            ? 'bg-green-100 text-green-800'
+                            : s.status === 'paused'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800'
+                        }`}
+                      >
                         {s.status}
                       </span>
                     </td>
                     <td className="py-2 pr-4 text-gray-600">
                       {s.program ? (
-                        <a href={`/programs/${s.program.id}`} className="text-blue-600 hover:underline">
+                        <a
+                          href={`/programs/${s.program.id}`}
+                          className="text-blue-600 hover:underline"
+                        >
                           {s.program.name}
                         </a>
-                      ) : '—'}
+                      ) : (
+                        '—'
+                      )}
                     </td>
                     <td className="py-2 pr-4 text-gray-500">
                       {s.last_fetched_at
-                        ? s.last_fetched_at.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        ? s.last_fetched_at.toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })
                         : 'Never'}
                     </td>
                     <td className="py-2 pr-4">
                       {s.runs[0] ? (
                         <div>
-                          <span className={`text-xs font-medium ${
-                            s.runs[0].result === 'success'
-                              ? 'text-green-700'
-                              : s.runs[0].result === 'unchanged'
-                                ? 'text-gray-500'
-                                : 'text-red-600'
-                          }`}>
+                          <span
+                            className={`text-xs font-medium ${
+                              s.runs[0].result === 'success'
+                                ? 'text-green-700'
+                                : s.runs[0].result === 'unchanged'
+                                  ? 'text-gray-500'
+                                  : 'text-red-600'
+                            }`}
+                          >
                             {s.runs[0].result}
                           </span>
                           {s.runs[0].error_message && (
-                            <p className="mt-0.5 text-xs text-red-500 max-w-xs truncate" title={s.runs[0].error_message}>
+                            <p
+                              className="mt-0.5 max-w-xs truncate text-xs text-red-500"
+                              title={s.runs[0].error_message}
+                            >
                               {s.runs[0].error_message}
                             </p>
                           )}
@@ -332,10 +339,7 @@ function CandidateCard({
           {matchedProgram && (
             <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
               Matches:{' '}
-              <a
-                href={`/programs/${matchedProgram.id}`}
-                className="underline"
-              >
+              <a href={`/programs/${matchedProgram.id}`} className="underline">
                 {matchedProgram.name}
               </a>
             </span>
@@ -344,12 +348,10 @@ function CandidateCard({
       </div>
 
       {/* Extracted data summary */}
-      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 text-sm">
+      <div className="mt-3 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
         {locations.length > 0 && (
           <div>
-            <span className="text-xs uppercase tracking-wide text-gray-500">
-              Location
-            </span>
+            <span className="text-xs tracking-wide text-gray-500 uppercase">Location</span>
             <p className="text-gray-900">
               {locations.map((l) => `${l.city}, ${l.country}`).join(' / ')}
             </p>
@@ -357,17 +359,13 @@ function CandidateCard({
         )}
         {deadline && (
           <div>
-            <span className="text-xs uppercase tracking-wide text-gray-500">
-              Deadline
-            </span>
+            <span className="text-xs tracking-wide text-gray-500 uppercase">Deadline</span>
             <p className="text-gray-900">{deadline}</p>
           </div>
         )}
         {tuition !== null && (
           <div>
-            <span className="text-xs uppercase tracking-wide text-gray-500">
-              Tuition
-            </span>
+            <span className="text-xs tracking-wide text-gray-500 uppercase">Tuition</span>
             <p className="text-gray-900">
               {tuition === 0 ? 'Free' : `$${tuition.toLocaleString('en-US')}`}
             </p>
@@ -375,15 +373,11 @@ function CandidateCard({
         )}
         {model && (
           <div>
-            <span className="text-xs uppercase tracking-wide text-gray-500">
-              Model
-            </span>
+            <span className="text-xs tracking-wide text-gray-500 uppercase">Model</span>
             <p className="text-gray-900">
               {model}
               {tokensIn != null && tokensOut != null && (
-                <span className="text-gray-500">
-                  {' '}({tokensIn + tokensOut} tok)
-                </span>
+                <span className="text-gray-500"> ({tokensIn + tokensOut} tok)</span>
               )}
             </p>
           </div>
@@ -413,13 +407,12 @@ function CandidateCard({
       )}
 
       {/* Description preview */}
-      {description && (
-        <p className="mt-3 text-sm text-gray-700 line-clamp-3">{description}</p>
-      )}
+      {description && <p className="mt-3 line-clamp-3 text-sm text-gray-700">{description}</p>}
 
       {/* Meta */}
       <p className="mt-3 text-xs text-gray-500">
-        Fetched {fetchedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+        Fetched{' '}
+        {fetchedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         {' · '}ID: {candidateId.slice(0, 8)}
       </p>
 

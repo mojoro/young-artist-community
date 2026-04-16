@@ -1,19 +1,19 @@
-import Link from "next/link";
-import type { Prisma } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
-import type { Program } from "@/lib/types";
-import { SubscribeForm } from "./subscribe/subscribe-form";
-import { ProgramCard } from "./components/program-card";
+import Link from 'next/link'
+import type { Prisma } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
+import type { Program } from '@/lib/types'
+import { SubscribeForm } from './subscribe/subscribe-form'
+import { ProgramCard } from './components/program-card'
 
 const PROGRAM_INCLUDE = {
   program_instruments: { include: { instrument: true } },
   program_categories: { include: { category: true } },
   program_locations: { include: { location: true } },
-} as const;
+} as const
 
 type ProgramWithRelations = Prisma.ProgramGetPayload<{
-  include: typeof PROGRAM_INCLUDE;
-}>;
+  include: typeof PROGRAM_INCLUDE
+}>
 
 function formatProgram(
   row: ProgramWithRelations,
@@ -26,9 +26,7 @@ function formatProgram(
     description: row.description,
     start_date: row.start_date ? row.start_date.toISOString() : null,
     end_date: row.end_date ? row.end_date.toISOString() : null,
-    application_deadline: row.application_deadline
-      ? row.application_deadline.toISOString()
-      : null,
+    application_deadline: row.application_deadline ? row.application_deadline.toISOString() : null,
     tuition: row.tuition,
     application_fee: row.application_fee,
     age_min: row.age_min,
@@ -55,67 +53,55 @@ function formatProgram(
     })),
     average_rating: stats.avg === null ? null : Math.round(stats.avg * 10) / 10,
     review_count: stats.count,
-  };
+  }
 }
 
-async function attachRatingStats(
-  programs: ProgramWithRelations[],
-): Promise<Program[]> {
-  if (programs.length === 0) return [];
-  const ids = programs.map((p) => p.id);
+async function attachRatingStats(programs: ProgramWithRelations[]): Promise<Program[]> {
+  if (programs.length === 0) return []
+  const ids = programs.map((p) => p.id)
   const grouped = await prisma.review.groupBy({
-    by: ["program_id"],
+    by: ['program_id'],
     where: { program_id: { in: ids } },
     _avg: { rating: true },
     _count: { rating: true },
-  });
+  })
   const statsMap = new Map(
-    grouped.map((g) => [
-      g.program_id,
-      { avg: g._avg.rating, count: g._count.rating },
-    ]),
-  );
-  return programs.map((p) =>
-    formatProgram(p, statsMap.get(p.id) ?? { avg: null, count: 0 }),
-  );
+    grouped.map((g) => [g.program_id, { avg: g._avg.rating, count: g._count.rating }]),
+  )
+  return programs.map((p) => formatProgram(p, statsMap.get(p.id) ?? { avg: null, count: 0 }))
 }
 
 export default async function Home() {
   const [recentRows, categoryRows] = await Promise.all([
     prisma.program.findMany({
-      orderBy: { updated_at: "desc" },
+      orderBy: { updated_at: 'desc' },
       take: 6,
       include: PROGRAM_INCLUDE,
     }),
     prisma.category.findMany({
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
       select: { id: true, name: true },
     }),
-  ]);
+  ])
 
-  const recent = await attachRatingStats(recentRows);
-  const categories = categoryRows;
+  const recent = await attachRatingStats(recentRows)
+  const categories = categoryRows
 
   return (
     <>
       {/* Hero */}
       <section className="bg-white py-12 sm:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="mx-auto max-w-3xl text-4xl sm:text-5xl font-bold tracking-tight text-slate-900">
+        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+          <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
             A free, community-built directory of young artist programs
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
-            No ads, no paid placements, no paywalls. Just honest information and
-            reviews from singers and instrumentalists who&apos;ve been through
-            these programs. Browse summer festivals, academies, and YAPs. Help
-            others by sharing your experience.
+            No ads, no paid placements, no paywalls. Just honest information and reviews from
+            singers and instrumentalists who&apos;ve been through these programs. Browse summer
+            festivals, academies, and YAPs. Help others by sharing your experience.
           </p>
 
-          <form
-            action="/programs"
-            method="GET"
-            className="mx-auto mt-8 max-w-xl"
-          >
+          <form action="/programs" method="GET" className="mx-auto mt-8 max-w-xl">
             <label htmlFor="home-search" className="sr-only">
               Search programs
             </label>
@@ -126,11 +112,11 @@ export default async function Home() {
                 type="text"
                 name="q"
                 placeholder="Search programs..."
-                className="w-full rounded-full border-0 bg-slate-100 pl-5 pr-12 py-3 text-base ring-1 ring-slate-200 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                className="w-full rounded-full border-0 bg-slate-100 py-3 pr-12 pl-5 text-base ring-1 ring-slate-200 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none"
               />
               <button
                 type="submit"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-brand-600 hover:bg-brand-700 transition-colors"
+                className="absolute top-1/2 right-1.5 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-brand-600 transition-colors hover:bg-brand-700"
                 aria-label="Search"
               >
                 <svg
@@ -149,7 +135,7 @@ export default async function Home() {
               </button>
             </div>
             {/* Desktop: side by side */}
-            <div className="hidden sm:flex gap-2">
+            <div className="hidden gap-2 sm:flex">
               <input
                 type="text"
                 name="q"
@@ -158,7 +144,7 @@ export default async function Home() {
               />
               <button
                 type="submit"
-                className="rounded-full bg-brand-600 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
+                className="rounded-full bg-brand-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-700"
               >
                 Search
               </button>
@@ -169,37 +155,34 @@ export default async function Home() {
 
       {/* Community contribution CTA */}
       <section className="bg-brand-50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-14">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
           <div>
             <h2 className="text-2xl font-bold tracking-tight text-slate-900">
               This directory grows when you contribute
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-slate-600">
-              Every review and program listing here comes from the community. If
-              you&apos;ve attended a program, please leave a review. If you know
-              of a program that&apos;s missing or see a field that needs
-              updating, please feel free to add it! The more people contribute,
-              the more useful this becomes for everyone.
+              Every review and program listing here comes from the community. If you&apos;ve
+              attended a program, please leave a review. If you know of a program that&apos;s
+              missing or see a field that needs updating, please feel free to add it! The more
+              people contribute, the more useful this becomes for everyone.
             </p>
-            <div className="mt-6 flex flex-row justify-center sm:justify-start gap-3">
+            <div className="mt-6 flex flex-row justify-center gap-3 sm:justify-start">
               <Link
                 href="/reviews/new"
-                className="rounded-full bg-brand-600 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
+                className="rounded-full bg-brand-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-700"
               >
                 Write a review
               </Link>
               <Link
                 href="/programs/new"
-                className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition"
+                className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-slate-900/5 transition hover:shadow-md"
               >
                 Submit a program
               </Link>
             </div>
           </div>
           <div className="mt-8 border-t border-brand-600/10 pt-6">
-            <p className="text-sm font-medium text-slate-600">
-              Want to stay in the loop?
-            </p>
+            <p className="text-sm font-medium text-slate-600">Want to stay in the loop?</p>
             <div className="mt-3 max-w-sm">
               <SubscribeForm variant="light" />
             </div>
@@ -211,21 +194,17 @@ export default async function Home() {
       <section className="py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between">
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-              Recently updated
-            </h2>
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900">Recently updated</h2>
             <Link
               href="/programs"
-              className="text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors"
+              className="text-sm font-medium text-brand-600 transition-colors hover:text-brand-700"
             >
               Browse all &rarr;
             </Link>
           </div>
 
           {recent.length === 0 ? (
-            <p className="mt-6 text-sm text-slate-500">
-              No programs available yet.
-            </p>
+            <p className="mt-6 text-sm text-slate-500">No programs available yet.</p>
           ) : (
             <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {recent.map((program) => (
@@ -237,23 +216,19 @@ export default async function Home() {
       </section>
 
       {/* Browse by category */}
-      <section className="pb-16 pt-4">
+      <section className="pt-4 pb-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-            Browse by category
-          </h2>
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900">Browse by category</h2>
 
           {categories.length === 0 ? (
-            <p className="mt-6 text-sm text-slate-500">
-              No categories available.
-            </p>
+            <p className="mt-6 text-sm text-slate-500">No categories available.</p>
           ) : (
             <div className="mt-6 flex flex-wrap gap-3">
               {categories.map((c) => (
                 <Link
                   key={c.id}
                   href={`/programs?category_id=${c.id}`}
-                  className="rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-900/5 transition hover:shadow-md hover:text-brand-600"
+                  className="rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-900/5 transition hover:text-brand-600 hover:shadow-md"
                 >
                   {c.name}
                 </Link>
@@ -263,5 +238,5 @@ export default async function Home() {
         </div>
       </section>
     </>
-  );
+  )
 }

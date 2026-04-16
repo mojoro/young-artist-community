@@ -16,12 +16,8 @@ export function ReExtractButton({ sourceId }: { sourceId: string }) {
       >
         {pending ? 'Extracting...' : 'Re-extract'}
       </button>
-      {state?.error && (
-        <p className="mt-1 text-xs text-red-600">{state.error}</p>
-      )}
-      {state?.message && (
-        <p className="mt-1 text-xs text-green-700">{state.message}</p>
-      )}
+      {state?.error && <p className="mt-1 text-xs text-red-600">{state.error}</p>}
+      {state?.message && <p className="mt-1 text-xs text-green-700">{state.message}</p>}
     </form>
   )
 }

@@ -69,12 +69,7 @@ function formatProgram(
   }
 }
 
-const ALLOWED_SORT_FIELDS = [
-  'name',
-  'tuition',
-  'application_deadline',
-  'created_at',
-] as const
+const ALLOWED_SORT_FIELDS = ['name', 'tuition', 'application_deadline', 'created_at'] as const
 
 // ---------------------------------------------------------------------------
 // GET /api/programs

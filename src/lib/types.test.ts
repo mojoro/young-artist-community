@@ -3,12 +3,7 @@ import { sortInstruments } from '@/lib/types'
 
 describe('sortInstruments', () => {
   it('pins Voice first regardless of input position', () => {
-    const input = [
-      { name: 'Violin' },
-      { name: 'Cello' },
-      { name: 'Voice' },
-      { name: 'Flute' },
-    ]
+    const input = [{ name: 'Violin' }, { name: 'Cello' }, { name: 'Voice' }, { name: 'Flute' }]
     const result = sortInstruments(input)
     expect(result[0]).toEqual({ name: 'Voice' })
   })
@@ -22,13 +17,7 @@ describe('sortInstruments', () => {
       { name: 'Oboe' },
     ]
     const result = sortInstruments(input)
-    expect(result.map((i) => i.name)).toEqual([
-      'Voice',
-      'Cello',
-      'Flute',
-      'Oboe',
-      'Violin',
-    ])
+    expect(result.map((i) => i.name)).toEqual(['Voice', 'Cello', 'Flute', 'Oboe', 'Violin'])
   })
 
   it('returns empty array for empty input', () => {
@@ -41,11 +30,7 @@ describe('sortInstruments', () => {
   })
 
   it('does not mutate the original array', () => {
-    const input = [
-      { name: 'Violin' },
-      { name: 'Voice' },
-      { name: 'Cello' },
-    ]
+    const input = [{ name: 'Violin' }, { name: 'Voice' }, { name: 'Cello' }]
     const copy = [...input]
     sortInstruments(input)
     expect(input).toEqual(copy)
