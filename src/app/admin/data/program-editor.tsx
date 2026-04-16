@@ -69,12 +69,8 @@ export function ProgramEditor({
     <form action={action} className="space-y-4">
       <input type="hidden" name="program_id" value={program.id} />
 
-      {state?.error && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
-      {state?.message && (
-        <p className="text-sm text-green-700">{state.message}</p>
-      )}
+      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.message && <p className="text-sm text-green-700">{state.message}</p>}
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">
@@ -100,12 +96,7 @@ export function ProgramEditor({
           type="date"
           defaultValue={program.start_date ?? ''}
         />
-        <Field
-          label="End date"
-          name="end_date"
-          type="date"
-          defaultValue={program.end_date ?? ''}
-        />
+        <Field label="End date" name="end_date" type="date" defaultValue={program.end_date ?? ''} />
         <Field
           label="Application deadline"
           name="application_deadline"
@@ -171,9 +162,7 @@ export function ProgramEditor({
             defaultValue={program.instruments}
             placeholder="Voice, Piano, Violin"
           />
-          <p className="mt-1 text-xs text-gray-400">
-            Valid: {validInstruments.join(', ')}
-          </p>
+          <p className="mt-1 text-xs text-gray-400">Valid: {validInstruments.join(', ')}</p>
         </div>
         <div className="sm:col-span-2">
           <Field
@@ -182,9 +171,7 @@ export function ProgramEditor({
             defaultValue={program.categories}
             placeholder="Opera, Chamber Music"
           />
-          <p className="mt-1 text-xs text-gray-400">
-            Valid: {validCategories.join(', ')}
-          </p>
+          <p className="mt-1 text-xs text-gray-400">Valid: {validCategories.join(', ')}</p>
         </div>
         <div className="sm:col-span-2">
           <Field
@@ -193,9 +180,7 @@ export function ProgramEditor({
             defaultValue={program.locations}
             placeholder="Salzburg/Austria, Aspen/US"
           />
-          <p className="mt-1 text-xs text-gray-400">
-            Valid: {validLocations.join(', ')}
-          </p>
+          <p className="mt-1 text-xs text-gray-400">Valid: {validLocations.join(', ')}</p>
         </div>
       </div>
 

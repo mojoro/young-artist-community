@@ -18,12 +18,7 @@ const SORT_OPTIONS: Array<{ value: string; label: string }> = [
   { value: '-tuition', label: 'Tuition (high→low)' },
 ]
 
-const ALLOWED_SORT_FIELDS = [
-  'name',
-  'tuition',
-  'application_deadline',
-  'created_at',
-] as const
+const ALLOWED_SORT_FIELDS = ['name', 'tuition', 'application_deadline', 'created_at'] as const
 
 const PROGRAM_INCLUDE = {
   program_instruments: { include: { instrument: true } },
@@ -46,9 +41,7 @@ function formatProgram(
     description: row.description,
     start_date: row.start_date ? row.start_date.toISOString() : null,
     end_date: row.end_date ? row.end_date.toISOString() : null,
-    application_deadline: row.application_deadline
-      ? row.application_deadline.toISOString()
-      : null,
+    application_deadline: row.application_deadline ? row.application_deadline.toISOString() : null,
     tuition: row.tuition,
     application_fee: row.application_fee,
     age_min: row.age_min,
@@ -319,11 +312,9 @@ export default async function ProgramsPage({
   const totalPages = Math.ceil(totalItems / limit)
 
   return (
-    <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-10">
+    <main className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
       <header className="py-8">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          Programs
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Programs</h1>
         <p className="mt-1 text-base text-slate-500">
           Browse and filter young artist programs in classical music and opera.
         </p>
@@ -337,7 +328,7 @@ export default async function ProgramsPage({
         <div>
           <label
             htmlFor="q"
-            className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+            className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
           >
             Search
           </label>
@@ -347,15 +338,15 @@ export default async function ProgramsPage({
             type="text"
             defaultValue={currentQ}
             placeholder="Search by name or description..."
-            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-4">
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <label
               htmlFor="instrument_id"
-              className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+              className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
             >
               Instrument
             </label>
@@ -363,7 +354,7 @@ export default async function ProgramsPage({
               id="instrument_id"
               name="instrument_id"
               defaultValue={currentInstrument}
-              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
             >
               <option value="">All instruments</option>
               {instruments.map((i) => (
@@ -377,7 +368,7 @@ export default async function ProgramsPage({
           <div>
             <label
               htmlFor="category_id"
-              className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+              className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
             >
               Category
             </label>
@@ -385,7 +376,7 @@ export default async function ProgramsPage({
               id="category_id"
               name="category_id"
               defaultValue={currentCategory}
-              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
             >
               <option value="">All categories</option>
               {categories.map((c) => (
@@ -399,7 +390,7 @@ export default async function ProgramsPage({
           <div>
             <label
               htmlFor="country"
-              className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+              className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
             >
               Country
             </label>
@@ -407,7 +398,7 @@ export default async function ProgramsPage({
               id="country"
               name="country"
               defaultValue={currentCountry}
-              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
             >
               <option value="">All countries</option>
               {countries.map((c) => (
@@ -421,7 +412,7 @@ export default async function ProgramsPage({
           <div>
             <label
               htmlFor="tuition_lower_than"
-              className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+              className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
             >
               Max tuition (USD)
             </label>
@@ -433,14 +424,14 @@ export default async function ProgramsPage({
               step="1"
               defaultValue={currentTuition}
               placeholder="e.g. 5000"
-              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
           <div>
             <label
               htmlFor="sort"
-              className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+              className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
             >
               Sort by
             </label>
@@ -448,7 +439,7 @@ export default async function ProgramsPage({
               id="sort"
               name="sort"
               defaultValue={currentSort}
-              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
             >
               {SORT_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -461,7 +452,7 @@ export default async function ProgramsPage({
           <div>
             <label
               htmlFor="app_fee"
-              className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5"
+              className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
             >
               Application fee
             </label>
@@ -469,7 +460,7 @@ export default async function ProgramsPage({
               id="app_fee"
               name="app_fee"
               defaultValue={currentAppFee}
-              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-500 focus:bg-white transition-colors"
+              className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
             >
               <option value="">Any</option>
               <option value="free">Free application</option>
@@ -478,7 +469,7 @@ export default async function ProgramsPage({
           </div>
 
           <div className="flex items-center pt-6">
-            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
+            <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
               <input
                 type="checkbox"
                 name="offers_scholarship"
@@ -490,14 +481,12 @@ export default async function ProgramsPage({
             </label>
           </div>
         </div>
-        {currentView !== 'card' && (
-          <input type="hidden" name="view" value={currentView} />
-        )}
+        {currentView !== 'card' && <input type="hidden" name="view" value={currentView} />}
 
         <div className="mt-5 flex items-center gap-4 border-t border-slate-100 pt-4">
           <button
             type="submit"
-            className="rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
+            className="rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-700"
           >
             Apply filters
           </button>
@@ -510,7 +499,7 @@ export default async function ProgramsPage({
           <span className="ml-auto text-sm text-slate-400">
             {meta.total_items} result{meta.total_items === 1 ? '' : 's'}
           </span>
-          <div className="flex items-center rounded-lg ring-1 ring-slate-200 overflow-hidden">
+          <div className="flex items-center overflow-hidden rounded-lg ring-1 ring-slate-200">
             <Link
               href={viewLink(params, 'card')}
               className={`inline-flex items-center px-2.5 py-2 transition-colors ${
@@ -550,14 +539,12 @@ export default async function ProgramsPage({
 
       {programs.length === 0 ? (
         <div className="rounded-xl bg-white p-16 text-center shadow-sm ring-1 ring-slate-900/5">
-          <p className="text-lg font-medium text-slate-700">
-            No programs match your filters.
-          </p>
+          <p className="text-lg font-medium text-slate-700">No programs match your filters.</p>
           <p className="mt-2 text-sm text-slate-500">
             Try adjusting your search criteria or{' '}
             <Link
               href="/programs"
-              className="font-medium text-brand-600 hover:text-brand-700 transition-colors"
+              className="font-medium text-brand-600 transition-colors hover:text-brand-700"
             >
               clear all filters
             </Link>{' '}
@@ -567,18 +554,24 @@ export default async function ProgramsPage({
       ) : (
         <>
           {currentView === 'list' ? (
-            <div className="rounded-xl bg-white shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
+            <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-900/5">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-slate-100 text-left">
                       <th className="px-4 py-3 font-semibold text-slate-700">Program</th>
-                      <th className="px-4 py-3 font-semibold text-slate-700 hidden sm:table-cell">Location</th>
-                      <th className="px-4 py-3 font-semibold text-slate-700 hidden md:table-cell">Categories</th>
-                      <th className="px-4 py-3 font-semibold text-slate-700 text-right">Tuition</th>
-                      <th className="px-4 py-3 font-semibold text-slate-700 text-right">App fee</th>
-                      <th className="px-4 py-3 font-semibold text-slate-700 hidden lg:table-cell">Deadline</th>
-                      <th className="px-4 py-3 font-semibold text-slate-700 text-right">Rating</th>
+                      <th className="hidden px-4 py-3 font-semibold text-slate-700 sm:table-cell">
+                        Location
+                      </th>
+                      <th className="hidden px-4 py-3 font-semibold text-slate-700 md:table-cell">
+                        Categories
+                      </th>
+                      <th className="px-4 py-3 text-right font-semibold text-slate-700">Tuition</th>
+                      <th className="px-4 py-3 text-right font-semibold text-slate-700">App fee</th>
+                      <th className="hidden px-4 py-3 font-semibold text-slate-700 lg:table-cell">
+                        Deadline
+                      </th>
+                      <th className="px-4 py-3 text-right font-semibold text-slate-700">Rating</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
@@ -601,7 +594,7 @@ export default async function ProgramsPage({
             {hasPrev ? (
               <Link
                 href={cursorLink(params, meta.prev)}
-                className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100"
               >
                 Previous
               </Link>
@@ -619,9 +612,7 @@ export default async function ProgramsPage({
                   key={i}
                   href={cursorLink(params, cursor)}
                   className={`inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-brand-600 text-white'
-                      : 'text-slate-600 hover:bg-slate-100'
+                    isActive ? 'bg-brand-600 text-white' : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
                   {i + 1}
@@ -632,7 +623,7 @@ export default async function ProgramsPage({
             {hasNext ? (
               <Link
                 href={cursorLink(params, meta.next)}
-                className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100"
               >
                 Next
               </Link>
@@ -660,12 +651,12 @@ function ProgramRow({ program }: { program: Program }) {
   const hasRating = program.review_count > 0 && program.average_rating !== null
 
   return (
-    <tr className="hover:bg-slate-50 transition-colors">
+    <tr className="transition-colors hover:bg-slate-50">
       <td className="px-4 py-3">
         <div className="flex items-center gap-2">
           <Link
             href={`/programs/${program.slug}`}
-            className="font-medium text-slate-900 hover:text-brand-600 transition-colors"
+            className="font-medium text-slate-900 transition-colors hover:text-brand-600"
           >
             {program.name}
           </Link>
@@ -676,10 +667,8 @@ function ProgramRow({ program }: { program: Program }) {
           )}
         </div>
       </td>
-      <td className="px-4 py-3 text-slate-500 hidden sm:table-cell">
-        {locationText}
-      </td>
-      <td className="px-4 py-3 hidden md:table-cell">
+      <td className="hidden px-4 py-3 text-slate-500 sm:table-cell">{locationText}</td>
+      <td className="hidden px-4 py-3 md:table-cell">
         {shownCategories.length > 0 ? (
           <div className="flex flex-wrap gap-1">
             {shownCategories.map((c) => (
@@ -700,25 +689,21 @@ function ProgramRow({ program }: { program: Program }) {
           <span className="text-slate-400">{'\u2014'}</span>
         )}
       </td>
-      <td className="px-4 py-3 text-right font-medium text-slate-900 whitespace-nowrap">
+      <td className="px-4 py-3 text-right font-medium whitespace-nowrap text-slate-900">
         {formatTuition(program.tuition)}
       </td>
-      <td className="px-4 py-3 text-right text-slate-600 whitespace-nowrap">
+      <td className="px-4 py-3 text-right whitespace-nowrap text-slate-600">
         {formatAppFee(program.application_fee)}
       </td>
-      <td className="px-4 py-3 text-slate-500 hidden lg:table-cell whitespace-nowrap">
+      <td className="hidden px-4 py-3 whitespace-nowrap text-slate-500 lg:table-cell">
         {formatDate(program.application_deadline)}
       </td>
       <td className="px-4 py-3 text-right whitespace-nowrap">
         {hasRating ? (
           <span className="inline-flex items-center gap-1">
             <span className="text-accent-500">&#9733;</span>
-            <span className="font-medium text-slate-700">
-              {program.average_rating!.toFixed(1)}
-            </span>
-            <span className="text-slate-400">
-              ({program.review_count})
-            </span>
+            <span className="font-medium text-slate-700">{program.average_rating!.toFixed(1)}</span>
+            <span className="text-slate-400">({program.review_count})</span>
           </span>
         ) : (
           <span className="text-slate-400">No reviews</span>

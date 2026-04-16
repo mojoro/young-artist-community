@@ -33,10 +33,7 @@ export async function approveCandidate(formData: FormData) {
     throw new Error(`Invalid extracted_json: ${parsed.error.message}`)
   }
 
-  const programId = await upsertProgramFromExtraction(
-    parsed.data,
-    candidate.program_id,
-  )
+  const programId = await upsertProgramFromExtraction(parsed.data, candidate.program_id)
 
   await prisma.programCandidate.update({
     where: { id: candidateId },
@@ -137,7 +134,9 @@ export async function addSource(
     })
   } catch (e) {
     if (
-      typeof e === 'object' && e !== null && 'code' in e &&
+      typeof e === 'object' &&
+      e !== null &&
+      'code' in e &&
       (e as { code: string }).code === 'P2002'
     ) {
       return { error: 'A source with that URL already exists.' }
@@ -219,9 +218,7 @@ export interface ScrapeState {
  * then a single combined LLM extraction merges data from all pages.
  * Unlinked sources (program_id = null) are processed individually.
  */
-export async function runScrape(
-  _prev: ScrapeState | null,
-): Promise<ScrapeState> {
+export async function runScrape(_prev: ScrapeState | null): Promise<ScrapeState> {
   try {
     const sources = await prisma.importSource.findMany({
       where: { status: 'active' },

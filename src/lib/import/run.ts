@@ -1,7 +1,11 @@
 import type { ImportSource } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { fetchSource, type FetchResult } from './fetcher'
-import { extractProgram, extractProgramFromMultipleSources, type ExtractionResult } from './extractor'
+import {
+  extractProgram,
+  extractProgramFromMultipleSources,
+  type ExtractionResult,
+} from './extractor'
 import { createCandidate, type CreateCandidateResult } from './candidate'
 
 export interface RunSourceResult {
@@ -72,12 +76,25 @@ export async function runFetchForSource(
       })
 
       if (extraction.kind === 'error') {
-        return { import_run_id: run.id, source_id: source.id, result: 'extraction_error', fetch, extraction }
+        return {
+          import_run_id: run.id,
+          source_id: source.id,
+          result: 'extraction_error',
+          fetch,
+          extraction,
+        }
       }
 
       // Successful extraction → create candidate for human review
       const candidate = await createCandidate(extraction, source.id, run.id)
-      return { import_run_id: run.id, source_id: source.id, result: 'success', fetch, extraction, candidate }
+      return {
+        import_run_id: run.id,
+        source_id: source.id,
+        result: 'success',
+        fetch,
+        extraction,
+        candidate,
+      }
     }
 
     return { import_run_id: run.id, source_id: source.id, result: 'success', fetch }

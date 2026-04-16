@@ -16,9 +16,11 @@ export default async function AdminReportsPage({
   if (!(await isAdminAuthenticated())) redirect('/admin')
 
   const params = await searchParams
-  const statusFilter = typeof params.status === 'string' && STATUS_FILTERS.includes(params.status as typeof STATUS_FILTERS[number])
-    ? params.status
-    : 'pending'
+  const statusFilter =
+    typeof params.status === 'string' &&
+    STATUS_FILTERS.includes(params.status as (typeof STATUS_FILTERS)[number])
+      ? params.status
+      : 'pending'
 
   const where = statusFilter === 'all' ? {} : { status: statusFilter }
 
@@ -62,36 +64,31 @@ export default async function AdminReportsPage({
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-gray-900">
-          Reports
-        </h1>
+        <h1 className="text-2xl font-semibold text-gray-900">Reports</h1>
         <div className="flex items-center gap-4">
           <Link
             href="/admin/import"
             prefetch={false}
-            className="text-sm text-gray-600 hover:text-gray-900 underline"
+            className="text-sm text-gray-600 underline hover:text-gray-900"
           >
             Import
           </Link>
           <Link
             href="/admin/data"
             prefetch={false}
-            className="text-sm text-gray-600 hover:text-gray-900 underline"
+            className="text-sm text-gray-600 underline hover:text-gray-900"
           >
             Data
           </Link>
           <Link
             href="/"
             prefetch={false}
-            className="text-sm text-gray-600 hover:text-gray-900 underline"
+            className="text-sm text-gray-600 underline hover:text-gray-900"
           >
             Back to site
           </Link>
           <form action={adminLogout}>
-            <button
-              type="submit"
-              className="text-sm text-gray-600 hover:text-gray-900 underline"
-            >
+            <button type="submit" className="text-sm text-gray-600 underline hover:text-gray-900">
               Log out
             </button>
           </form>
@@ -109,9 +106,7 @@ export default async function AdminReportsPage({
               href={`/admin/reports?status=${s}`}
               prefetch={false}
               className={`rounded-md px-3 py-1.5 text-sm font-medium ${
-                isActive
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                isActive ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               {s.charAt(0).toUpperCase() + s.slice(1)}

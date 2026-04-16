@@ -705,7 +705,8 @@ const PROGRAMS: ProgramSeed[] = [
         location_id: LOC_RAVINIA,
         time_slot: new Date('2025-12-08T10:00:00Z'),
         audition_fee: 0,
-        instructions: 'Live audition required. Two contrasting chamber music excerpts plus solo work.',
+        instructions:
+          'Live audition required. Two contrasting chamber music excerpts plus solo work.',
         registration_url: 'https://www.ravinia.org/programs/steans/applications',
         instrument_names: ['Piano', 'Violin'],
       },
@@ -1122,53 +1123,161 @@ async function main() {
   // information from several pages into one complete extraction.
   const importSources = [
     // --- Salzburg YSP ---
-    { name: 'Salzburg YSP — Main', url: 'https://www.salzburgerfestspiele.at/en/young-singers-project', program_id: '10000000-0000-0000-0000-000000000001' },
-    { name: 'Salzburg YSP — Talent Development', url: 'https://www.salzburgerfestspiele.at/en/talent-development', program_id: '10000000-0000-0000-0000-000000000001' },
+    {
+      name: 'Salzburg YSP — Main',
+      url: 'https://www.salzburgerfestspiele.at/en/young-singers-project',
+      program_id: '10000000-0000-0000-0000-000000000001',
+    },
+    {
+      name: 'Salzburg YSP — Talent Development',
+      url: 'https://www.salzburgerfestspiele.at/en/talent-development',
+      program_id: '10000000-0000-0000-0000-000000000001',
+    },
 
     // --- Aspen ---
-    { name: 'Aspen — Programs of Study', url: 'https://www.aspenmusicfestival.com/students-welcome/admissions/programs-of-study/', program_id: '10000000-0000-0000-0000-000000000002' },
-    { name: 'Aspen — Fees & Deadlines', url: 'https://www.aspenmusicfestival.com/students-welcome/admissions/application-fees-and-deadlines', program_id: '10000000-0000-0000-0000-000000000002' },
-    { name: 'Aspen — Costs & Payment', url: 'https://www.aspenmusicfestival.com/students-welcome/admissions/costs-payment-and-refund-policy', program_id: '10000000-0000-0000-0000-000000000002' },
-    { name: 'Aspen — Fellowships', url: 'https://www.aspenmusicfestival.com/students-welcome/admissions/fellowships-and-financial-assistance', program_id: '10000000-0000-0000-0000-000000000002' },
+    {
+      name: 'Aspen — Programs of Study',
+      url: 'https://www.aspenmusicfestival.com/students-welcome/admissions/programs-of-study/',
+      program_id: '10000000-0000-0000-0000-000000000002',
+    },
+    {
+      name: 'Aspen — Fees & Deadlines',
+      url: 'https://www.aspenmusicfestival.com/students-welcome/admissions/application-fees-and-deadlines',
+      program_id: '10000000-0000-0000-0000-000000000002',
+    },
+    {
+      name: 'Aspen — Costs & Payment',
+      url: 'https://www.aspenmusicfestival.com/students-welcome/admissions/costs-payment-and-refund-policy',
+      program_id: '10000000-0000-0000-0000-000000000002',
+    },
+    {
+      name: 'Aspen — Fellowships',
+      url: 'https://www.aspenmusicfestival.com/students-welcome/admissions/fellowships-and-financial-assistance',
+      program_id: '10000000-0000-0000-0000-000000000002',
+    },
 
     // --- TMC ---
-    { name: 'TMC — Main', url: 'https://www.bso.org/tmc', program_id: '10000000-0000-0000-0000-000000000003' },
-    { name: 'TMC — Fees & Requirements', url: 'https://www.bso.org/tmc/program-fees-and-requirements', program_id: '10000000-0000-0000-0000-000000000003' },
-    { name: 'TMC — Fellowships', url: 'https://www.bso.org/tmc/fellowship-programs', program_id: '10000000-0000-0000-0000-000000000003' },
+    {
+      name: 'TMC — Main',
+      url: 'https://www.bso.org/tmc',
+      program_id: '10000000-0000-0000-0000-000000000003',
+    },
+    {
+      name: 'TMC — Fees & Requirements',
+      url: 'https://www.bso.org/tmc/program-fees-and-requirements',
+      program_id: '10000000-0000-0000-0000-000000000003',
+    },
+    {
+      name: 'TMC — Fellowships',
+      url: 'https://www.bso.org/tmc/fellowship-programs',
+      program_id: '10000000-0000-0000-0000-000000000003',
+    },
 
     // --- Santa Fe Opera ---
-    { name: 'Santa Fe Opera — Singers', url: 'https://www.santafeopera.org/company/singers/', program_id: '10000000-0000-0000-0000-000000000004' },
-    { name: 'Santa Fe Opera — Application Info', url: 'https://www.santafeopera.org/company/singers/singers-application-info/', program_id: '10000000-0000-0000-0000-000000000004' },
+    {
+      name: 'Santa Fe Opera — Singers',
+      url: 'https://www.santafeopera.org/company/singers/',
+      program_id: '10000000-0000-0000-0000-000000000004',
+    },
+    {
+      name: 'Santa Fe Opera — Application Info',
+      url: 'https://www.santafeopera.org/company/singers/singers-application-info/',
+      program_id: '10000000-0000-0000-0000-000000000004',
+    },
 
     // --- Glyndebourne ---
-    { name: 'Glyndebourne — Jerwood Young Artists', url: 'https://www.glyndebourne.com/about-us/talent-development/jerwood-young-artists/', program_id: '10000000-0000-0000-0000-000000000005' },
+    {
+      name: 'Glyndebourne — Jerwood Young Artists',
+      url: 'https://www.glyndebourne.com/about-us/talent-development/jerwood-young-artists/',
+      program_id: '10000000-0000-0000-0000-000000000005',
+    },
 
     // --- Aix ---
-    { name: 'Aix — Académie', url: 'https://festival-aix.com/academie', program_id: '10000000-0000-0000-0000-000000000006' },
-    { name: 'Aix — 2026 Voice Residency', url: 'https://festival-aix.com/en/formations/2026-voice-residency', program_id: '10000000-0000-0000-0000-000000000006' },
+    {
+      name: 'Aix — Académie',
+      url: 'https://festival-aix.com/academie',
+      program_id: '10000000-0000-0000-0000-000000000006',
+    },
+    {
+      name: 'Aix — 2026 Voice Residency',
+      url: 'https://festival-aix.com/en/formations/2026-voice-residency',
+      program_id: '10000000-0000-0000-0000-000000000006',
+    },
 
     // --- Banff ---
-    { name: 'Banff — Music Programs', url: 'https://www.banffcentre.ca/music', program_id: '10000000-0000-0000-0000-000000000008' },
-    { name: 'Banff — Chamber Music 2026', url: 'https://www.banffcentre.ca/programs/music/chamber-music-2026', program_id: '10000000-0000-0000-0000-000000000008' },
+    {
+      name: 'Banff — Music Programs',
+      url: 'https://www.banffcentre.ca/music',
+      program_id: '10000000-0000-0000-0000-000000000008',
+    },
+    {
+      name: 'Banff — Chamber Music 2026',
+      url: 'https://www.banffcentre.ca/programs/music/chamber-music-2026',
+      program_id: '10000000-0000-0000-0000-000000000008',
+    },
 
     // --- Ravinia ---
-    { name: 'Ravinia — Steans Institute', url: 'https://www.ravinia.org/programs/steans', program_id: '10000000-0000-0000-0000-000000000009' },
-    { name: 'Ravinia — Applications', url: 'https://www.ravinia.org/programs/steans/applications', program_id: '10000000-0000-0000-0000-000000000009' },
+    {
+      name: 'Ravinia — Steans Institute',
+      url: 'https://www.ravinia.org/programs/steans',
+      program_id: '10000000-0000-0000-0000-000000000009',
+    },
+    {
+      name: 'Ravinia — Applications',
+      url: 'https://www.ravinia.org/programs/steans/applications',
+      program_id: '10000000-0000-0000-0000-000000000009',
+    },
 
     // --- Brevard ---
-    { name: 'Brevard — Institute', url: 'https://www.brevardmusic.org/institute/', program_id: '10000000-0000-0000-0000-000000000010' },
-    { name: 'Brevard — Opera', url: 'https://www.brevardmusic.org/institute/college/opera/', program_id: '10000000-0000-0000-0000-000000000010' },
+    {
+      name: 'Brevard — Institute',
+      url: 'https://www.brevardmusic.org/institute/',
+      program_id: '10000000-0000-0000-0000-000000000010',
+    },
+    {
+      name: 'Brevard — Opera',
+      url: 'https://www.brevardmusic.org/institute/college/opera/',
+      program_id: '10000000-0000-0000-0000-000000000010',
+    },
 
     // --- Merola ---
-    { name: 'Merola — Main', url: 'https://merola.org', program_id: '10000000-0000-0000-0000-000000000011' },
-    { name: 'Merola — Apply', url: 'https://merola.org/apply/', program_id: '10000000-0000-0000-0000-000000000011' },
-    { name: 'Merola — SF Opera', url: 'https://www.sfopera.com/training/merola/', program_id: '10000000-0000-0000-0000-000000000011' },
+    {
+      name: 'Merola — Main',
+      url: 'https://merola.org',
+      program_id: '10000000-0000-0000-0000-000000000011',
+    },
+    {
+      name: 'Merola — Apply',
+      url: 'https://merola.org/apply/',
+      program_id: '10000000-0000-0000-0000-000000000011',
+    },
+    {
+      name: 'Merola — SF Opera',
+      url: 'https://www.sfopera.com/training/merola/',
+      program_id: '10000000-0000-0000-0000-000000000011',
+    },
 
     // --- AIMS ---
-    { name: 'AIMS — Main', url: 'https://aimsgraz.com', program_id: '10000000-0000-0000-0000-000000000012' },
-    { name: 'AIMS — The Program', url: 'https://aimsgraz.com/the-program/', program_id: '10000000-0000-0000-0000-000000000012' },
-    { name: 'AIMS — Voice', url: 'https://aimsgraz.com/the-program/voice/', program_id: '10000000-0000-0000-0000-000000000012' },
-    { name: 'AIMS — Fund Your Experience', url: 'https://aimsgraz.com/the-program/fund-your-experience/', program_id: '10000000-0000-0000-0000-000000000012' },
+    {
+      name: 'AIMS — Main',
+      url: 'https://aimsgraz.com',
+      program_id: '10000000-0000-0000-0000-000000000012',
+    },
+    {
+      name: 'AIMS — The Program',
+      url: 'https://aimsgraz.com/the-program/',
+      program_id: '10000000-0000-0000-0000-000000000012',
+    },
+    {
+      name: 'AIMS — Voice',
+      url: 'https://aimsgraz.com/the-program/voice/',
+      program_id: '10000000-0000-0000-0000-000000000012',
+    },
+    {
+      name: 'AIMS — Fund Your Experience',
+      url: 'https://aimsgraz.com/the-program/fund-your-experience/',
+      program_id: '10000000-0000-0000-0000-000000000012',
+    },
   ]
 
   for (const source of importSources) {

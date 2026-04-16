@@ -30,9 +30,7 @@ export function CandidateEditor({
     <div className="mt-3 border-t border-gray-100 pt-3">
       <form action={action}>
         <input type="hidden" name="candidate_id" value={candidateId} />
-        <label className="block text-xs font-medium text-gray-600">
-          Extracted JSON
-        </label>
+        <label className="block text-xs font-medium text-gray-600">Extracted JSON</label>
         <textarea
           name="extracted_json"
           value={json}
@@ -41,12 +39,8 @@ export function CandidateEditor({
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-xs leading-relaxed"
           spellCheck={false}
         />
-        {state?.error && (
-          <p className="mt-1 text-xs text-red-600">{state.error}</p>
-        )}
-        {state?.message && (
-          <p className="mt-1 text-xs text-green-700">{state.message}</p>
-        )}
+        {state?.error && <p className="mt-1 text-xs text-red-600">{state.error}</p>}
+        {state?.message && <p className="mt-1 text-xs text-green-700">{state.message}</p>}
         <div className="mt-2 flex items-center gap-2">
           <button
             type="submit"

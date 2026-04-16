@@ -15,11 +15,9 @@ export function ScrapeButton() {
       >
         {pending ? 'Scraping...' : 'Run scrape'}
       </button>
-      {state?.error && (
-        <p className="mt-1 text-xs text-red-600">{state.error}</p>
-      )}
+      {state?.error && <p className="mt-1 text-xs text-red-600">{state.error}</p>}
       {state?.summary && (
-        <p className="mt-1 whitespace-pre-line text-xs text-gray-600">{state.summary}</p>
+        <p className="mt-1 text-xs whitespace-pre-line text-gray-600">{state.summary}</p>
       )}
     </form>
   )

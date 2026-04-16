@@ -1,12 +1,7 @@
 import { NextResponse } from 'next/server'
 import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
-import {
-  badRequest,
-  conflict,
-  internalError,
-  validationError,
-} from '@/lib/problem'
+import { badRequest, conflict, internalError, validationError } from '@/lib/problem'
 
 export async function GET() {
   try {
@@ -49,10 +44,7 @@ export async function POST(request: Request) {
       headers: { Location: `/api/instruments/${created.id}` },
     })
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError &&
-      e.code === 'P2002'
-    ) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
       return conflict(`Instrument with name '${trimmed}' already exists.`)
     }
     return internalError('Failed to create instrument')

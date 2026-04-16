@@ -74,15 +74,20 @@ export async function updateProgram(
     return Number.isNaN(d.getTime()) ? null : d
   }
   const csvList = (k: string) =>
-    (str(k) ?? '').split(',').map((s) => s.trim()).filter(Boolean)
+    (str(k) ?? '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
 
   try {
     const instrumentNames = csvList('instruments')
     const categoryNames = csvList('categories')
-    const locationEntries = csvList('locations').map((l) => {
-      const parts = l.split('/').map((s) => s.trim())
-      return { city: parts[0] || l, country: parts[1] || '', state: parts[2] || null }
-    }).filter((l) => l.city && l.country)
+    const locationEntries = csvList('locations')
+      .map((l) => {
+        const parts = l.split('/').map((s) => s.trim())
+        return { city: parts[0] || l, country: parts[1] || '', state: parts[2] || null }
+      })
+      .filter((l) => l.city && l.country)
 
     // Validate names against existing reference data (case-insensitive)
     const [allInstruments, allCategories] = await Promise.all([
@@ -93,27 +98,27 @@ export async function updateProgram(
     const instrumentIds: string[] = []
     const unknownInstruments: string[] = []
     for (const name of instrumentNames) {
-      const match = allInstruments.find(
-        (i) => i.name.toLowerCase() === name.toLowerCase(),
-      )
+      const match = allInstruments.find((i) => i.name.toLowerCase() === name.toLowerCase())
       if (match) instrumentIds.push(match.id)
       else unknownInstruments.push(name)
     }
     if (unknownInstruments.length > 0) {
-      return { error: `Unknown instruments: ${unknownInstruments.join(', ')}. Check spelling or add them first.` }
+      return {
+        error: `Unknown instruments: ${unknownInstruments.join(', ')}. Check spelling or add them first.`,
+      }
     }
 
     const categoryIds: string[] = []
     const unknownCategories: string[] = []
     for (const name of categoryNames) {
-      const match = allCategories.find(
-        (c) => c.name.toLowerCase() === name.toLowerCase(),
-      )
+      const match = allCategories.find((c) => c.name.toLowerCase() === name.toLowerCase())
       if (match) categoryIds.push(match.id)
       else unknownCategories.push(name)
     }
     if (unknownCategories.length > 0) {
-      return { error: `Unknown categories: ${unknownCategories.join(', ')}. Check spelling or add them first.` }
+      return {
+        error: `Unknown categories: ${unknownCategories.join(', ')}. Check spelling or add them first.`,
+      }
     }
 
     const locationIds: string[] = []
@@ -133,7 +138,9 @@ export async function updateProgram(
       }
     }
     if (unknownLocations.length > 0) {
-      return { error: `Unknown locations: ${unknownLocations.join(', ')}. Add them via the API first.` }
+      return {
+        error: `Unknown locations: ${unknownLocations.join(', ')}. Add them via the API first.`,
+      }
     }
 
     await prisma.$transaction(async (tx) => {
@@ -215,7 +222,10 @@ async function parseAuditionForm(formData: FormData) {
     return Number.isFinite(n) ? n : null
   }
   const csvList = (k: string) =>
-    (str(k) ?? '').split(',').map((s) => s.trim()).filter(Boolean)
+    (str(k) ?? '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
 
   const locationStr = str('location')
   if (!locationStr) return { error: 'Location is required (City/Country).' }

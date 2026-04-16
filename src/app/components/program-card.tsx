@@ -1,63 +1,63 @@
-import Link from "next/link";
-import type { Program } from "@/lib/types";
+import Link from 'next/link'
+import type { Program } from '@/lib/types'
 
 function formatTuition(n: number | null): string | null {
-  if (n === null) return null;
-  if (n === 0) return "Free";
-  return `$${n.toLocaleString("en-US")}`;
+  if (n === null) return null
+  if (n === 0) return 'Free'
+  return `$${n.toLocaleString('en-US')}`
 }
 
 function formatDate(iso: string | null): string | null {
-  if (!iso) return null;
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return null;
-  const month = d.toLocaleDateString("en-US", { month: "short" });
-  const day = d.getDate();
-  const year = `'${String(d.getFullYear()).slice(-2)}`;
-  return `${month} ${day}, ${year}`;
+  if (!iso) return null
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return null
+  const month = d.toLocaleDateString('en-US', { month: 'short' })
+  const day = d.getDate()
+  const year = `'${String(d.getFullYear()).slice(-2)}`
+  return `${month} ${day}, ${year}`
 }
 
 function formatAppFee(n: number | null): string | null {
-  if (n === null) return null;
-  if (n === 0) return "Free";
-  return `$${n.toLocaleString("en-US")}`;
+  if (n === null) return null
+  if (n === 0) return 'Free'
+  return `$${n.toLocaleString('en-US')}`
 }
 
 function AddLink({ href }: { href: string }) {
   return (
     <Link
       href={href}
-      className="group/add inline-flex items-center gap-0.5 text-tag-700 cursor-pointer transition-colors hover:text-brand-600"
+      className="group/add inline-flex cursor-pointer items-center gap-0.5 text-tag-700 transition-colors hover:text-brand-600"
     >
       <span>&mdash;</span>
-      <span className="max-w-0 overflow-hidden opacity-0 group-hover/add:max-w-[3ch] group-hover/add:opacity-100 transition-all duration-150 text-xs font-medium">
+      <span className="max-w-0 overflow-hidden text-xs font-medium opacity-0 transition-all duration-150 group-hover/add:max-w-[3ch] group-hover/add:opacity-100">
         Add
       </span>
     </Link>
-  );
+  )
 }
 
 export function ProgramCard({ program }: { program: Program }) {
   const locationText =
     program.locations.length > 0
-      ? program.locations.map((l) => `${l.city}, ${l.country}`).join(" / ")
-      : "Location TBD";
+      ? program.locations.map((l) => `${l.city}, ${l.country}`).join(' / ')
+      : 'Location TBD'
 
-  const shownInstruments = program.instruments.slice(0, 3);
-  const extraInstruments = program.instruments.length - shownInstruments.length;
+  const shownInstruments = program.instruments.slice(0, 3)
+  const extraInstruments = program.instruments.length - shownInstruments.length
 
-  const shownCategories = program.categories.slice(0, 3);
-  const extraCategories = program.categories.length - shownCategories.length;
+  const shownCategories = program.categories.slice(0, 3)
+  const extraCategories = program.categories.length - shownCategories.length
 
-  const hasRating = program.review_count > 0 && program.average_rating !== null;
-  const editHref = `/programs/${program.slug}/edit`;
+  const hasRating = program.review_count > 0 && program.average_rating !== null
+  const editHref = `/programs/${program.slug}/edit`
 
-  const tuitionText = formatTuition(program.tuition);
-  const appFeeText = formatAppFee(program.application_fee);
-  const deadlineText = formatDate(program.application_deadline);
+  const tuitionText = formatTuition(program.tuition)
+  const appFeeText = formatAppFee(program.application_fee)
+  const deadlineText = formatDate(program.application_deadline)
 
   return (
-    <article className="flex flex-col rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5 transition hover:shadow-md hover:-translate-y-0.5">
+    <article className="flex flex-col rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5 transition hover:-translate-y-0.5 hover:shadow-md">
       {shownCategories.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {shownCategories.map((c) => (
@@ -76,25 +76,18 @@ export function ProgramCard({ program }: { program: Program }) {
         </div>
       )}
 
-      <h2 className="text-base font-semibold text-slate-900 leading-snug mt-2">
-        <Link
-          href={`/programs/${program.slug}`}
-          className="hover:text-brand-600 transition-colors"
-        >
+      <h2 className="mt-2 text-base leading-snug font-semibold text-slate-900">
+        <Link href={`/programs/${program.slug}`} className="transition-colors hover:text-brand-600">
           {program.name}
         </Link>
       </h2>
 
-      <p className="text-sm text-slate-500 mt-1">
-        {program.locations.length > 0 ? (
-          locationText
-        ) : (
-          <AddLink href={editHref} />
-        )}
+      <p className="mt-1 text-sm text-slate-500">
+        {program.locations.length > 0 ? locationText : <AddLink href={editHref} />}
       </p>
 
       {shownInstruments.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-2">
+        <div className="mt-2 flex flex-wrap gap-1.5">
           {shownInstruments.map((i) => (
             <span
               key={i.id}
@@ -111,10 +104,10 @@ export function ProgramCard({ program }: { program: Program }) {
         </div>
       )}
 
-      <div className="sm:mb-4 mb-3" />
+      <div className="mb-3 sm:mb-4" />
 
       {/* Desktop: single row */}
-      <div className="hidden sm:flex items-center justify-between sm:mt-auto sm:pt-4 sm:border-t sm:border-slate-200">
+      <div className="hidden items-center justify-between sm:mt-auto sm:flex sm:border-t sm:border-slate-200 sm:pt-4">
         <div className="flex items-center gap-1.5 text-sm">
           <span className="inline-flex items-center gap-1 font-medium text-slate-900">
             <svg
@@ -135,7 +128,7 @@ export function ProgramCard({ program }: { program: Program }) {
             </span>
           )}
           <span className="mx-0.5 text-slate-300">|</span>
-          <span className="inline-flex items-center gap-1 text-slate-500 whitespace-nowrap">
+          <span className="inline-flex items-center gap-1 whitespace-nowrap text-slate-500">
             <svg
               viewBox="4 3 24 26"
               fill="currentColor"
@@ -158,13 +151,7 @@ export function ProgramCard({ program }: { program: Program }) {
               className="h-3.5 w-3.5 text-slate-400"
               aria-hidden="true"
             >
-              <circle
-                cx="8"
-                cy="8"
-                r="6.5"
-                stroke="currentColor"
-                strokeWidth="1.3"
-              />
+              <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.3" />
               <path
                 d="M8 4.5V8l2.5 1.5"
                 stroke="currentColor"
@@ -188,7 +175,7 @@ export function ProgramCard({ program }: { program: Program }) {
           ) : (
             <Link
               href="/reviews/new"
-              className="font-medium text-tag-700 hover:text-brand-600 transition-colors"
+              className="font-medium text-tag-700 transition-colors hover:text-brand-600"
             >
               + Review
             </Link>
@@ -197,7 +184,7 @@ export function ProgramCard({ program }: { program: Program }) {
       </div>
 
       {/* Mobile: two rows with rating centered on right */}
-      <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 sm:hidden text-sm mt-auto pt-2.5 border-t border-slate-200">
+      <div className="mt-auto grid grid-cols-[1fr_auto] items-center gap-x-3 border-t border-slate-200 pt-2.5 text-sm sm:hidden">
         <div className="flex items-center gap-1.5">
           <span className="inline-flex items-center gap-1 font-medium text-slate-900">
             <svg
@@ -230,14 +217,14 @@ export function ProgramCard({ program }: { program: Program }) {
           ) : (
             <Link
               href="/reviews/new"
-              className="font-medium text-tag-700 hover:text-brand-600 transition-colors"
+              className="font-medium text-tag-700 transition-colors hover:text-brand-600"
             >
               + Review
             </Link>
           )}
         </div>
-        <div className="flex items-center gap-1.5 mt-1">
-          <span className="inline-flex items-center gap-1 text-slate-500 whitespace-nowrap">
+        <div className="mt-1 flex items-center gap-1.5">
+          <span className="inline-flex items-center gap-1 whitespace-nowrap text-slate-500">
             <svg
               viewBox="4 3 24 26"
               fill="currentColor"
@@ -260,13 +247,7 @@ export function ProgramCard({ program }: { program: Program }) {
               className="h-3.5 w-3.5 text-slate-400"
               aria-hidden="true"
             >
-              <circle
-                cx="8"
-                cy="8"
-                r="6.5"
-                stroke="currentColor"
-                strokeWidth="1.3"
-              />
+              <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.3" />
               <path
                 d="M8 4.5V8l2.5 1.5"
                 stroke="currentColor"
@@ -280,5 +261,5 @@ export function ProgramCard({ program }: { program: Program }) {
         </div>
       </div>
     </article>
-  );
+  )
 }

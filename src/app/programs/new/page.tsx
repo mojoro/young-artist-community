@@ -29,18 +29,26 @@ export default async function NewProgramPage() {
         href="/programs"
         className="inline-flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-700"
       >
-        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+        <svg
+          className="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+          />
         </svg>
         Back to programs
       </Link>
 
-      <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">
-        Submit a Program
-      </h1>
+      <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">Submit a Program</h1>
       <p className="mt-2 text-base text-slate-500">
-        Know a young artist program that should be listed? Fill out the details below
-        and it will be added to the directory.
+        Know a young artist program that should be listed? Fill out the details below and it will be
+        added to the directory.
       </p>
 
       <div className="mt-8 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5">

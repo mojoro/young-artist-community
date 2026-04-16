@@ -16,10 +16,7 @@ export default async function AdminLoginPage({
       <h1 className="text-xl font-semibold text-gray-900">Admin login</h1>
       <form action={adminLogin} className="mt-6 space-y-4">
         <div>
-          <label
-            htmlFor="token"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="token" className="block text-sm font-medium text-gray-700">
             Admin token
           </label>
           <input
@@ -31,9 +28,7 @@ export default async function AdminLoginPage({
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
           />
         </div>
-        {hasError && (
-          <p className="text-sm text-red-600">Invalid token.</p>
-        )}
+        {hasError && <p className="text-sm text-red-600">Invalid token.</p>}
         <button
           type="submit"
           className="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"

@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* ==========================================================================
    PALETTE — swap the active block to change entire site color scheme.
@@ -112,11 +112,11 @@
   a,
   button,
   select,
-  [role="button"],
-  [type="submit"],
-  [type="reset"],
-  input[type="checkbox"],
-  input[type="radio"],
+  [role='button'],
+  [type='submit'],
+  [type='reset'],
+  input[type='checkbox'],
+  input[type='radio'],
   summary {
     cursor: pointer;
   }
@@ -127,15 +127,15 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   /* Aix-en-Provence (terracotta + saffron + lavender + olive) — active */
-  --color-brand-50:  #fef3ed;
+  --color-brand-50: #fef3ed;
   --color-brand-500: #b85c3a;
   --color-brand-600: #a0522d;
   --color-brand-700: #853f1e;
   --color-brand-900: #2a1610;
   --color-accent-500: #e5a100;
-  --color-tag-50:    #f3f0f8;
-  --color-tag-700:   #7056a0;
-  --color-success-50:  #f2f5ec;
+  --color-tag-50: #f3f0f8;
+  --color-tag-700: #7056a0;
+  --color-success-50: #f2f5ec;
   --color-success-600: #6b8e23;
   --color-success-700: #5a7a1c;
 }

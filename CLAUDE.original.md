@@ -66,16 +66,19 @@ yactracker/
 The Prisma schema is in `prisma/schema.prisma`. It defines these models:
 
 **Core entities:**
+
 - `Program` — the central entity. Has scalar fields for dates, tuition, age range, scholarship, URLs.
 - `Review` — belongs to one Program (FK `program_id`). Has rating (int 1-5), year_attended, reviewer_name, title, body.
 - `Audition` — belongs to one Program (FK `program_id`) and one Location (FK `location_id`). Has time_slot, fee, instructions, registration URL.
 
 **Reference data:**
+
 - `Instrument` — unique name. Used in filter dropdowns.
 - `Category` — unique name. Used in filter dropdowns.
 - `Location` — city, country, state, address.
 
 **Join tables (all have @@unique on the FK pair):**
+
 - `ProgramInstrument` — Program ↔ Instrument (M:N)
 - `ProgramCategory` — Program ↔ Category (M:N)
 - `ProgramLocation` — Program ↔ Location (M:N)
@@ -134,6 +137,7 @@ Create `prisma/seed.ts` that populates:
 **Auditions** — 2-3 auditions per program in different locations.
 
 Configure the seed script in `package.json`:
+
 ```json
 {
   "prisma": {
@@ -147,18 +151,21 @@ Configure the seed script in `package.json`:
 Three pages, all server-rendered where possible:
 
 ### 1. Landing page (`/`)
+
 - Hero section with tagline: "Find and review young artist programs in classical music and opera"
 - Search bar that navigates to `/programs?q=<query>`
 - Featured programs section (e.g. nearest deadlines or highest rated)
 - Quick filter chips for common categories
 
 ### 2. Program directory (`/programs`)
+
 - Filter sidebar or top bar with dropdowns for: instrument, category, country, scholarship, tuition range
 - Program cards in a grid showing: name, location(s), category badges, tuition, deadline, average rating, review count
 - Pagination controls
 - Sort dropdown (deadline, rating, tuition, name)
 
 ### 3. Program detail (`/programs/[program_id]`)
+
 - Full program info: description, dates, tuition, age range, scholarship, links
 - Instrument and category tags
 - Locations list

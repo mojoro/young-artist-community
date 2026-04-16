@@ -4,11 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { sortInstruments } from '@/lib/types'
 import { AuditionForm } from './audition-form'
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const program = await prisma.program.findUnique({
     where: { slug },
@@ -21,11 +17,7 @@ export async function generateMetadata({
   }
 }
 
-export default async function NewAuditionPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
+export default async function NewAuditionPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
   const program = await prisma.program.findUnique({
@@ -53,17 +45,26 @@ export default async function NewAuditionPage({
         href={`/programs/${program.slug}`}
         className="inline-flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-700"
       >
-        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+        <svg
+          className="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+          />
         </svg>
         Back to {program.name}
       </Link>
 
-      <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">
-        Add Audition
-      </h1>
+      <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">Add Audition</h1>
       <p className="mt-2 text-base text-slate-500">
-        Submit an audition location for <span className="font-medium text-slate-700">{program.name}</span>.
+        Submit an audition location for{' '}
+        <span className="font-medium text-slate-700">{program.name}</span>.
       </p>
 
       <div className="mt-8 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5">

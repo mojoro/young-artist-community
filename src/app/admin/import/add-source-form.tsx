@@ -3,22 +3,18 @@
 import { useActionState } from 'react'
 import { addSource } from './actions'
 
-export function AddSourceForm({
-  programs,
-}: {
-  programs: Array<{ id: string; name: string }>
-}) {
+export function AddSourceForm({ programs }: { programs: Array<{ id: string; name: string }> }) {
   const [state, action, pending] = useActionState(addSource, null)
 
   return (
     <form action={action} className="mt-6 rounded-lg border border-gray-200 bg-white p-4">
       <h3 className="text-sm font-medium text-gray-900">Add source</h3>
-      {state?.error && (
-        <p className="mt-2 text-sm text-red-600">{state.error}</p>
-      )}
+      {state?.error && <p className="mt-2 text-sm text-red-600">{state.error}</p>}
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div>
-          <label htmlFor="source_name" className="block text-xs text-gray-600">Name</label>
+          <label htmlFor="source_name" className="block text-xs text-gray-600">
+            Name
+          </label>
           <input
             id="source_name"
             name="name"
@@ -29,7 +25,9 @@ export function AddSourceForm({
           />
         </div>
         <div>
-          <label htmlFor="source_url" className="block text-xs text-gray-600">URL</label>
+          <label htmlFor="source_url" className="block text-xs text-gray-600">
+            URL
+          </label>
           <input
             id="source_url"
             name="url"
@@ -51,7 +49,9 @@ export function AddSourceForm({
           >
             <option value="">None (new program)</option>
             {programs.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
             ))}
           </select>
         </div>

@@ -28,7 +28,9 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={`aud_${name}`} className="block text-xs text-gray-600">{label}</label>
+      <label htmlFor={`aud_${name}`} className="block text-xs text-gray-600">
+        {label}
+      </label>
       <input
         id={`aud_${name}`}
         name={name}
@@ -76,9 +78,7 @@ export function AuditionForm({
             defaultValue={audition?.location ?? ''}
             placeholder="New York/US"
           />
-          <p className="mt-0.5 text-xs text-gray-400 truncate">
-            {validLocations.join(', ')}
-          </p>
+          <p className="mt-0.5 truncate text-xs text-gray-400">{validLocations.join(', ')}</p>
         </div>
         <Field
           label="Date/time"
@@ -100,12 +100,12 @@ export function AuditionForm({
             defaultValue={audition?.instruments ?? ''}
             placeholder="Voice, Piano"
           />
-          <p className="mt-0.5 text-xs text-gray-400 truncate">
-            {validInstruments.join(', ')}
-          </p>
+          <p className="mt-0.5 truncate text-xs text-gray-400">{validInstruments.join(', ')}</p>
         </div>
         <div className="sm:col-span-2 lg:col-span-3">
-          <label htmlFor="aud_instructions" className="block text-xs text-gray-600">Instructions</label>
+          <label htmlFor="aud_instructions" className="block text-xs text-gray-600">
+            Instructions
+          </label>
           <textarea
             id="aud_instructions"
             name="instructions"
