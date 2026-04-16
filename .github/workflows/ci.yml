@@ -67,6 +67,7 @@ jobs:
         env:
           BASE_URL: ${{ steps.vercel.outputs.url }}
           ADMIN_TOKEN: ${{ secrets.TEST_ADMIN_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - uses: actions/upload-artifact@v4
         if: always()
