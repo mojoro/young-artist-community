@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
+import { FeedbackModal } from './feedback-modal'
 
 export function MobileHeader() {
   const [open, setOpen] = useState(false)
@@ -93,6 +94,9 @@ export function MobileHeader() {
             >
               Submit a Program
             </Link>
+            <div className="[&_.feedback-trigger]:rounded-lg [&_.feedback-trigger]:px-3 [&_.feedback-trigger]:py-2 [&_.feedback-trigger]:text-sm [&_.feedback-trigger]:font-medium [&_.feedback-trigger]:text-slate-600 [&_.feedback-trigger]:transition-colors hover:[&_.feedback-trigger]:bg-slate-100 hover:[&_.feedback-trigger]:text-slate-900">
+              <FeedbackModal />
+            </div>
           </nav>
 
           {/* Mobile hamburger — animated bars to X */}
@@ -151,6 +155,9 @@ export function MobileHeader() {
           >
             Submit a Program
           </Link>
+          <div className="[&_.feedback-trigger]:block [&_.feedback-trigger]:w-full [&_.feedback-trigger]:rounded-lg [&_.feedback-trigger]:px-3 [&_.feedback-trigger]:py-2.5 [&_.feedback-trigger]:text-left [&_.feedback-trigger]:text-sm [&_.feedback-trigger]:font-medium [&_.feedback-trigger]:text-slate-600 [&_.feedback-trigger]:transition-colors hover:[&_.feedback-trigger]:bg-slate-100 hover:[&_.feedback-trigger]:text-slate-900">
+            <FeedbackModal />
+          </div>
         </nav>
       </div>
     </header>
