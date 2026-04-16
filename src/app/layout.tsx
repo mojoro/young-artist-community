@@ -123,7 +123,7 @@ export default function RootLayout({
                 <div>
                   <p className="text-sm font-medium text-slate-300">Interested in this platform?</p>
                   <p className="mt-0.5 text-xs text-slate-300">
-                    Sign up for the mailing list (no spam ever, promise) to let us know there's
+                    Sign up for the mailing list (no spam ever, promise) to let us know there&apos;s
                     demand.
                   </p>
                 </div>
@@ -137,8 +137,8 @@ export default function RootLayout({
                 <div>
                   <p className="text-sm font-medium text-slate-300">Built by John Moorman</p>
                   <p className="mt-1.5 max-w-sm text-xs leading-relaxed text-slate-300">
-                    If anything about this project interests you or you'd like to help out, please
-                    reach out.
+                    If anything about this project interests you or you&apos;d like to help out,
+                    please reach out.
                   </p>
                   <div className="mt-3 flex items-center gap-4 text-sm text-slate-300">
                     <a

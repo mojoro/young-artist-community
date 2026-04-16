@@ -2,18 +2,13 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 
 export function MobileHeader() {
   const [open, setOpen] = useState(false)
-  const pathname = usePathname()
   const headerRef = useRef<HTMLElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
 
-  // Close menu on navigation
-  useEffect(() => {
-    setOpen(false)
-  }, [pathname])
+  const closeMenu = useCallback(() => setOpen(false), [])
 
   // Close on click outside
   const handleClickOutside = useCallback((e: MouseEvent) => {
@@ -130,24 +125,28 @@ export function MobileHeader() {
         <nav className="border-t border-slate-100 bg-white px-4 pt-2 pb-4">
           <Link
             href="/"
+            onClick={closeMenu}
             className="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
           >
             Home
           </Link>
           <Link
             href="/about"
+            onClick={closeMenu}
             className="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
           >
             About
           </Link>
           <Link
             href="/programs"
+            onClick={closeMenu}
             className="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
           >
             Programs
           </Link>
           <Link
             href="/programs/new"
+            onClick={closeMenu}
             className="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
           >
             Submit a Program

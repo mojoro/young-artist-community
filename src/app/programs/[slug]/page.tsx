@@ -61,20 +61,11 @@ function EditLink({ href }: { href: string }) {
   )
 }
 
-function renderStars(rating: number): string {
-  const r = Math.max(0, Math.min(5, Math.round(rating)))
-  return '★'.repeat(r) + '☆'.repeat(5 - r)
-}
-
 const PROGRAM_INCLUDE = {
   program_instruments: { include: { instrument: true } },
   program_categories: { include: { category: true } },
   program_locations: { include: { location: true } },
 } as const
-
-type ProgramWithRelations = Prisma.ProgramGetPayload<{
-  include: typeof PROGRAM_INCLUDE
-}>
 
 type AuditionWithRelations = Prisma.AuditionGetPayload<{
   include: {
