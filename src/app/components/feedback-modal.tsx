@@ -34,7 +34,7 @@ export function FeedbackModal() {
 
       <dialog
         ref={dialogRef}
-        className="w-full max-w-md rounded-xl bg-white p-0 shadow-xl backdrop:bg-black/40"
+        className="m-auto w-full max-w-md rounded-xl bg-white p-0 shadow-xl backdrop:bg-black/40"
         onClick={(e) => {
           if (e.target === dialogRef.current) dialogRef.current.close()
         }}
