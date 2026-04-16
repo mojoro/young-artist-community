@@ -2,13 +2,13 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { isAdminAuthenticated, adminLogout } from '../actions'
-import { ReportCard } from './report-card'
+import { FeedbackCard } from './feedback-card'
 
 type SearchParams = { [key: string]: string | string[] | undefined }
 
-const STATUS_FILTERS = ['all', 'pending', 'reviewed', 'resolved', 'dismissed'] as const
+const STATUS_FILTERS = ['all', 'pending', 'read', 'resolved'] as const
 
-export default async function AdminReportsPage({
+export default async function AdminFeedbackPage({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>
@@ -24,17 +24,13 @@ export default async function AdminReportsPage({
 
   const where = statusFilter === 'all' ? {} : { status: statusFilter }
 
-  const [reports, counts] = await Promise.all([
-    prisma.report.findMany({
+  const [rows, counts] = await Promise.all([
+    prisma.feedback.findMany({
       where,
       orderBy: { created_at: 'desc' },
       take: 100,
-      include: {
-        program: { select: { id: true, name: true } },
-        review: { select: { id: true, body: true } },
-      },
     }),
-    prisma.report.groupBy({
+    prisma.feedback.groupBy({
       by: ['status'],
       _count: { status: true },
     }),
@@ -47,24 +43,19 @@ export default async function AdminReportsPage({
     total += row._count.status
   }
 
-  const formatted = reports.map((r) => ({
+  const formatted = rows.map((r) => ({
     id: r.id,
-    report_type: r.report_type,
-    description: r.description,
-    reporter_email: r.reporter_email,
+    message: r.message,
+    email: r.email,
     status: r.status,
     admin_notes: r.admin_notes,
     created_at: r.created_at.toISOString(),
-    program_name: r.program?.name ?? null,
-    program_id: r.program?.id ?? null,
-    review_id: r.review?.id ?? null,
-    review_snippet: r.review?.body ? r.review.body.slice(0, 120) : null,
   }))
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-gray-900">Reports</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">Feedback</h1>
         <div className="flex items-center gap-4">
           <Link
             href="/admin/import"
@@ -81,11 +72,11 @@ export default async function AdminReportsPage({
             Data
           </Link>
           <Link
-            href="/admin/feedback"
+            href="/admin/reports"
             prefetch={false}
             className="text-sm text-gray-600 underline hover:text-gray-900"
           >
-            Feedback
+            Reports
           </Link>
           <Link
             href="/"
@@ -110,7 +101,7 @@ export default async function AdminReportsPage({
           return (
             <Link
               key={s}
-              href={`/admin/reports?status=${s}`}
+              href={`/admin/feedback?status=${s}`}
               prefetch={false}
               className={`rounded-md px-3 py-1.5 text-sm font-medium ${
                 isActive ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -127,15 +118,15 @@ export default async function AdminReportsPage({
         })}
       </div>
 
-      {/* Report list */}
+      {/* Feedback list */}
       {formatted.length === 0 ? (
         <p className="mt-8 text-sm text-gray-500">
-          No {statusFilter === 'all' ? '' : statusFilter} reports.
+          No {statusFilter === 'all' ? '' : statusFilter} feedback.
         </p>
       ) : (
         <div className="mt-6 space-y-4">
-          {formatted.map((report) => (
-            <ReportCard key={report.id} report={report} />
+          {formatted.map((fb) => (
+            <FeedbackCard key={fb.id} feedback={fb} />
           ))}
         </div>
       )}

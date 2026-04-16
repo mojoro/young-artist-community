@@ -7,6 +7,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 import { SubscribeForm } from './subscribe/subscribe-form'
 import { MobileHeader } from './components/mobile-header'
+import { FeedbackModal } from './components/feedback-modal'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -129,6 +130,12 @@ export default function RootLayout({
                 </div>
                 <div className="w-full sm:w-80">
                   <SubscribeForm variant="dark" />
+                </div>
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-xs text-slate-300">
+                <span>Have an idea or suggestion?</span>
+                <div className="[&_.feedback-trigger]:font-medium [&_.feedback-trigger]:text-white [&_.feedback-trigger]:underline [&_.feedback-trigger]:transition-colors hover:[&_.feedback-trigger]:text-slate-200">
+                  <FeedbackModal />
                 </div>
               </div>
             </div>
