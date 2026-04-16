@@ -49,20 +49,29 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: |
-          # Poll for a successful Vercel deployment on this commit
+          # Poll for a successful Vercel deployment on this commit.
+          # Vercel registers a GitHub "deployment" object with an empty payload,
+          # then creates a deployment *status* with state=success once the build
+          # finishes.  The preview URL lives in the status's environment_url field.
           SHA="${{ github.event.pull_request.head.sha }}"
           for i in $(seq 1 150); do
-            URL=$(gh api "repos/${{ github.repository }}/deployments?sha=${SHA}&environment=Preview" \
-              --jq '.[0].payload.web_url // empty' 2>/dev/null || true)
-            if [ -n "$URL" ]; then
-              STATUS=$(curl -s -o /dev/null -w '%{http_code}' \
-                -H "x-vercel-protection-bypass: ${BYPASS_SECRET}" "$URL")
-              if [ "$STATUS" = "200" ]; then
-                echo "url=$URL" >> "$GITHUB_OUTPUT"
-                echo "Preview ready at $URL"
-                exit 0
+            DEPLOY_ID=$(gh api "repos/${{ github.repository }}/deployments?sha=${SHA}&environment=Preview" \
+              --jq '.[0].id // empty' 2>/dev/null || true)
+            if [ -n "$DEPLOY_ID" ]; then
+              URL=$(gh api "repos/${{ github.repository }}/deployments/${DEPLOY_ID}/statuses" \
+                --jq '[.[] | select(.state == "success")][0].environment_url // empty' 2>/dev/null || true)
+              if [ -n "$URL" ]; then
+                STATUS=$(curl -s -o /dev/null -w '%{http_code}' \
+                  -H "x-vercel-protection-bypass: ${BYPASS_SECRET}" "$URL")
+                if [ "$STATUS" = "200" ]; then
+                  echo "url=$URL" >> "$GITHUB_OUTPUT"
+                  echo "Preview ready at $URL"
+                  exit 0
+                fi
+                echo "Attempt $i: deployment $DEPLOY_ID ready but HTTP $STATUS"
+              else
+                echo "Attempt $i: deployment $DEPLOY_ID exists but no successful status yet"
               fi
-              echo "Attempt $i: deployment found but status $STATUS"
             else
               echo "Attempt $i: no deployment yet"
             fi
