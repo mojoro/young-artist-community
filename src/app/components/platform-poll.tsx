@@ -53,10 +53,10 @@ export function PlatformPoll({
     })
   }
 
-  const maxCount = Math.max(1, ...Object.values(state.counts))
+  const total = Object.values(state.counts).reduce((a, b) => a + b, 0)
 
   return (
-    <div>
+    <div className="px-4">
       <h3 className="text-sm font-medium text-slate-600">
         Where should the Young Artist Community live?
       </h3>
@@ -68,7 +68,7 @@ export function PlatformPoll({
         {PLATFORMS.map((platform) => {
           const voted = state.voted[platform]
           const count = state.counts[platform]
-          const pct = (count / maxCount) * 100
+          const pct = total > 0 ? (count / total) * 100 : 0
           return (
             <li key={platform}>
               <label className="flex cursor-pointer items-center gap-3 rounded-md px-1 py-1.5 transition-colors hover:bg-brand-600/5">
@@ -91,8 +91,8 @@ export function PlatformPoll({
                     style={{ width: `${pct}%` }}
                   />
                 </span>
-                <span className="w-8 shrink-0 text-right text-sm text-slate-600 tabular-nums">
-                  {count}
+                <span className="w-20 shrink-0 text-right text-sm text-slate-600 tabular-nums">
+                  {count} · {Math.round(pct)}%
                 </span>
               </label>
             </li>

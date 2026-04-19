@@ -14,17 +14,17 @@ test.describe('platform interest poll', () => {
     const row = page.locator('li', { has: page.getByRole('checkbox', { name: /Discord/i }) })
     const checkbox = row.getByRole('checkbox', { name: /Discord/i })
     const count = row.locator('span.tabular-nums')
-    const initial = Number(((await count.textContent()) ?? '0').trim())
+    const initial = Number(((await count.textContent()) ?? '0').match(/^(\d+)/)?.[1] ?? '0')
 
     await expect(checkbox).not.toBeChecked()
 
     await checkbox.click()
     await expect(checkbox).toBeChecked()
-    await expect(count).toHaveText(String(initial + 1))
+    await expect(count).toHaveText(new RegExp(`^${initial + 1}\\b`))
 
     await checkbox.click()
     await expect(checkbox).not.toBeChecked()
-    await expect(count).toHaveText(String(initial))
+    await expect(count).toHaveText(new RegExp(`^${initial}\\b`))
   })
 
   test('voted state persists across reload via cookie', async ({ page }) => {
