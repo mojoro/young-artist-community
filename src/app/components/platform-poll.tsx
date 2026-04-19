@@ -28,11 +28,9 @@ export function PlatformPoll({
     discord: false,
     reddit: false,
   }
-  // eslint-disable-next-line security/detect-object-injection
   for (const p of initialVoted) votedMap[p] = true
 
   const [isPending, startTransition] = useTransition()
-  /* eslint-disable security/detect-object-injection */
   const [state, applyOptimistic] = useOptimistic<PollState, Platform>(
     { counts: initialCounts, voted: votedMap },
     (prev, platform) => {
@@ -46,7 +44,6 @@ export function PlatformPoll({
       }
     },
   )
-  /* eslint-enable security/detect-object-injection */
 
   function handleClick(platform: Platform) {
     startTransition(async () => {
@@ -65,7 +62,6 @@ export function PlatformPoll({
         use — pick as many as you like.
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
-        {/* eslint-disable security/detect-object-injection */}
         {PLATFORMS.map((platform) => {
           const voted = state.voted[platform]
           const count = state.counts[platform]
@@ -90,7 +86,6 @@ export function PlatformPoll({
             </button>
           )
         })}
-        {/* eslint-enable security/detect-object-injection */}
       </div>
     </div>
   )
