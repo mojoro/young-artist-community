@@ -97,6 +97,7 @@ export default async function Home() {
     instagram: 0,
     discord: 0,
     reddit: 0,
+    other: 0,
   }
   for (const row of platformGroups) {
     if ((PLATFORMS as readonly string[]).includes(row.platform)) {

@@ -9,6 +9,7 @@ const LABELS: Record<Platform, string> = {
   instagram: 'Instagram',
   discord: 'Discord',
   reddit: 'Reddit',
+  other: 'Other',
 }
 
 type PollState = {
@@ -28,6 +29,7 @@ export function PlatformPoll({
     instagram: false,
     discord: false,
     reddit: false,
+    other: false,
   }
   for (const p of initialVoted) votedMap[p] = true
 
