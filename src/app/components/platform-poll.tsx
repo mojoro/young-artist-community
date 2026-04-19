@@ -92,7 +92,7 @@ export function PlatformPoll({
                   />
                 </span>
                 <span className="w-20 shrink-0 text-right text-sm text-slate-600 tabular-nums">
-                  {count} · {Math.round(pct)}%
+                  {Math.round(pct)}% ({count})
                 </span>
               </label>
             </li>
