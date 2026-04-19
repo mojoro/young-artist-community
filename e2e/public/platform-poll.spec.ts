@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 test.describe('platform interest poll', () => {
   test('checkboxes render inside the community CTA on the landing page', async ({ page }) => {
     await page.goto('/')
-    for (const label of ['Facebook', 'Instagram', 'Discord', 'Reddit']) {
+    for (const label of ['Facebook', 'Instagram', 'Discord', 'Reddit', 'Other']) {
       await expect(page.getByRole('checkbox', { name: new RegExp(label, 'i') })).toBeVisible()
     }
   })
