@@ -93,9 +93,8 @@ export function PlatformPoll({
                     style={{ width: `${pct}%` }}
                   />
                 </span>
-                <span className="-ml-1.5 w-20 shrink-0 text-right text-sm tabular-nums">
-                  <span className="text-slate-500">{Math.round(pct)}%</span>{' '}
-                  <span className="text-slate-400">({count})</span>
+                <span className="w-20 shrink-0 text-right text-sm text-slate-500 tabular-nums">
+                  {Math.round(pct)}% ({count})
                 </span>
               </label>
             </li>
