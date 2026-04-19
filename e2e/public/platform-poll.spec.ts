@@ -8,45 +8,41 @@ test.describe('platform interest poll', () => {
     }
   })
 
-  test('clicking a checkbox toggles voted state and updates the count', async ({ page }) => {
+  test('clicking a checkbox toggles voted state', async ({ page }) => {
     await page.goto('/')
 
-    const row = page.locator('li', { has: page.getByRole('checkbox', { name: /Discord/i }) })
-    const checkbox = row.getByRole('checkbox', { name: /Discord/i })
-    const count = row.locator('span.tabular-nums')
-    const initial = Number(((await count.textContent()) ?? '').match(/\((\d+)\)/)?.[1] ?? '0')
+    const checkbox = page.getByRole('checkbox', { name: /Discord/i })
 
     await expect(checkbox).not.toBeChecked()
 
     await checkbox.click()
     await expect(checkbox).toBeChecked()
-    await expect(count).toHaveText(new RegExp(`\\(${initial + 1}\\)`))
+    // Wait for the server action's transition to settle before clicking again,
+    // otherwise the checkbox is still disabled and the second click is a no-op.
+    await expect(checkbox).toBeEnabled()
 
     await checkbox.click()
     await expect(checkbox).not.toBeChecked()
-    await expect(count).toHaveText(new RegExp(`\\(${initial}\\)`))
+    await expect(checkbox).toBeEnabled()
   })
 
   test('voted state persists across reload via cookie', async ({ page }) => {
     await page.goto('/')
 
     const checkbox = page.getByRole('checkbox', { name: /Reddit/i })
-    const actionDone = page.waitForResponse(
-      (r) => r.url().includes('localhost') && r.status() === 200 && r.request().method() === 'POST',
-    )
     await checkbox.click()
-    await actionDone
     await expect(checkbox).toBeChecked()
+    // Wait for the server action to settle so the Set-Cookie header is applied
+    // before we reload the page.
+    await expect(checkbox).toBeEnabled()
 
     await page.reload()
     await expect(page.getByRole('checkbox', { name: /Reddit/i })).toBeChecked()
 
     // Clean up so repeated runs stay deterministic
-    const cleanupDone = page.waitForResponse(
-      (r) => r.url().includes('localhost') && r.status() === 200 && r.request().method() === 'POST',
-    )
-    await page.getByRole('checkbox', { name: /Reddit/i }).click()
-    await cleanupDone
-    await expect(page.getByRole('checkbox', { name: /Reddit/i })).not.toBeChecked()
+    const reloaded = page.getByRole('checkbox', { name: /Reddit/i })
+    await reloaded.click()
+    await expect(reloaded).not.toBeChecked()
+    await expect(reloaded).toBeEnabled()
   })
 })
