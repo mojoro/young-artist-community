@@ -64,7 +64,7 @@ export function PlatformPoll({
       </h3>
       <p className="mt-1 text-sm text-slate-500">
         We&apos;re thinking of starting a social space. Vote for any platforms you&apos;d actually
-        use — pick as many as you like.
+        use. Feel free to pick as many as you like.
       </p>
       <ul className="mt-4 flex flex-col gap-3">
         {PLATFORMS.map((platform) => {
