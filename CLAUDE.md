@@ -9,8 +9,8 @@ YACTracker — a Young Artist Community directory + review platform for Young Ar
 - Next.js 16 (App Router, Server Components, React Compiler enabled)
 - React 19
 - TypeScript (strict mode)
-- Prisma 7 ORM + Neon serverless adapter
-- Neon Postgres (connection string in `DATABASE_URL` env var)
+- Prisma 7 ORM + `@prisma/adapter-pg` (vanilla `pg` driver)
+- Supabase Postgres (provisioned via Vercel Marketplace integration)
 - Tailwind CSS v4
 - OpenRouter (Claude Haiku 4.5) for LLM extraction
 - Vitest (unit) + Playwright (e2e)
@@ -198,10 +198,13 @@ Flow: `ImportSource` → fetch HTML → hash diff → LLM extract (OpenRouter, C
 
 ## Environment variables
 
-- `DATABASE_URL` — Neon pooled connection string
+- `POSTGRES_PRISMA_URL` — Supabase pooled (pgbouncer 6543) — runtime connection
+- `POSTGRES_URL_NON_POOLING` — Supabase direct (5432) — `prisma db push` / migrations
 - `ADMIN_TOKEN` — shared secret for admin login
 - `OPENROUTER_API_KEY` — for LLM extraction
 - `CRON_SECRET` — Vercel cron auth (auto-sent as Bearer token)
+
+Vercel Marketplace Supabase integration also auto-wires `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, etc. — currently unused (we only consume the Postgres URL).
 
 ## Design system
 
