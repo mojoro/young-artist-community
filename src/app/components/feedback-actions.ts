@@ -1,6 +1,8 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { prisma } from '@/lib/prisma'
+import { rateLimitByIp } from '@/lib/rate-limit'
 
 export interface FeedbackFormState {
   message?: string
@@ -14,6 +16,15 @@ export async function submitFeedback(
   // Honeypot
   const honeypot = String(formData.get('url_confirm') ?? '').trim()
   if (honeypot) return { message: 'Thanks for your feedback!' }
+
+  const headerStore = await headers()
+  const limit = await rateLimitByIp(headerStore, 'submit-feedback', {
+    windowMs: 60_000,
+    max: 5,
+  })
+  if (!limit.allowed) {
+    return { error: 'Too many requests. Please try again in a moment.' }
+  }
 
   const message = String(formData.get('message') ?? '').trim()
   if (!message) return { error: 'Message is required.' }

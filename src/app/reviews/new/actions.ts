@@ -1,8 +1,10 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
+import { rateLimitByIp } from '@/lib/rate-limit'
 import { toSlug } from '@/lib/slug'
 
 export interface SubmitReviewState {
@@ -41,6 +43,15 @@ export async function submitReviewGeneric(
   // Honeypot
   const honeypot = (formData.get('url_confirm') as string)?.trim()
   if (honeypot) return { error: '' }
+
+  const headerStore = await headers()
+  const limit = await rateLimitByIp(headerStore, 'submit-review-generic', {
+    windowMs: 60_000,
+    max: 5,
+  })
+  if (!limit.allowed) {
+    return { error: 'Too many requests. Please try again in a moment.' }
+  }
 
   // Parse program selection
   const programSelection = parseProgramSelection(formData.get('program') as string)

@@ -2,14 +2,16 @@
 
 import { revalidatePath } from 'next/cache'
 import { cookies, headers } from 'next/headers'
-import { apiFetch } from '@/lib/api'
 import { extractIp, hashIp } from '@/lib/ip-hash'
 import { prisma } from '@/lib/prisma'
+import { rateLimitByIp } from '@/lib/rate-limit'
 
 export interface ReportFormState {
   message?: string
   error?: string
 }
+
+const TOO_MANY = 'Too many requests. Please slow down and try again in a moment.'
 
 export async function submitReport(
   _prev: ReportFormState | null,
@@ -18,6 +20,13 @@ export async function submitReport(
   // Honeypot
   const honeypot = String(formData.get('url_confirm') ?? '').trim()
   if (honeypot) return { message: 'Thanks for your report.' }
+
+  const headerStore = await headers()
+  const limit = await rateLimitByIp(headerStore, 'submit-report', {
+    windowMs: 60_000,
+    max: 5,
+  })
+  if (!limit.allowed) return { error: TOO_MANY }
 
   const program_id = String(formData.get('program_id') ?? '').trim()
   if (!program_id) return { error: 'Missing program.' }
@@ -56,9 +65,26 @@ export async function submitReview(formData: FormData): Promise<void> {
   const honeypot = String(formData.get('url_confirm') ?? '').trim()
   if (honeypot) return
 
+  const headerStore = await headers()
+  const limit = await rateLimitByIp(headerStore, 'submit-review', {
+    windowMs: 60_000,
+    max: 5,
+  })
+  if (!limit.allowed) {
+    throw new Error(TOO_MANY)
+  }
+
   const program_id = String(formData.get('program_id') ?? '')
   if (!program_id) {
     throw new Error('program_id is required')
+  }
+
+  const program = await prisma.program.findUnique({
+    where: { id: program_id },
+    select: { id: true, slug: true },
+  })
+  if (!program) {
+    throw new Error('Program not found')
   }
 
   const ratingRaw = formData.get('rating')
@@ -75,50 +101,51 @@ export async function submitReview(formData: FormData): Promise<void> {
     throw new Error('Review is too long (max 5000 characters)')
   }
 
-  const reviewer_name = String(formData.get('reviewer_name') ?? '').trim()
-  if (reviewer_name.length > 100) {
+  const reviewer_name = String(formData.get('reviewer_name') ?? '').trim() || null
+  if (reviewer_name && reviewer_name.length > 100) {
     throw new Error('Name is too long (max 100 characters)')
   }
 
-  const title = String(formData.get('title') ?? '').trim()
-  if (title.length > 200) {
+  const title = String(formData.get('title') ?? '').trim() || null
+  if (title && title.length > 200) {
     throw new Error('Title is too long (max 200 characters)')
   }
 
-  const payload: Record<string, unknown> = { rating, body }
-  if (reviewer_name) payload.reviewer_name = reviewer_name
-  if (title) payload.title = title
+  let year_attended: number | null = null
   const year_raw = formData.get('year_attended')
   if (year_raw !== null && year_raw !== '') {
     const year = Number(year_raw)
     if (Number.isInteger(year) && year >= 1950 && year <= 2100) {
-      payload.year_attended = year
+      year_attended = year
     }
   }
 
-  const res = await apiFetch(`/api/programs/${program_id}/reviews`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+  await prisma.review.create({
+    data: {
+      program_id,
+      rating,
+      body,
+      reviewer_name,
+      title,
+      year_attended,
+    },
   })
 
-  if (!res.ok) {
-    const text = await res.text()
-    throw new Error(`Failed to submit review: ${res.status} ${text}`)
-  }
-
-  // Look up slug for revalidation since routes use slugs
-  const prog = await prisma.program.findUnique({
-    where: { id: program_id },
-    select: { slug: true },
-  })
-  if (prog?.slug) revalidatePath(`/programs/${prog.slug}`)
+  if (program.slug) revalidatePath(`/programs/${program.slug}`)
 }
 
 export async function toggleHelpful(
   reviewId: string,
 ): Promise<{ helpful_count: number; liked: boolean }> {
   const headerStore = await headers()
+  const limit = await rateLimitByIp(headerStore, 'toggle-helpful', {
+    windowMs: 60_000,
+    max: 30,
+  })
+  if (!limit.allowed) {
+    throw new Error(TOO_MANY)
+  }
+
   const ip = extractIp(headerStore)
   const ip_hash = await hashIp(ip)
 

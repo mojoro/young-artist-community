@@ -1,8 +1,10 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
+import { rateLimitByIp } from '@/lib/rate-limit'
 import { toSlug } from '@/lib/slug'
 
 export interface EditProgramState {
@@ -37,6 +39,15 @@ export async function editProgram(
   _prev: EditProgramState | null,
   formData: FormData,
 ): Promise<EditProgramState> {
+  const headerStore = await headers()
+  const limit = await rateLimitByIp(headerStore, 'edit-program', {
+    windowMs: 60_000,
+    max: 5,
+  })
+  if (!limit.allowed) {
+    return { error: 'Too many requests. Please try again in a moment.' }
+  }
+
   const programId = formData.get('program_id') as string
   if (!programId) return { error: 'Missing program.' }
 

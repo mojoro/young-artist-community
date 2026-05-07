@@ -1,8 +1,10 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
+import { rateLimitByIp } from '@/lib/rate-limit'
 import { toSlug } from '@/lib/slug'
 
 export interface CreateProgramState {
@@ -57,6 +59,15 @@ export async function createProgram(
 
   // Honeypot
   if (str('url_confirm')) return { error: '' }
+
+  const headerStore = await headers()
+  const limit = await rateLimitByIp(headerStore, 'create-program', {
+    windowMs: 60_000,
+    max: 5,
+  })
+  if (!limit.allowed) {
+    return { error: 'Too many requests. Please try again in a moment.' }
+  }
 
   const name = str('name')
   if (!name) return { error: 'Program name is required.' }
