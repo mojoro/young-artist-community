@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/auth'
 import { badRequest, internalError, notFound, validationError } from '@/lib/problem'
 
 // Re-use the include shape and formatter from the collection route. Keeping a
@@ -114,6 +115,9 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ program_id: string }> },
 ): Promise<NextResponse> {
+  const denied = await requireAdmin()
+  if (denied) return denied
+
   const { program_id } = await params
 
   let raw: unknown

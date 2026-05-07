@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/auth'
 import { badRequest, internalError, validationError } from '@/lib/problem'
 import { buildMeta, parsePagination } from '@/lib/pagination'
 import { parseSort, toPrismaOrderBy } from '@/lib/sort'
@@ -218,6 +219,9 @@ export async function GET(request: Request): Promise<NextResponse> {
 // ---------------------------------------------------------------------------
 
 export async function POST(request: Request): Promise<NextResponse> {
+  const denied = await requireAdmin()
+  if (denied) return denied
+
   let raw: unknown
   try {
     raw = await request.json()
