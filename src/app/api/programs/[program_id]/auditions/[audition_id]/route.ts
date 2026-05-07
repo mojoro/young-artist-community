@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import type { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/auth'
 import { notFound, validationError, internalError } from '@/lib/problem'
 
 type RouteContext = {
@@ -170,6 +171,9 @@ async function validateAuditionInput(
 }
 
 export async function PUT(request: NextRequest, context: RouteContext): Promise<NextResponse> {
+  const denied = await requireAdmin()
+  if (denied) return denied
+
   try {
     const { program_id, audition_id } = await context.params
 

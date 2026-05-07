@@ -1,6 +1,8 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { prisma } from '@/lib/prisma'
+import { rateLimitByIp } from '@/lib/rate-limit'
 
 export interface SubscribeState {
   message?: string
@@ -14,6 +16,15 @@ export async function subscribe(
   // Honeypot
   const honeypot = (formData.get('url_confirm') as string)?.trim()
   if (honeypot) return { message: "Thanks for expressing interest! We'll be in touch." }
+
+  const headerStore = await headers()
+  const limit = await rateLimitByIp(headerStore, 'subscribe', {
+    windowMs: 60_000,
+    max: 5,
+  })
+  if (!limit.allowed) {
+    return { error: 'Too many requests. Please try again in a moment.' }
+  }
 
   const email = (formData.get('email') as string)?.trim().toLowerCase()
 

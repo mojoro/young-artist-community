@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server'
 import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/auth'
 import { badRequest, conflict, internalError, notFound, validationError } from '@/lib/problem'
 
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ instrument_id: string }> },
 ) {
+  const denied = await requireAdmin()
+  if (denied) return denied
+
   const { instrument_id } = await params
 
   let body: unknown

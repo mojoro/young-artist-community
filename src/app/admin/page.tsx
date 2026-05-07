@@ -10,6 +10,7 @@ export default async function AdminLoginPage({
 
   const params = await searchParams
   const hasError = params.error === 'invalid'
+  const throttled = params.error === 'throttled'
 
   return (
     <div className="mx-auto max-w-sm px-4 py-20">
@@ -29,6 +30,9 @@ export default async function AdminLoginPage({
           />
         </div>
         {hasError && <p className="text-sm text-red-600">Invalid token.</p>}
+        {throttled && (
+          <p className="text-sm text-red-600">Too many attempts. Try again in a few minutes.</p>
+        )}
         <button
           type="submit"
           className="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"

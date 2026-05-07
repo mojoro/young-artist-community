@@ -274,7 +274,7 @@ cp .env.example .env.local
 
 # Set up database
 npx prisma generate
-npx prisma db push
+npx prisma migrate deploy
 npx prisma db seed
 
 # Run dev server

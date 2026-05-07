@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/auth'
 import { notFound, validationError, internalError } from '@/lib/problem'
 import { parsePagination, buildMeta } from '@/lib/pagination'
 import { parseSort, toPrismaOrderBy } from '@/lib/sort'
@@ -87,6 +88,9 @@ interface ReviewInput {
 }
 
 export async function POST(request: NextRequest, context: RouteContext): Promise<NextResponse> {
+  const denied = await requireAdmin()
+  if (denied) return denied
+
   try {
     const { program_id } = await context.params
 

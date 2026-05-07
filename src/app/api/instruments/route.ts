@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/auth'
 import { badRequest, conflict, internalError, validationError } from '@/lib/problem'
 
 export async function GET() {
@@ -16,6 +17,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const denied = await requireAdmin()
+  if (denied) return denied
+
   let body: unknown
   try {
     body = await request.json()

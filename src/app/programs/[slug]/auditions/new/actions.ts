@@ -1,8 +1,10 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
+import { rateLimitByIp } from '@/lib/rate-limit'
 
 export interface CreateAuditionState {
   error?: string
@@ -40,6 +42,15 @@ export async function createAudition(
 
   // Honeypot
   if (str('url_confirm')) return { error: '' }
+
+  const headerStore = await headers()
+  const limit = await rateLimitByIp(headerStore, 'create-audition', {
+    windowMs: 60_000,
+    max: 5,
+  })
+  if (!limit.allowed) {
+    return { error: 'Too many requests. Please try again in a moment.' }
+  }
 
   const programId = formData.get('program_id') as string
   if (!programId) return { error: 'Missing program ID.' }

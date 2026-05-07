@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { cookies, headers } from 'next/headers'
 import { extractIp, hashIp } from '@/lib/ip-hash'
 import { prisma } from '@/lib/prisma'
+import { rateLimitByIp } from '@/lib/rate-limit'
 import { PLATFORMS, type Platform } from './platform-poll-constants'
 
 const COOKIE_NAME = 'platform_votes'
@@ -21,6 +22,14 @@ export async function togglePlatformVote(
   }
 
   const headerStore = await headers()
+  const limit = await rateLimitByIp(headerStore, 'platform-vote', {
+    windowMs: 60_000,
+    max: 30,
+  })
+  if (!limit.allowed) {
+    throw new Error('Too many requests. Please slow down.')
+  }
+
   const ip = extractIp(headerStore)
   const ip_hash = await hashIp(ip)
 

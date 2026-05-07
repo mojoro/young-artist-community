@@ -199,12 +199,32 @@ Flow: `ImportSource` → fetch HTML → hash diff → LLM extract (OpenRouter, C
 ## Environment variables
 
 - `POSTGRES_PRISMA_URL` — Supabase pooled (pgbouncer 6543) — runtime connection
-- `POSTGRES_URL_NON_POOLING` — Supabase direct (5432) — `prisma db push` / migrations
+- `POSTGRES_URL_NON_POOLING` — Supabase direct (5432) — used by `prisma migrate` (Production env only)
+- `DATABASE_URL` / `DATABASE_URL_UNPOOLED` — Neon (Preview + Development envs)
 - `ADMIN_TOKEN` — shared secret for admin login
 - `OPENROUTER_API_KEY` — for LLM extraction
 - `CRON_SECRET` — Vercel cron auth (auto-sent as Bearer token)
 
 Vercel Marketplace Supabase integration also auto-wires `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, etc. — currently unused (we only consume the Postgres URL).
+
+## Database environments + migrations
+
+**Two DBs, scoped per Vercel environment:**
+
+- **Production** → Supabase (`POSTGRES_*` env vars). Source of truth.
+- **Preview + Development** → Neon (`DATABASE_URL` / `DATABASE_URL_UNPOOLED`). Refreshed daily from a Supabase dump (PII scrubbed) by `.github/workflows/sync-prod-to-neon.yml`. Neon's Vercel integration creates a per-PR branch off main automatically.
+
+**Migration flow (Prisma 7 `migrate`, NOT `db push`):**
+
+1. Locally, edit `prisma/schema.prisma`, run `npm run db:migrate` (= `prisma migrate dev`). Generates `prisma/migrations/<ts>_<name>/migration.sql`. Applies to your Neon dev branch.
+2. Commit the migration SQL file alongside the schema change.
+3. PR opens → preview build runs `prisma migrate deploy` against the per-PR Neon branch.
+4. Merge → prod build runs `prisma migrate deploy` against Supabase.
+5. Next daily sync overwrites Neon main with Supabase state (which now includes the new migration row).
+
+**Never commit a schema change without a migration file.** `prisma db push` is removed from package scripts to prevent accidental destructive sync. If you must prototype without a migration, use `npx prisma db push` directly against your Neon dev branch only.
+
+**The sync script (`scripts/sync-prod-to-neon.sh`)** uses `pg_restore --clean` — dropping all tables in Neon before restoring. PII columns (`subscriber.email`, `feedback.email`, `report.reporter_email`) are anonymized post-restore.
 
 ## Design system
 
@@ -239,11 +259,12 @@ Five named palettes in `globals.css` (one active, rest commented). Active: **Aix
 | Script | What it runs |
 | --- | --- |
 | `npm run dev` | `next dev` |
-| `npm run build` | `prisma generate && prisma db push && next build` — schema is pushed to `DATABASE_URL` on every build (including Vercel) |
+| `npm run build` | `prisma generate && prisma migrate deploy && next build` — applies any pending migrations from `prisma/migrations/`. Non-destructive. Runs on Vercel for prod (Supabase) and previews (Neon). |
 | `npm run lint` | `eslint` |
 | `npm run format` / `format:check` | Prettier (incl. `prettier-plugin-tailwindcss`) |
 | `npm test` / `test:watch` / `test:coverage` | vitest (unit) |
-| `npm run db:push` / `db:seed` / `db:studio` | Prisma dev helpers |
+| `npm run db:migrate` | `prisma migrate dev` — create + apply a new migration locally (against Neon). Commit the generated SQL file. |
+| `npm run db:deploy` / `db:seed` / `db:studio` | Prisma helpers |
 | `npx playwright test` | Playwright e2e |
 
 Husky + lint-staged run `eslint --fix` and Prettier on staged files pre-commit (`prepare: husky`).
