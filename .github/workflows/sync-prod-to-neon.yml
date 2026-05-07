@@ -31,4 +31,7 @@ jobs:
         env:
           SUPABASE_PROD_URL: ${{ secrets.SUPABASE_PROD_URL }}
           NEON_DEV_URL: ${{ secrets.NEON_DEV_URL }}
-        run: bash scripts/sync-prod-to-neon.sh
+        run: |
+          export PATH="/usr/lib/postgresql/17/bin:$PATH"
+          pg_dump --version
+          bash scripts/sync-prod-to-neon.sh
