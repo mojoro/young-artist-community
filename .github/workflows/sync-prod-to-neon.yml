@@ -1,0 +1,28 @@
+name: Sync prod to Neon dev
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch: {}
+
+concurrency:
+  group: sync-prod-to-neon
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Postgres client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Run sync
+        env:
+          SUPABASE_PROD_URL: ${{ secrets.SUPABASE_PROD_URL }}
+          NEON_DEV_URL: ${{ secrets.NEON_DEV_URL }}
+        run: bash scripts/sync-prod-to-neon.sh
