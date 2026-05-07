@@ -7,9 +7,10 @@ set -euo pipefail
 DUMP=/tmp/yac-prod-dump.bin
 trap 'rm -f "$DUMP"' EXIT
 
-echo "==> Dump Supabase prod"
+echo "==> Dump Supabase prod (public schema only)"
 pg_dump \
   --format=custom \
+  --schema=public \
   --no-owner \
   --no-privileges \
   --no-comments \
