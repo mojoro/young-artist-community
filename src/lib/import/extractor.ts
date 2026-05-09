@@ -39,8 +39,14 @@ export const extractedProgramSchema = z.object({
   start_date: z.string().nullable().default(null),
   end_date: z.string().nullable().default(null),
   application_deadline: z.string().nullable().default(null),
+  currency: z.enum(['USD', 'EUR', 'GBP']).default('USD'),
   tuition: z.number().nullable().default(null),
   application_fee: z.number().nullable().default(null),
+  stipend: z.number().nullable().default(null),
+  stipend_frequency: z
+    .enum(['daily', 'weekly', 'monthly', 'annual', 'one_time'])
+    .nullable()
+    .default(null),
   age_min: z.number().int().nullable().default(null),
   age_max: z.number().int().nullable().default(null),
   offers_scholarship: z.boolean().default(false),
@@ -88,14 +94,15 @@ Given the HTML of a program's webpage, extract all available information into a 
 1. **name**: The official program name. Required.
 2. **description**: A concise summary of the program (1-3 sentences). Do not copy entire paragraphs of marketing text.
 3. **Dates**: Use ISO 8601 format (YYYY-MM-DD). If only a month/year is given, use the 1st of that month. If no year, assume the next occurrence.
-4. **Tuition & fees**: In USD. If listed in another currency, convert approximately and note the original in description. If "free" or "no tuition", use 0.
-5. **Age range**: Extract age_min and age_max if stated. Phrases like "18-30" → age_min: 18, age_max: 30. "18+" → age_min: 18, age_max: null.
-6. **instruments**: List instrument names as they map to standard orchestral/vocal categories: Voice, Violin, Viola, Cello, Double Bass, Flute, Oboe, Clarinet, Bassoon, French Horn, Trumpet, Trombone, Tuba, Piano, Harp, Percussion, Composition, Conducting. Use these canonical names when possible.
-7. **categories**: Classify the program into one or more of: Opera, Orchestral, Chamber Music, Art Song / Lieder, Musical Theatre, Baroque, Contemporary, Choral.
-8. **locations**: Extract city + country (+ US state if applicable) for where the program takes place.
-9. **auditions**: If audition information is on the page, extract each audition with its city, country, date/time, fee, and which instruments.
-10. **URLs**: Extract application_url and program_url if present. Use absolute URLs.
-11. **confidence**: Rate 0.0 to 1.0 how confident you are that the extraction is accurate and complete. Below 0.5 means the page likely isn't a YAP program page.
+4. **currency & amounts**: Extract \`currency\` as one of USD, EUR, or GBP based on the symbols/words used on the page (\`$\` or USD → USD; \`€\` or EUR → EUR; \`£\` or GBP → GBP). If unclear, default to USD. All monetary fields (tuition, application_fee, stipend, audition fees) must be in the same currency — extract amounts as they appear on the page, do NOT convert. If "free" or "no tuition", use 0.
+5. **Stipend / salary**: Some programs pay participants. If a payment amount is mentioned (e.g. "$500 per week", "stipend of €1000/month", "£60,000 annual salary"), extract both \`stipend\` (the amount in the program's currency) and \`stipend_frequency\` (one of: daily, weekly, monthly, annual, one_time). If no payment is mentioned, leave both null. Do not confuse stipends/salaries with tuition or fees. Always set both fields together — never one without the other.
+6. **Age range**: Extract age_min and age_max if stated. Phrases like "18-30" → age_min: 18, age_max: 30. "18+" → age_min: 18, age_max: null.
+7. **instruments**: List instrument names as they map to standard orchestral/vocal categories: Voice, Violin, Viola, Cello, Double Bass, Flute, Oboe, Clarinet, Bassoon, French Horn, Trumpet, Trombone, Tuba, Piano, Harp, Percussion, Composition, Conducting. Use these canonical names when possible.
+8. **categories**: Classify the program into one or more of: Opera, Orchestral, Chamber Music, Art Song / Lieder, Musical Theatre, Baroque, Contemporary, Choral.
+9. **locations**: Extract city + country (+ US state if applicable) for where the program takes place.
+10. **auditions**: If audition information is on the page, extract each audition with its city, country, date/time, fee, and which instruments.
+11. **URLs**: Extract application_url and program_url if present. Use absolute URLs.
+12. **confidence**: Rate 0.0 to 1.0 how confident you are that the extraction is accurate and complete. Below 0.5 means the page likely isn't a YAP program page.
 
 If the page clearly is not a young artist program (e.g. a 404 page, a generic homepage, an unrelated site), return:
 \`\`\`json

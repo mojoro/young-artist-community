@@ -40,8 +40,11 @@ export async function upsertProgramFromExtraction(
     application_deadline: extracted.application_deadline
       ? new Date(extracted.application_deadline)
       : null,
+    currency: extracted.currency,
     tuition: extracted.tuition,
     application_fee: extracted.application_fee,
+    stipend: extracted.stipend,
+    stipend_frequency: extracted.stipend_frequency,
     age_min: extracted.age_min,
     age_max: extracted.age_max,
     offers_scholarship: extracted.offers_scholarship,

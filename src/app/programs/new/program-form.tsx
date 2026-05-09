@@ -3,6 +3,7 @@
 import { useActionState } from 'react'
 import { createProgram, type CreateProgramState } from './actions'
 import { Combobox, LocationCombobox } from '@/app/components/combobox'
+import { SelectInput } from '@/app/components/select-input'
 
 interface Props {
   instruments: { id: string; name: string }[]
@@ -112,6 +113,28 @@ export function ProgramForm({ instruments, categories, locations }: Props) {
         </div>
       </div>
 
+      {/* Currency */}
+      <div className="mt-5">
+        <label
+          htmlFor="currency"
+          className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+        >
+          Currency
+        </label>
+        <SelectInput
+          id="currency"
+          name="currency"
+          defaultValue="USD"
+          wrapperClassName="sm:max-w-[12rem]"
+          className="rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none"
+          options={[
+            { value: 'USD', label: 'USD ($)' },
+            { value: 'EUR', label: 'EUR (€)' },
+            { value: 'GBP', label: 'GBP (£)' },
+          ]}
+        />
+      </div>
+
       {/* Financial */}
       <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
@@ -119,7 +142,7 @@ export function ProgramForm({ instruments, categories, locations }: Props) {
             htmlFor="tuition"
             className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
           >
-            Tuition (USD)
+            Tuition
           </label>
           <input
             id="tuition"
@@ -136,7 +159,7 @@ export function ProgramForm({ instruments, categories, locations }: Props) {
             htmlFor="application_fee"
             className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
           >
-            Application fee (USD)
+            Application fee
           </label>
           <input
             id="application_fee"
@@ -145,6 +168,42 @@ export function ProgramForm({ instruments, categories, locations }: Props) {
             min="0"
             step="1"
             className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
+          />
+        </div>
+      </div>
+
+      {/* Stipend / salary */}
+      <div className="mt-5">
+        <label
+          htmlFor="stipend"
+          className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+        >
+          Stipend / salary
+        </label>
+        <div className="grid grid-cols-[2fr_1fr] gap-3">
+          <input
+            id="stipend"
+            name="stipend"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Amount (leave blank if none)"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
+          />
+          <SelectInput
+            id="stipend_frequency"
+            name="stipend_frequency"
+            defaultValue=""
+            aria-label="Stipend frequency"
+            className="rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none"
+            options={[
+              { value: '', label: '— per period —' },
+              { value: 'daily', label: 'Per day' },
+              { value: 'weekly', label: 'Per week' },
+              { value: 'monthly', label: 'Per month' },
+              { value: 'annual', label: 'Per year' },
+              { value: 'one_time', label: 'One-time' },
+            ]}
           />
         </div>
       </div>

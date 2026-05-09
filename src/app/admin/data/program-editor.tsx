@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react'
 import { updateProgram } from './actions'
+import { SelectInput } from '@/app/components/select-input'
 
 interface ProgramData {
   id: string
@@ -10,8 +11,11 @@ interface ProgramData {
   start_date: string | null
   end_date: string | null
   application_deadline: string | null
+  currency: string
   tuition: number | null
   application_fee: number | null
+  stipend: number | null
+  stipend_frequency: string | null
   age_min: number | null
   age_max: number | null
   offers_scholarship: boolean
@@ -103,19 +107,62 @@ export function ProgramEditor({
           type="date"
           defaultValue={program.application_deadline ?? ''}
         />
+        <div>
+          <label htmlFor="prog_currency" className="block text-xs text-gray-600">
+            Currency
+          </label>
+          <SelectInput
+            id="prog_currency"
+            name="currency"
+            defaultValue={program.currency}
+            wrapperClassName="mt-1"
+            className="rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+            options={[
+              { value: 'USD', label: 'USD ($)' },
+              { value: 'EUR', label: 'EUR (€)' },
+              { value: 'GBP', label: 'GBP (£)' },
+            ]}
+          />
+        </div>
         <Field
-          label="Tuition (USD)"
+          label="Tuition"
           name="tuition"
           type="number"
           defaultValue={program.tuition?.toString() ?? ''}
           placeholder="0 = free"
         />
         <Field
-          label="Application fee (USD)"
+          label="Application fee"
           name="application_fee"
           type="number"
           defaultValue={program.application_fee?.toString() ?? ''}
         />
+        <Field
+          label="Stipend"
+          name="stipend"
+          type="number"
+          defaultValue={program.stipend?.toString() ?? ''}
+        />
+        <div>
+          <label htmlFor="prog_stipend_frequency" className="block text-xs text-gray-600">
+            Stipend frequency
+          </label>
+          <SelectInput
+            id="prog_stipend_frequency"
+            name="stipend_frequency"
+            defaultValue={program.stipend_frequency ?? ''}
+            wrapperClassName="mt-1"
+            className="rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+            options={[
+              { value: '', label: '— none —' },
+              { value: 'daily', label: 'Per day' },
+              { value: 'weekly', label: 'Per week' },
+              { value: 'monthly', label: 'Per month' },
+              { value: 'annual', label: 'Per year' },
+              { value: 'one_time', label: 'One-time' },
+            ]}
+          />
+        </div>
         <Field
           label="Age min"
           name="age_min"

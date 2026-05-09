@@ -3,22 +3,13 @@ import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
 import type { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
-import type { Audition, Review } from '@/lib/types'
+import type { Audition, Currency, Review, StipendFrequency } from '@/lib/types'
+import { isCurrency } from '@/lib/types'
+import { formatMoney } from '@/lib/money'
+import { formatStipendLong } from '@/lib/stipend'
 import { submitReview } from './actions'
 import { HelpfulButton } from './helpful-button'
 import { ReportButton } from './report-form'
-
-function formatTuition(n: number | null): string | null {
-  if (n === null) return null
-  if (n === 0) return 'Free'
-  return `$${n.toLocaleString('en-US')}`
-}
-
-function formatFee(n: number | null): string | null {
-  if (n === null) return null
-  if (n === 0) return 'Free'
-  return `$${n.toLocaleString('en-US')}`
-}
 
 function formatDate(iso: string | null, opts?: { time?: boolean }): string | null {
   if (!iso) return null
@@ -136,7 +127,7 @@ function KeyFact({ label, children }: { label: string; children: React.ReactNode
   )
 }
 
-function AuditionCard({ audition }: { audition: Audition }) {
+function AuditionCard({ audition, currency }: { audition: Audition; currency: Currency }) {
   return (
     <li className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -147,7 +138,9 @@ function AuditionCard({ audition }: { audition: Audition }) {
           {audition.time_slot ? formatDate(audition.time_slot, { time: true }) : '—'}
         </div>
       </div>
-      <div className="mt-1 text-sm text-slate-600">Fee: {formatFee(audition.audition_fee)}</div>
+      <div className="mt-1 text-sm text-slate-600">
+        Fee: {formatMoney(audition.audition_fee, currency) ?? '—'}
+      </div>
       {audition.instruments.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {audition.instruments.map((inst) => (
@@ -277,8 +270,11 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
     application_deadline: programRow.application_deadline
       ? programRow.application_deadline.toISOString()
       : null,
+    currency: isCurrency(programRow.currency) ? programRow.currency : ('USD' as Currency),
     tuition: programRow.tuition,
     application_fee: programRow.application_fee,
+    stipend: programRow.stipend,
+    stipend_frequency: programRow.stipend_frequency as StipendFrequency | null,
     age_min: programRow.age_min,
     age_max: programRow.age_max,
     offers_scholarship: programRow.offers_scholarship,
@@ -466,10 +462,19 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
             )}
           </KeyFact>
           <KeyFact label="Tuition">
-            {formatTuition(program.tuition) ?? <EditLink href={`/programs/${slug}/edit`} />}
+            {formatMoney(program.tuition, program.currency) ?? (
+              <EditLink href={`/programs/${slug}/edit`} />
+            )}
           </KeyFact>
           <KeyFact label="Application fee">
-            {formatFee(program.application_fee) ?? <EditLink href={`/programs/${slug}/edit`} />}
+            {formatMoney(program.application_fee, program.currency) ?? (
+              <EditLink href={`/programs/${slug}/edit`} />
+            )}
+          </KeyFact>
+          <KeyFact label="Stipend / salary">
+            {formatStipendLong(program.stipend, program.stipend_frequency, program.currency) ?? (
+              <EditLink href={`/programs/${slug}/edit`} />
+            )}
           </KeyFact>
           <KeyFact label="Age range">
             {formatAgeRange(program.age_min, program.age_max) ?? (
@@ -524,7 +529,7 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
         ) : (
           <ul className="mt-4 space-y-4">
             {auditions.map((a) => (
-              <AuditionCard key={a.id} audition={a} />
+              <AuditionCard key={a.id} audition={a} currency={program.currency} />
             ))}
           </ul>
         )}

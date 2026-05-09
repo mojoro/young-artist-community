@@ -122,6 +122,66 @@
   }
 }
 
+/* ---------- Native <select>: replace browser chevron with one that has breathing room ----------
+   Placed outside @layer so it beats Tailwind utilities (e.g. `px-3`) in the cascade. */
+select:not([multiple]):not([size]) {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem 1rem;
+  padding-right: 2.5rem;
+}
+
+/* ---------- Wrapped selects (SelectInput component): sibling SVG chevron that rotates on focus.
+   Background chevron from the rule above is suppressed since the SVG provides one. */
+.select-wrap > select:not([multiple]):not([size]) {
+  background-image: none;
+}
+.select-wrap > .select-chevron {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  pointer-events: none;
+  color: rgb(100 116 139); /* slate-500 */
+  transform: translateY(-50%);
+  transition: transform 180ms ease;
+}
+.select-wrap[data-open='true'] > .select-chevron {
+  transform: translateY(-50%) rotate(180deg);
+}
+.select-listbox {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow:
+    0 4px 12px rgb(15 23 42 / 0.08),
+    0 0 0 1px rgb(15 23 42 / 0.05);
+  max-height: 16rem;
+  overflow-y: auto;
+}
+.select-option {
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: rgb(15 23 42); /* slate-900 */
+}
+.select-option[data-highlighted='true'] {
+  background: rgb(241 245 249); /* slate-100 */
+}
+.select-option[aria-selected='true'] {
+  font-weight: 600;
+}
+
 /* ---------- ACTIVE PALETTE ---------- */
 @theme inline {
   --font-sans: var(--font-geist-sans);

@@ -3,6 +3,7 @@ import type { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/auth'
 import { badRequest, internalError, notFound, validationError } from '@/lib/problem'
+import { isCurrency, isStipendFrequency } from '@/lib/types'
 
 // Re-use the include shape and formatter from the collection route. Keeping a
 // local copy here avoids importing non-exported internals and keeps this file
@@ -38,8 +39,11 @@ function formatProgram(
     application_deadline: program.application_deadline
       ? program.application_deadline.toISOString()
       : null,
+    currency: program.currency,
     tuition: program.tuition,
     application_fee: program.application_fee,
+    stipend: program.stipend,
+    stipend_frequency: program.stipend_frequency,
     age_min: program.age_min,
     age_max: program.age_max,
     offers_scholarship: program.offers_scholarship,
@@ -157,6 +161,13 @@ export async function PUT(
   if (appDeadline && 'error' in appDeadline) return appDeadline.error
   if (appDeadline) update.application_deadline = appDeadline.value
 
+  if ('currency' in raw) {
+    if (!isCurrency(raw.currency)) {
+      return validationError('currency must be USD, EUR, or GBP')
+    }
+    update.currency = raw.currency
+  }
+
   const tuition = parseNumberField(raw, 'tuition')
   if (tuition && 'error' in tuition) return tuition.error
   if (tuition) update.tuition = tuition.value
@@ -164,6 +175,20 @@ export async function PUT(
   const appFee = parseNumberField(raw, 'application_fee')
   if (appFee && 'error' in appFee) return appFee.error
   if (appFee) update.application_fee = appFee.value
+
+  const stipend = parseNumberField(raw, 'stipend')
+  if (stipend && 'error' in stipend) return stipend.error
+  if (stipend) update.stipend = stipend.value
+
+  if ('stipend_frequency' in raw) {
+    const v = raw.stipend_frequency
+    if (v !== null && !isStipendFrequency(v)) {
+      return validationError(
+        'stipend_frequency must be daily, weekly, monthly, annual, one_time, or null',
+      )
+    }
+    update.stipend_frequency = v
+  }
 
   const ageMin = parseIntField(raw, 'age_min')
   if (ageMin && 'error' in ageMin) return ageMin.error

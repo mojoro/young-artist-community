@@ -48,8 +48,11 @@ export default async function EditProgramPage({ params }: { params: Promise<{ sl
     application_deadline: programRow.application_deadline
       ? programRow.application_deadline.toISOString()
       : null,
+    currency: programRow.currency,
     tuition: programRow.tuition,
     application_fee: programRow.application_fee,
+    stipend: programRow.stipend,
+    stipend_frequency: programRow.stipend_frequency,
     age_min: programRow.age_min,
     age_max: programRow.age_max,
     offers_scholarship: programRow.offers_scholarship,

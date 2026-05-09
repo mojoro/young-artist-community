@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { rateLimitByIp } from '@/lib/rate-limit'
 import { toSlug } from '@/lib/slug'
+import { isCurrency, isStipendFrequency } from '@/lib/types'
 
 export interface EditProgramState {
   error?: string
@@ -80,12 +81,25 @@ export async function editProgram(
   if (description && description.length > 5000)
     return { error: 'Description is too long (max 5000 characters).' }
 
+  const currencyRaw = str('currency') ?? 'USD'
+  if (!isCurrency(currencyRaw)) return { error: 'Currency must be USD, EUR, or GBP.' }
+  const currency = currencyRaw
+
   const tuition = num('tuition')
   if (tuition !== null && tuition < 0) return { error: 'Tuition cannot be negative.' }
 
   const applicationFee = num('application_fee')
   if (applicationFee !== null && applicationFee < 0)
     return { error: 'Application fee cannot be negative.' }
+
+  const stipend = num('stipend')
+  if (stipend !== null && stipend < 0) return { error: 'Stipend cannot be negative.' }
+  const stipendFrequencyRaw = str('stipend_frequency')
+  if (stipendFrequencyRaw !== null && !isStipendFrequency(stipendFrequencyRaw))
+    return { error: 'Stipend frequency must be daily, weekly, monthly, annual, or one_time.' }
+  const stipendFrequency = stipend !== null ? stipendFrequencyRaw : null
+  if (stipend !== null && stipendFrequency === null)
+    return { error: 'Pick how often the stipend is paid.' }
 
   const ageMin = int('age_min')
   const ageMax = int('age_max')
@@ -223,8 +237,11 @@ export async function editProgram(
             start_date: current.start_date?.toISOString() ?? null,
             end_date: current.end_date?.toISOString() ?? null,
             application_deadline: current.application_deadline?.toISOString() ?? null,
+            currency: current.currency,
             tuition: current.tuition,
             application_fee: current.application_fee,
+            stipend: current.stipend,
+            stipend_frequency: current.stipend_frequency,
             age_min: current.age_min,
             age_max: current.age_max,
             offers_scholarship: current.offers_scholarship,
@@ -248,8 +265,11 @@ export async function editProgram(
           start_date: date('start_date'),
           end_date: date('end_date'),
           application_deadline: date('application_deadline'),
+          currency,
           tuition,
           application_fee: applicationFee,
+          stipend,
+          stipend_frequency: stipendFrequency,
           age_min: ageMin,
           age_max: ageMax,
           offers_scholarship: formData.get('offers_scholarship') === 'true',
