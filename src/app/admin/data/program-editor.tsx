@@ -12,6 +12,8 @@ interface ProgramData {
   application_deadline: string | null
   tuition: number | null
   application_fee: number | null
+  stipend: number | null
+  stipend_frequency: string | null
   age_min: number | null
   age_max: number | null
   offers_scholarship: boolean
@@ -116,6 +118,30 @@ export function ProgramEditor({
           type="number"
           defaultValue={program.application_fee?.toString() ?? ''}
         />
+        <Field
+          label="Stipend (USD)"
+          name="stipend"
+          type="number"
+          defaultValue={program.stipend?.toString() ?? ''}
+        />
+        <div>
+          <label htmlFor="prog_stipend_frequency" className="block text-xs text-gray-600">
+            Stipend frequency
+          </label>
+          <select
+            id="prog_stipend_frequency"
+            name="stipend_frequency"
+            defaultValue={program.stipend_frequency ?? ''}
+            className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+          >
+            <option value="">— none —</option>
+            <option value="daily">Per day</option>
+            <option value="weekly">Per week</option>
+            <option value="monthly">Per month</option>
+            <option value="annual">Per year</option>
+            <option value="one_time">One-time</option>
+          </select>
+        </div>
         <Field
           label="Age min"
           name="age_min"

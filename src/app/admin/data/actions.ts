@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
+import { isStipendFrequency } from '@/lib/types'
 
 export async function deleteProgram(formData: FormData) {
   const id = formData.get('program_id') as string
@@ -143,6 +144,19 @@ export async function updateProgram(
       }
     }
 
+    const stipend = num('stipend')
+    if (stipend !== null && stipend < 0) return { error: 'Stipend cannot be negative.' }
+    const stipendFrequencyRaw = str('stipend_frequency')
+    if (stipendFrequencyRaw !== null && !isStipendFrequency(stipendFrequencyRaw)) {
+      return {
+        error: 'Stipend frequency must be daily, weekly, monthly, annual, or one_time.',
+      }
+    }
+    const stipendFrequency = stipend !== null ? stipendFrequencyRaw : null
+    if (stipend !== null && stipendFrequency === null) {
+      return { error: 'Pick how often the stipend is paid.' }
+    }
+
     await prisma.$transaction(async (tx) => {
       await tx.program.update({
         where: { id },
@@ -154,6 +168,8 @@ export async function updateProgram(
           application_deadline: date('application_deadline'),
           tuition: num('tuition'),
           application_fee: num('application_fee'),
+          stipend,
+          stipend_frequency: stipendFrequency,
           age_min: int('age_min'),
           age_max: int('age_max'),
           offers_scholarship: formData.get('offers_scholarship') === 'true',

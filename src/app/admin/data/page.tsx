@@ -52,6 +52,8 @@ export default async function AdminDataPage({
     application_deadline: Date | null
     tuition: number | null
     application_fee: number | null
+    stipend: number | null
+    stipend_frequency: string | null
     age_min: number | null
     age_max: number | null
     offers_scholarship: boolean
@@ -215,6 +217,8 @@ export default async function AdminDataPage({
                   fullProgram.application_deadline?.toISOString().slice(0, 10) ?? null,
                 tuition: fullProgram.tuition,
                 application_fee: fullProgram.application_fee,
+                stipend: fullProgram.stipend,
+                stipend_frequency: fullProgram.stipend_frequency,
                 age_min: fullProgram.age_min,
                 age_max: fullProgram.age_max,
                 offers_scholarship: fullProgram.offers_scholarship,
