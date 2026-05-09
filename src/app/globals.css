@@ -204,6 +204,36 @@ select:not([multiple]):not([size]) {
   }
 }
 
+/* ---------- App-wide scrollbar — accent pill ---------- */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-brand-500) transparent;
+}
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand-500);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-600);
+}
+
+/* ---------- Recent reviews carousel — hide scrollbar (drag/snap drives navigation) ---------- */
+ul.review-scroller {
+  scrollbar-width: none;
+}
+ul.review-scroller::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 /* ---------- ACTIVE PALETTE ---------- */
 @theme inline {
   --font-sans: var(--font-geist-sans);
