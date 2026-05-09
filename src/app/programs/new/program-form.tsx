@@ -149,6 +149,41 @@ export function ProgramForm({ instruments, categories, locations }: Props) {
         </div>
       </div>
 
+      {/* Stipend / salary */}
+      <div className="mt-5">
+        <label
+          htmlFor="stipend"
+          className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+        >
+          Stipend / salary
+        </label>
+        <div className="grid grid-cols-[2fr_1fr] gap-3">
+          <input
+            id="stipend"
+            name="stipend"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Amount in USD (leave blank if none)"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
+          />
+          <select
+            id="stipend_frequency"
+            name="stipend_frequency"
+            defaultValue=""
+            aria-label="Stipend frequency"
+            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
+          >
+            <option value="">— per period —</option>
+            <option value="daily">Per day</option>
+            <option value="weekly">Per week</option>
+            <option value="monthly">Per month</option>
+            <option value="annual">Per year</option>
+            <option value="one_time">One-time</option>
+          </select>
+        </div>
+      </div>
+
       {/* Age range */}
       <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
