@@ -11,6 +11,7 @@ interface ProgramData {
   start_date: string | null
   end_date: string | null
   application_deadline: string | null
+  currency: string
   tuition: number | null
   application_fee: number | null
   stipend: number | null
@@ -147,6 +148,26 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
         </div>
       </div>
 
+      {/* Currency */}
+      <div className="mt-5">
+        <label
+          htmlFor="currency"
+          className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+        >
+          Currency
+        </label>
+        <select
+          id="currency"
+          name="currency"
+          defaultValue={program.currency}
+          className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500 sm:max-w-[12rem]"
+        >
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="GBP">GBP (£)</option>
+        </select>
+      </div>
+
       {/* Financial */}
       <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
@@ -154,7 +175,7 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
             htmlFor="tuition"
             className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
           >
-            Tuition (USD)
+            Tuition
           </label>
           <input
             id="tuition"
@@ -172,7 +193,7 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
             htmlFor="application_fee"
             className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
           >
-            Application fee (USD)
+            Application fee
           </label>
           <input
             id="application_fee"
@@ -201,7 +222,7 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
             type="number"
             min="0"
             step="1"
-            placeholder="Amount in USD (leave blank if none)"
+            placeholder="Amount (leave blank if none)"
             defaultValue={program.stipend ?? ''}
             className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />

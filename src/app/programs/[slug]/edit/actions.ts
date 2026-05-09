@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { rateLimitByIp } from '@/lib/rate-limit'
 import { toSlug } from '@/lib/slug'
-import { isStipendFrequency } from '@/lib/types'
+import { isCurrency, isStipendFrequency } from '@/lib/types'
 
 export interface EditProgramState {
   error?: string
@@ -80,6 +80,10 @@ export async function editProgram(
   const description = str('description')
   if (description && description.length > 5000)
     return { error: 'Description is too long (max 5000 characters).' }
+
+  const currencyRaw = str('currency') ?? 'USD'
+  if (!isCurrency(currencyRaw)) return { error: 'Currency must be USD, EUR, or GBP.' }
+  const currency = currencyRaw
 
   const tuition = num('tuition')
   if (tuition !== null && tuition < 0) return { error: 'Tuition cannot be negative.' }
@@ -233,6 +237,7 @@ export async function editProgram(
             start_date: current.start_date?.toISOString() ?? null,
             end_date: current.end_date?.toISOString() ?? null,
             application_deadline: current.application_deadline?.toISOString() ?? null,
+            currency: current.currency,
             tuition: current.tuition,
             application_fee: current.application_fee,
             stipend: current.stipend,
@@ -260,6 +265,7 @@ export async function editProgram(
           start_date: date('start_date'),
           end_date: date('end_date'),
           application_deadline: date('application_deadline'),
+          currency,
           tuition,
           application_fee: applicationFee,
           stipend,
