@@ -11,6 +11,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  migration-safety:
+    name: Migration safety
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan new migrations for destructive SQL
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          mapfile -t NEW_FILES < <(git diff --name-only --diff-filter=AM "$BASE_SHA...$HEAD_SHA" -- 'prisma/migrations/*/migration.sql')
+          if [ "${#NEW_FILES[@]}" -eq 0 ]; then
+            echo "No new or modified migration files in this PR."
+            exit 0
+          fi
+          echo "Scanning ${#NEW_FILES[@]} migration file(s) for destructive SQL:"
+          printf '  - %s\n' "${NEW_FILES[@]}"
+          # Multi-DB setup (Supabase prod + Neon preview/dev) exists to protect
+          # against data loss. DROP TABLE and DROP COLUMN destroy production
+          # data on merge; require explicit maintainer review instead of
+          # letting them slip through.
+          PATTERN='DROP[[:space:]]+TABLE|DROP[[:space:]]+COLUMN'
+          if matches=$(grep -E -i -H -n "$PATTERN" "${NEW_FILES[@]}"); then
+            echo "::error::Destructive migration detected. Coordinate with the maintainer before merging."
+            echo "$matches" | while IFS= read -r line; do
+              echo "::error file=${line%%:*}::${line}"
+            done
+            exit 1
+          fi
+          echo "No destructive SQL detected."
+
   quality:
     name: Lint, Type-check & Test
     runs-on: ubuntu-latest
