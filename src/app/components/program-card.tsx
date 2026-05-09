@@ -1,12 +1,7 @@
 import Link from 'next/link'
 import type { Program } from '@/lib/types'
+import { formatMoney } from '@/lib/money'
 import { formatStipendShort } from '@/lib/stipend'
-
-function formatTuition(n: number | null): string | null {
-  if (n === null) return null
-  if (n === 0) return 'Free'
-  return `$${n.toLocaleString('en-US')}`
-}
 
 function formatDate(iso: string | null): string | null {
   if (!iso) return null
@@ -16,12 +11,6 @@ function formatDate(iso: string | null): string | null {
   const day = d.getDate()
   const year = `'${String(d.getFullYear()).slice(-2)}`
   return `${month} ${day}, ${year}`
-}
-
-function formatAppFee(n: number | null): string | null {
-  if (n === null) return null
-  if (n === 0) return 'Free'
-  return `$${n.toLocaleString('en-US')}`
 }
 
 function AddLink({ href }: { href: string }) {
@@ -53,10 +42,14 @@ export function ProgramCard({ program }: { program: Program }) {
   const hasRating = program.review_count > 0 && program.average_rating !== null
   const editHref = `/programs/${program.slug}/edit`
 
-  const tuitionText = formatTuition(program.tuition)
-  const appFeeText = formatAppFee(program.application_fee)
+  const tuitionText = formatMoney(program.tuition, program.currency)
+  const appFeeText = formatMoney(program.application_fee, program.currency)
   const deadlineText = formatDate(program.application_deadline)
-  const stipendText = formatStipendShort(program.stipend, program.stipend_frequency)
+  const stipendText = formatStipendShort(
+    program.stipend,
+    program.stipend_frequency,
+    program.currency,
+  )
 
   return (
     <article className="flex flex-col rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5 transition hover:-translate-y-0.5 hover:shadow-md">
