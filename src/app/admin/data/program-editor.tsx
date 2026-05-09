@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react'
 import { updateProgram } from './actions'
+import { SelectInput } from '@/app/components/select-input'
 
 interface ProgramData {
   id: string
@@ -110,16 +111,17 @@ export function ProgramEditor({
           <label htmlFor="prog_currency" className="block text-xs text-gray-600">
             Currency
           </label>
-          <select
+          <SelectInput
             id="prog_currency"
             name="currency"
             defaultValue={program.currency}
-            className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+            wrapperClassName="mt-1"
+            className="rounded-md border border-gray-300 px-2 py-1.5 text-sm"
           >
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (€)</option>
             <option value="GBP">GBP (£)</option>
-          </select>
+          </SelectInput>
         </div>
         <Field
           label="Tuition"
@@ -144,11 +146,12 @@ export function ProgramEditor({
           <label htmlFor="prog_stipend_frequency" className="block text-xs text-gray-600">
             Stipend frequency
           </label>
-          <select
+          <SelectInput
             id="prog_stipend_frequency"
             name="stipend_frequency"
             defaultValue={program.stipend_frequency ?? ''}
-            className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+            wrapperClassName="mt-1"
+            className="rounded-md border border-gray-300 px-2 py-1.5 text-sm"
           >
             <option value="">— none —</option>
             <option value="daily">Per day</option>
@@ -156,7 +159,7 @@ export function ProgramEditor({
             <option value="monthly">Per month</option>
             <option value="annual">Per year</option>
             <option value="one_time">One-time</option>
-          </select>
+          </SelectInput>
         </div>
         <Field
           label="Age min"

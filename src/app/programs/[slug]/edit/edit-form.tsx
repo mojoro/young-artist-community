@@ -3,6 +3,7 @@
 import { useActionState } from 'react'
 import { editProgram, type EditProgramState } from './actions'
 import { Combobox, LocationCombobox } from '@/app/components/combobox'
+import { SelectInput } from '@/app/components/select-input'
 
 interface ProgramData {
   id: string
@@ -156,16 +157,17 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
         >
           Currency
         </label>
-        <select
+        <SelectInput
           id="currency"
           name="currency"
           defaultValue={program.currency}
-          className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500 sm:max-w-[12rem]"
+          wrapperClassName="sm:max-w-[12rem]"
+          className="rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
         >
           <option value="USD">USD ($)</option>
           <option value="EUR">EUR (€)</option>
           <option value="GBP">GBP (£)</option>
-        </select>
+        </SelectInput>
       </div>
 
       {/* Financial */}
@@ -226,12 +228,12 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
             defaultValue={program.stipend ?? ''}
             className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />
-          <select
+          <SelectInput
             id="stipend_frequency"
             name="stipend_frequency"
             defaultValue={program.stipend_frequency ?? ''}
             aria-label="Stipend frequency"
-            className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
+            className="rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           >
             <option value="">— per period —</option>
             <option value="daily">Per day</option>
@@ -239,7 +241,7 @@ export function EditProgramForm({ program, allInstruments, allCategories, allLoc
             <option value="monthly">Per month</option>
             <option value="annual">Per year</option>
             <option value="one_time">One-time</option>
-          </select>
+          </SelectInput>
         </div>
       </div>
 

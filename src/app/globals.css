@@ -134,6 +134,24 @@ select:not([multiple]):not([size]) {
   padding-right: 2.5rem;
 }
 
+/* ---------- Wrapped selects (SelectInput component): sibling SVG chevron that rotates on focus.
+   Background chevron from the rule above is suppressed since the SVG provides one. */
+.select-wrap > select:not([multiple]):not([size]) {
+  background-image: none;
+}
+.select-wrap > .select-chevron {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  pointer-events: none;
+  color: rgb(100 116 139); /* slate-500 */
+  transform: translateY(-50%);
+  transition: transform 180ms ease;
+}
+.select-wrap:focus-within > .select-chevron {
+  transform: translateY(-50%) rotate(180deg);
+}
+
 /* ---------- ACTIVE PALETTE ---------- */
 @theme inline {
   --font-sans: var(--font-geist-sans);
