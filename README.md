@@ -17,15 +17,16 @@ The platform is free to use, has no ads, no paid placements, and no paywalls. Co
 
 ## Stack
 
-| Layer          | Technology                                 |
-| -------------- | ------------------------------------------ |
-| Framework      | Next.js 16 (App Router, Server Components) |
-| Language       | TypeScript (strict mode)                   |
-| Database       | Postgres (Neon serverless)                 |
-| ORM            | Prisma 7 with Neon adapter                 |
-| Styling        | Tailwind CSS v4                            |
-| LLM extraction | OpenRouter (Claude Haiku 4.5)              |
-| Hosting        | Vercel                                     |
+| Layer          | Technology                                                    |
+| -------------- | ------------------------------------------------------------- |
+| Framework      | Next.js 16 (App Router, Server Components)                    |
+| Language       | TypeScript (strict mode)                                      |
+| Database       | Postgres — **Supabase** (production) + **Neon** (preview/dev) |
+| ORM            | Prisma 7 with `@prisma/adapter-pg`                            |
+| Styling        | Tailwind CSS v4                                               |
+| LLM extraction | OpenRouter (Claude Haiku 4.5)                                 |
+| CI/CD          | GitHub Actions + Vercel                                       |
+| Hosting        | Vercel                                                        |
 
 ## Project structure
 
@@ -41,13 +42,22 @@ src/
     admin/                    # admin panel (token-gated)
       import/                 # import pipeline review queue
       data/                   # program/review/audition CRUD
-    api/                      # REST API (Zalando-aligned)
+    api/                      # REST API (read public, write admin-gated)
   lib/
-    prisma.ts                 # Prisma client singleton
+    prisma.ts                 # Prisma client singleton (verified TLS)
+    auth.ts                   # requireAdmin() guard for API routes
+    admin-auth.ts             # timing-safe ADMIN_TOKEN cookie check
+    rate-limit.ts             # in-memory IP rate limiter
     import/                   # scrape + LLM extraction pipeline
 prisma/
   schema.prisma               # database schema
+  migrations/                 # versioned SQL migrations (prisma migrate)
   seed.ts                     # reference data seeding
+scripts/
+  sync-prod-to-neon.sh        # daily Supabase→Neon dump + PII scrub
+.github/workflows/
+  ci.yml                      # lint/typecheck/test + Playwright e2e
+  sync-prod-to-neon.yml       # daily 04:00 UTC, manual dispatch
 ```
 
 ## Data model
@@ -258,7 +268,7 @@ erDiagram
 ### Prerequisites
 
 - Node.js 24+
-- A Postgres database (we use [Neon](https://neon.tech))
+- A Postgres database. The deployed app uses Supabase (prod) and Neon (preview/dev). For local dev, any Postgres 17 works — we recommend a Neon dev branch.
 
 ### Setup
 
@@ -270,25 +280,40 @@ npm install
 
 # Configure environment
 cp .env.example .env.local
-# Edit .env.local with your DATABASE_URL, ADMIN_TOKEN, etc.
+# Edit .env.local — set DATABASE_URL (and DATABASE_URL_UNPOOLED for migrations),
+# ADMIN_TOKEN, OPENROUTER_API_KEY, CRON_SECRET.
 
 # Set up database
 npx prisma generate
-npx prisma migrate deploy
-npx prisma db seed
+npx prisma migrate deploy   # applies all migrations from prisma/migrations/
+npx prisma db seed          # optional: seed reference data + a few programs
 
 # Run dev server
 npm run dev
 ```
 
+### Database workflow
+
+- Every schema change ships as a migration: edit `prisma/schema.prisma`, run `npm run db:migrate`, commit the generated SQL file.
+- `npm run build` runs `prisma migrate deploy` (non-destructive). `prisma db push` is intentionally not exposed via npm scripts.
+- The Vercel build connects to **Supabase** for Production deployments and **Neon** for Preview/Development (env-scoped). A daily GitHub Action (`sync-prod-to-neon.yml`) overwrites Neon main with a PII-scrubbed dump of Supabase prod, so previews mirror real prod state.
+
 ### Environment variables
 
-| Variable             | Purpose                              |
-| -------------------- | ------------------------------------ |
-| `DATABASE_URL`       | Neon pooled connection string        |
-| `ADMIN_TOKEN`        | Shared secret for admin panel access |
-| `OPENROUTER_API_KEY` | LLM extraction (import pipeline)     |
-| `CRON_SECRET`        | Vercel cron authentication           |
+| Variable                                 | Purpose                                                             |
+| ---------------------------------------- | ------------------------------------------------------------------- |
+| `POSTGRES_PRISMA_URL`                    | Supabase pooler connection (Production)                             |
+| `POSTGRES_URL_NON_POOLING`               | Supabase direct connection (Production, used by `prisma migrate`)   |
+| `DATABASE_URL` / `DATABASE_URL_UNPOOLED` | Neon connection (Preview + Development)                             |
+| `ADMIN_TOKEN`                            | Shared secret for admin panel access                                |
+| `OPENROUTER_API_KEY`                     | LLM extraction (import pipeline)                                    |
+| `CRON_SECRET`                            | Vercel cron authentication                                          |
+| `PG_SSL_NO_VERIFY`                       | Set `true` to skip TLS cert verification (dev only — never in prod) |
+
+### CI/CD
+
+- **CI** (`ci.yml`) runs on every PR: ESLint, Prettier, `tsc --noEmit`, Vitest, `npm audit`. On PR open, polls GitHub for the matching Vercel preview, then runs Playwright against the preview URL using `VERCEL_AUTOMATION_BYPASS_SECRET`.
+- **Sync** (`sync-prod-to-neon.yml`) runs daily at 04:00 UTC and on demand: `pg_dump` from Supabase (public schema only), `pg_restore --clean` to Neon, then anonymizes `subscriber.email`, `feedback.email`, `report.reporter_email`. Required GH secrets: `SUPABASE_PROD_URL` (Session pooler URL), `NEON_DEV_URL` (Neon main branch unpooled URL).
 
 ## Import pipeline
 

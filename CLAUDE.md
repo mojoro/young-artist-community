@@ -9,8 +9,8 @@ YACTracker — a Young Artist Community directory + review platform for Young Ar
 - Next.js 16 (App Router, Server Components, React Compiler enabled)
 - React 19
 - TypeScript (strict mode)
-- Prisma 7 ORM + `@prisma/adapter-pg` (vanilla `pg` driver)
-- Supabase Postgres (provisioned via Vercel Marketplace integration)
+- Prisma 7 ORM + `@prisma/adapter-pg` (vanilla `pg` driver) with verified TLS
+- Postgres: **Supabase** (Production) + **Neon** (Preview/Development) — synced daily
 - Tailwind CSS v4
 - OpenRouter (Claude Haiku 4.5) for LLM extraction
 - Vitest (unit) + Playwright (e2e)
@@ -23,8 +23,14 @@ YACTracker — a Young Artist Community directory + review platform for Young Ar
 yactracker/
 ├── prisma/
 │   ├── schema.prisma          # do not modify without asking
+│   ├── migrations/            # Prisma migrations — every schema change adds one
 │   └── seed.ts                # seed script: reference data, programs, import sources
 ├── prisma.config.ts           # Prisma 7 config (root, reads .env.local)
+├── scripts/
+│   └── sync-prod-to-neon.sh   # daily Supabase→Neon dump + PII scrub
+├── .github/workflows/
+│   ├── ci.yml                 # lint/typecheck/test on PR + Playwright e2e
+│   └── sync-prod-to-neon.yml  # cron 04:00 UTC + manual dispatch
 ├── src/
 │   ├── app/
 │   │   ├── layout.tsx         # root layout w/ header nav, footer, tuning fork logo SVG
@@ -79,14 +85,17 @@ yactracker/
 │   │       ├── instruments/ · categories/ · locations/
 │   │       └── import/run/    # POST trigger scrape (CRON_SECRET gated)
 │   └── lib/
-│       ├── prisma.ts          # singleton Prisma client w/ NeonAdapter
+│       ├── prisma.ts          # singleton Prisma client w/ adapter-pg + verified TLS
+│       ├── admin-auth.ts      # ADMIN_TOKEN cookie check (timing-safe sha256 compare)
+│       ├── auth.ts            # requireAdmin() guard for API routes; 429 helper
+│       ├── rate-limit.ts      # in-memory sliding-window IP rate limiter
 │       ├── problem.ts         # RFC 9457 problem+json helpers
 │       ├── pagination.ts      # cursor-based pagination (opaque base64url tokens)
 │       ├── sort.ts            # sort param parsing + Prisma orderBy
 │       ├── types.ts           # shared TypeScript types
-│       ├── api.ts             # typed fetch helpers (server actions only)
+│       ├── api.ts             # typed fetch helpers (server actions only — most write paths now use Prisma directly)
 │       ├── slug.ts            # name → kebab-case slug (strips diacritics)
-│       ├── ip-hash.ts         # sha256 of request IP (ReviewLike dedup, etc.)
+│       ├── ip-hash.ts         # sha256 of request IP (ReviewLike, rate-limit keys, etc.)
 │       ├── __mocks__/prisma.ts # vitest-mock-extended mock
 │       ├── *.test.ts          # vitest unit tests colocated in lib/
 │       └── import/
@@ -168,11 +177,20 @@ Follows Zalando RESTful API Guidelines (pragmatically — see memory).
 8. **Cursor pagination** — opaque base64url tokens encoding `{offset}`. `cursor` + `limit` params.
 9. **Sorting** via `sort` query param. Comma-separated, `-` prefix = desc.
 10. **Validation errors** → 400 (not 422, per Zalando).
-11. **No auth** on public API. Admin pages gated by `ADMIN_TOKEN` cookie.
+11. **GET endpoints unauthenticated** (public read). **POST/PUT/DELETE require admin auth** via `requireAdmin()` from `src/lib/auth.ts` — returns 401 problem+json otherwise. Public writes go through server actions, not the API.
 
 ## Data fetching pattern
 
-**Server components query Prisma directly.** Do NOT use `apiFetch`/HTTP self-fetch from server components — it causes unnecessary round-trips and 401 errors on Vercel deployment-protected URLs. The `src/lib/api.ts` helpers exist only for server actions that POST to API routes.
+**Server components AND server actions query Prisma directly.** Do NOT use `apiFetch`/HTTP self-fetch from either — it causes unnecessary round-trips, 401 errors on Vercel deployment-protected URLs, and (now) blocks on the admin gate. The `src/lib/api.ts` helpers are kept only for legacy GET callers.
+
+## Security model
+
+- **Admin gate**: `ADMIN_TOKEN` env var compared timing-safely against the `admin_token` httpOnly cookie via `tokenMatches()` in `src/lib/admin-auth.ts` (sha256 + `timingSafeEqual`). Login form rate-limited 10 attempts / 15 min per IP.
+- **API write endpoints**: every POST/PUT/DELETE under `src/app/api/**` calls `requireAdmin()` at the top. GET stays public.
+- **Public server actions** (`submitReport`, `submitReview*`, `submitFeedback`, `createProgram`, `editProgram`, `createAudition`, `subscribe`, `toggleHelpful`, `togglePlatformVote`): per-IP rate limit via `src/lib/rate-limit.ts` (in-memory sliding window). Default: 5 writes / 60s for forms, 30 / 60s for toggles.
+- **TLS to Postgres**: `rejectUnauthorized: true` by default in `src/lib/prisma.ts`. Set `PG_SSL_NO_VERIFY=true` only as a dev escape hatch — never prod.
+- **Honeypot + length caps** on every public form (`url_confirm` field, ≤5000 char bodies, ≤200 char names, etc.).
+- **No public auth/users**. There is no signup. Identity is per-IP-hash for dedup (review likes, platform-poll votes); raw IPs never stored.
 
 ## Admin pages
 
@@ -282,7 +300,7 @@ Local runs use a `webServer` (`npm run build && npm start` on :3000, `reuseExist
 
 ## Important constraints
 
-- No public auth/authz. Admin uses `ADMIN_TOKEN`.
+- No public auth/authz; no users. Admin uses `ADMIN_TOKEN`.
 - No PATCH — PUT for all updates.
 - Every collection response wrapped in `{ "items": [...] }`.
 - UUIDs for all primary keys.
