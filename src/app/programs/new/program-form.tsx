@@ -112,6 +112,26 @@ export function ProgramForm({ instruments, categories, locations }: Props) {
         </div>
       </div>
 
+      {/* Currency */}
+      <div className="mt-5">
+        <label
+          htmlFor="currency"
+          className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+        >
+          Currency
+        </label>
+        <select
+          id="currency"
+          name="currency"
+          defaultValue="USD"
+          className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500 sm:max-w-[12rem]"
+        >
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="GBP">GBP (£)</option>
+        </select>
+      </div>
+
       {/* Financial */}
       <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
@@ -119,7 +139,7 @@ export function ProgramForm({ instruments, categories, locations }: Props) {
             htmlFor="tuition"
             className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
           >
-            Tuition (USD)
+            Tuition
           </label>
           <input
             id="tuition"
@@ -136,7 +156,7 @@ export function ProgramForm({ instruments, categories, locations }: Props) {
             htmlFor="application_fee"
             className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
           >
-            Application fee (USD)
+            Application fee
           </label>
           <input
             id="application_fee"
@@ -164,7 +184,7 @@ export function ProgramForm({ instruments, categories, locations }: Props) {
             type="number"
             min="0"
             step="1"
-            placeholder="Amount in USD (leave blank if none)"
+            placeholder="Amount (leave blank if none)"
             className="w-full rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
           />
           <select
