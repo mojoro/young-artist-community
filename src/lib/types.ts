@@ -40,6 +40,13 @@ export interface Location {
   address: string | null
 }
 
+export const STIPEND_FREQUENCIES = ['daily', 'weekly', 'monthly', 'annual', 'one_time'] as const
+export type StipendFrequency = (typeof STIPEND_FREQUENCIES)[number]
+
+export function isStipendFrequency(value: unknown): value is StipendFrequency {
+  return typeof value === 'string' && (STIPEND_FREQUENCIES as readonly string[]).includes(value)
+}
+
 export interface Program {
   id: string
   slug: string
@@ -50,6 +57,8 @@ export interface Program {
   application_deadline: string | null
   tuition: number | null
   application_fee: number | null
+  stipend: number | null
+  stipend_frequency: StipendFrequency | null
   age_min: number | null
   age_max: number | null
   offers_scholarship: boolean
