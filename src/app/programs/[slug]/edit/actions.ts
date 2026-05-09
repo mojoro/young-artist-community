@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { rateLimitByIp } from '@/lib/rate-limit'
 import { toSlug } from '@/lib/slug'
+import { isStipendFrequency } from '@/lib/types'
 
 export interface EditProgramState {
   error?: string
@@ -86,6 +87,15 @@ export async function editProgram(
   const applicationFee = num('application_fee')
   if (applicationFee !== null && applicationFee < 0)
     return { error: 'Application fee cannot be negative.' }
+
+  const stipend = num('stipend')
+  if (stipend !== null && stipend < 0) return { error: 'Stipend cannot be negative.' }
+  const stipendFrequencyRaw = str('stipend_frequency')
+  if (stipendFrequencyRaw !== null && !isStipendFrequency(stipendFrequencyRaw))
+    return { error: 'Stipend frequency must be daily, weekly, monthly, annual, or one_time.' }
+  const stipendFrequency = stipend !== null ? stipendFrequencyRaw : null
+  if (stipend !== null && stipendFrequency === null)
+    return { error: 'Pick how often the stipend is paid.' }
 
   const ageMin = int('age_min')
   const ageMax = int('age_max')
@@ -225,6 +235,8 @@ export async function editProgram(
             application_deadline: current.application_deadline?.toISOString() ?? null,
             tuition: current.tuition,
             application_fee: current.application_fee,
+            stipend: current.stipend,
+            stipend_frequency: current.stipend_frequency,
             age_min: current.age_min,
             age_max: current.age_max,
             offers_scholarship: current.offers_scholarship,
@@ -250,6 +262,8 @@ export async function editProgram(
           application_deadline: date('application_deadline'),
           tuition,
           application_fee: applicationFee,
+          stipend,
+          stipend_frequency: stipendFrequency,
           age_min: ageMin,
           age_max: ageMax,
           offers_scholarship: formData.get('offers_scholarship') === 'true',
