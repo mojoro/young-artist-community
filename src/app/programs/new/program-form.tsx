@@ -126,12 +126,13 @@ export function ProgramForm({ instruments, categories, locations }: Props) {
           name="currency"
           defaultValue="USD"
           wrapperClassName="sm:max-w-[12rem]"
-          className="rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
-        >
-          <option value="USD">USD ($)</option>
-          <option value="EUR">EUR (€)</option>
-          <option value="GBP">GBP (£)</option>
-        </SelectInput>
+          className="rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none"
+          options={[
+            { value: 'USD', label: 'USD ($)' },
+            { value: 'EUR', label: 'EUR (€)' },
+            { value: 'GBP', label: 'GBP (£)' },
+          ]}
+        />
       </div>
 
       {/* Financial */}
@@ -194,15 +195,16 @@ export function ProgramForm({ instruments, categories, locations }: Props) {
             name="stipend_frequency"
             defaultValue=""
             aria-label="Stipend frequency"
-            className="rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500"
-          >
-            <option value="">— per period —</option>
-            <option value="daily">Per day</option>
-            <option value="weekly">Per week</option>
-            <option value="monthly">Per month</option>
-            <option value="annual">Per year</option>
-            <option value="one_time">One-time</option>
-          </SelectInput>
+            className="rounded-lg border-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 ring-1 ring-slate-200 transition-colors focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none"
+            options={[
+              { value: '', label: '— per period —' },
+              { value: 'daily', label: 'Per day' },
+              { value: 'weekly', label: 'Per week' },
+              { value: 'monthly', label: 'Per month' },
+              { value: 'annual', label: 'Per year' },
+              { value: 'one_time', label: 'One-time' },
+            ]}
+          />
         </div>
       </div>
 

@@ -151,6 +151,36 @@ select:not([multiple]):not([size]) {
 .select-wrap[data-open='true'] > .select-chevron {
   transform: translateY(-50%) rotate(180deg);
 }
+.select-listbox {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow:
+    0 4px 12px rgb(15 23 42 / 0.08),
+    0 0 0 1px rgb(15 23 42 / 0.05);
+  max-height: 16rem;
+  overflow-y: auto;
+}
+.select-option {
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: rgb(15 23 42); /* slate-900 */
+}
+.select-option[data-highlighted='true'] {
+  background: rgb(241 245 249); /* slate-100 */
+}
+.select-option[aria-selected='true'] {
+  font-weight: 600;
+}
 
 /* ---------- ACTIVE PALETTE ---------- */
 @theme inline {

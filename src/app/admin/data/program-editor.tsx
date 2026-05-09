@@ -117,11 +117,12 @@ export function ProgramEditor({
             defaultValue={program.currency}
             wrapperClassName="mt-1"
             className="rounded-md border border-gray-300 px-2 py-1.5 text-sm"
-          >
-            <option value="USD">USD ($)</option>
-            <option value="EUR">EUR (€)</option>
-            <option value="GBP">GBP (£)</option>
-          </SelectInput>
+            options={[
+              { value: 'USD', label: 'USD ($)' },
+              { value: 'EUR', label: 'EUR (€)' },
+              { value: 'GBP', label: 'GBP (£)' },
+            ]}
+          />
         </div>
         <Field
           label="Tuition"
@@ -152,14 +153,15 @@ export function ProgramEditor({
             defaultValue={program.stipend_frequency ?? ''}
             wrapperClassName="mt-1"
             className="rounded-md border border-gray-300 px-2 py-1.5 text-sm"
-          >
-            <option value="">— none —</option>
-            <option value="daily">Per day</option>
-            <option value="weekly">Per week</option>
-            <option value="monthly">Per month</option>
-            <option value="annual">Per year</option>
-            <option value="one_time">One-time</option>
-          </SelectInput>
+            options={[
+              { value: '', label: '— none —' },
+              { value: 'daily', label: 'Per day' },
+              { value: 'weekly', label: 'Per week' },
+              { value: 'monthly', label: 'Per month' },
+              { value: 'annual', label: 'Per year' },
+              { value: 'one_time', label: 'One-time' },
+            ]}
+          />
         </div>
         <Field
           label="Age min"
