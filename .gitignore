@@ -20,6 +20,10 @@
 # local docs (not committed)
 /docs/
 
+# design-system extraction output (regenerable via npx extract-design-system)
+/.extract-design-system/
+/design-system/
+
 # next.js
 /.next/
 /out/
