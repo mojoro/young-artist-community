@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { cookies } from 'next/headers'
 import type { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
+import { isClean } from '@/lib/profanity'
 import type { Program } from '@/lib/types'
 import { SubscribeForm } from './subscribe/subscribe-form'
 import { ProgramCard } from './components/program-card'
@@ -96,7 +97,7 @@ export default async function Home() {
       }),
       prisma.review.findMany({
         orderBy: { created_at: 'desc' },
-        take: 12,
+        take: 36,
         select: {
           id: true,
           rating: true,
@@ -111,7 +112,11 @@ export default async function Home() {
       cookies(),
     ])
 
-  const programIdsForRecent = Array.from(new Set(recentReviewRows.map((r) => r.program_id)))
+  const cleanReviewRows = recentReviewRows
+    .filter((r) => isClean(r.body, r.title, r.reviewer_name))
+    .slice(0, 12)
+
+  const programIdsForRecent = Array.from(new Set(cleanReviewRows.map((r) => r.program_id)))
   const programReviewStats =
     programIdsForRecent.length === 0
       ? []
@@ -131,7 +136,7 @@ export default async function Home() {
     ]),
   )
 
-  const recentReviews: RecentReview[] = recentReviewRows.map((r) => {
+  const recentReviews: RecentReview[] = cleanReviewRows.map((r) => {
     const stats = programStatsMap.get(r.program_id) ?? { avg: null, count: 0 }
     return {
       id: r.id,
