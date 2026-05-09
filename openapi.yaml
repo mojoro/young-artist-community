@@ -840,6 +840,12 @@ components:
         application_deadline:
           type: string
           format: date
+        currency:
+          type: string
+          enum: [USD, EUR, GBP]
+          default: USD
+          description: ISO 4217 currency code that all monetary fields on the program (tuition, application_fee, stipend, audition fees) are denominated in.
+          example: USD
         tuition:
           type: number
           format: float
@@ -924,6 +930,10 @@ components:
         application_deadline:
           type: string
           format: date
+        currency:
+          type: string
+          enum: [USD, EUR, GBP]
+          default: USD
         tuition:
           type: number
           format: float
