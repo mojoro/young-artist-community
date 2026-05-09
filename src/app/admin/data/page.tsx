@@ -50,6 +50,7 @@ export default async function AdminDataPage({
     start_date: Date | null
     end_date: Date | null
     application_deadline: Date | null
+    currency: string
     tuition: number | null
     application_fee: number | null
     stipend: number | null
@@ -215,6 +216,7 @@ export default async function AdminDataPage({
                 end_date: fullProgram.end_date?.toISOString().slice(0, 10) ?? null,
                 application_deadline:
                   fullProgram.application_deadline?.toISOString().slice(0, 10) ?? null,
+                currency: fullProgram.currency,
                 tuition: fullProgram.tuition,
                 application_fee: fullProgram.application_fee,
                 stipend: fullProgram.stipend,

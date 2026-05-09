@@ -10,6 +10,7 @@ interface ProgramData {
   start_date: string | null
   end_date: string | null
   application_deadline: string | null
+  currency: string
   tuition: number | null
   application_fee: number | null
   stipend: number | null
@@ -105,21 +106,36 @@ export function ProgramEditor({
           type="date"
           defaultValue={program.application_deadline ?? ''}
         />
+        <div>
+          <label htmlFor="prog_currency" className="block text-xs text-gray-600">
+            Currency
+          </label>
+          <select
+            id="prog_currency"
+            name="currency"
+            defaultValue={program.currency}
+            className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+          >
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+          </select>
+        </div>
         <Field
-          label="Tuition (USD)"
+          label="Tuition"
           name="tuition"
           type="number"
           defaultValue={program.tuition?.toString() ?? ''}
           placeholder="0 = free"
         />
         <Field
-          label="Application fee (USD)"
+          label="Application fee"
           name="application_fee"
           type="number"
           defaultValue={program.application_fee?.toString() ?? ''}
         />
         <Field
-          label="Stipend (USD)"
+          label="Stipend"
           name="stipend"
           type="number"
           defaultValue={program.stipend?.toString() ?? ''}

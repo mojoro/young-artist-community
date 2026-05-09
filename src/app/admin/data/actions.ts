@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
-import { isStipendFrequency } from '@/lib/types'
+import { isCurrency, isStipendFrequency } from '@/lib/types'
 
 export async function deleteProgram(formData: FormData) {
   const id = formData.get('program_id') as string
@@ -144,6 +144,10 @@ export async function updateProgram(
       }
     }
 
+    const currencyRaw = str('currency') ?? 'USD'
+    if (!isCurrency(currencyRaw)) return { error: 'Currency must be USD, EUR, or GBP.' }
+    const currency = currencyRaw
+
     const stipend = num('stipend')
     if (stipend !== null && stipend < 0) return { error: 'Stipend cannot be negative.' }
     const stipendFrequencyRaw = str('stipend_frequency')
@@ -166,6 +170,7 @@ export async function updateProgram(
           start_date: date('start_date'),
           end_date: date('end_date'),
           application_deadline: date('application_deadline'),
+          currency,
           tuition: num('tuition'),
           application_fee: num('application_fee'),
           stipend,
