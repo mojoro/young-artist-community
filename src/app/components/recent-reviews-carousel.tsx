@@ -38,28 +38,17 @@ function ReviewCard({ review, index }: { review: RecentReview; index: number }) 
   const reviewer = review.reviewer_name?.trim() || 'Anonymous'
   return (
     <article
-      className="review-card relative flex h-full snap-start scroll-ml-4 flex-col overflow-hidden rounded-xl bg-white p-5 pt-6 shadow-sm ring-1 ring-slate-900/5 transition hover:-translate-y-0.5 hover:shadow-md sm:scroll-ml-6 lg:scroll-ml-8"
+      className="review-card flex h-full snap-start scroll-ml-4 flex-col rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5 transition hover:-translate-y-0.5 hover:shadow-md sm:scroll-ml-6 lg:scroll-ml-8"
       style={{ animationDelay: `${Math.min(index, 6) * 60}ms` }}
     >
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-3 -right-1 font-serif text-[7rem] leading-none font-bold text-brand-50/80 select-none"
-      >
-        &ldquo;
-      </span>
-
-      <div className="relative">
-        <Stars rating={review.rating} />
-      </div>
+      <Stars rating={review.rating} />
 
       {review.title && (
-        <h3 className="relative mt-3 text-base leading-snug font-semibold text-slate-900">
-          {review.title}
-        </h3>
+        <h3 className="mt-3 text-base leading-snug font-semibold text-slate-900">{review.title}</h3>
       )}
 
       <p
-        className="relative mt-2 text-sm leading-relaxed text-slate-700"
+        className="mt-2 text-sm leading-relaxed text-slate-700"
         style={{
           display: '-webkit-box',
           WebkitLineClamp: review.title ? 4 : 5,
@@ -70,7 +59,7 @@ function ReviewCard({ review, index }: { review: RecentReview; index: number }) 
         {review.body}
       </p>
 
-      <div className="relative mt-4 pt-3">
+      <div className="relative mt-auto pt-4">
         <span aria-hidden="true" className="absolute top-0 left-0 h-px w-8 bg-brand-500/40" />
         <p className="truncate text-xs font-medium text-slate-500">
           {reviewer}
@@ -152,10 +141,19 @@ function ScrollButton({
   )
 }
 
+const DRAG_THRESHOLD_PX = 5
+
 export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) {
   const scrollerRef = useRef<HTMLUListElement>(null)
+  const dragRef = useRef<{
+    pointerId: number
+    startX: number
+    startScrollLeft: number
+    moved: boolean
+  } | null>(null)
   const [atStart, setAtStart] = useState(true)
   const [atEnd, setAtEnd] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
 
   useEffect(() => {
     const el = scrollerRef.current
@@ -187,13 +185,78 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
     el.scrollBy({ left: direction === 'next' ? step : -step, behavior: 'smooth' })
   }
 
+  const onPointerDown = (e: React.PointerEvent<HTMLUListElement>) => {
+    // Native touch scrolling is already buttery — only intercept mouse pointers.
+    if (e.pointerType !== 'mouse' || e.button !== 0) return
+    const el = scrollerRef.current
+    if (!el) return
+    dragRef.current = {
+      pointerId: e.pointerId,
+      startX: e.clientX,
+      startScrollLeft: el.scrollLeft,
+      moved: false,
+    }
+  }
+
+  const onPointerMove = (e: React.PointerEvent<HTMLUListElement>) => {
+    const drag = dragRef.current
+    const el = scrollerRef.current
+    if (!drag || !el || drag.pointerId !== e.pointerId) return
+    const dx = e.clientX - drag.startX
+    if (!drag.moved && Math.abs(dx) > DRAG_THRESHOLD_PX) {
+      drag.moved = true
+      setIsDragging(true)
+      try {
+        el.setPointerCapture(e.pointerId)
+      } catch {
+        // ignore — capture can fail if the pointer left the element
+      }
+    }
+    if (drag.moved) {
+      el.scrollLeft = drag.startScrollLeft - dx
+      e.preventDefault()
+    }
+  }
+
+  const endDrag = (e: React.PointerEvent<HTMLUListElement>) => {
+    const drag = dragRef.current
+    const el = scrollerRef.current
+    if (!drag || !el || drag.pointerId !== e.pointerId) return
+    const moved = drag.moved
+    dragRef.current = null
+    if (moved) {
+      setIsDragging(false)
+      try {
+        el.releasePointerCapture(e.pointerId)
+      } catch {
+        // ignore
+      }
+      // Suppress the click that the browser fires after a drag-release on a link.
+      const swallow = (clickEv: MouseEvent) => {
+        clickEv.preventDefault()
+        clickEv.stopPropagation()
+      }
+      el.addEventListener('click', swallow, { capture: true, once: true })
+      // Belt-and-suspenders: drop the listener if no click follows (e.g. release on empty space).
+      window.setTimeout(() => el.removeEventListener('click', swallow, true), 0)
+    }
+  }
+
   if (reviews.length === 0) return null
 
+  const showButtons = !(atStart && atEnd)
+
   return (
-    <div className="relative">
+    <div>
       <ul
         ref={scrollerRef}
-        className="-mx-4 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-4 pt-1 pb-6 [-ms-overflow-style:none] [scrollbar-width:none] sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 [&::-webkit-scrollbar]:hidden"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        className={`review-scroller -mx-4 flex gap-5 overflow-x-auto px-4 pt-1 pb-3 select-none sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 ${
+          isDragging ? 'cursor-grabbing' : 'cursor-grab snap-x snap-mandatory scroll-smooth'
+        }`}
       >
         {reviews.map((r, i) => (
           <li
@@ -206,13 +269,12 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
         ))}
       </ul>
 
-      <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-12 bg-gradient-to-l from-slate-50 to-transparent sm:block" />
-      <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-12 bg-gradient-to-r from-slate-50 to-transparent sm:block" />
-
-      <div className="absolute -top-12 right-0 hidden gap-2 sm:flex">
-        <ScrollButton direction="prev" disabled={atStart} onClick={() => scrollByPage('prev')} />
-        <ScrollButton direction="next" disabled={atEnd} onClick={() => scrollByPage('next')} />
-      </div>
+      {showButtons && (
+        <div className="mt-2 hidden justify-end gap-2 sm:flex">
+          <ScrollButton direction="prev" disabled={atStart} onClick={() => scrollByPage('prev')} />
+          <ScrollButton direction="next" disabled={atEnd} onClick={() => scrollByPage('next')} />
+        </div>
+      )}
     </div>
   )
 }
