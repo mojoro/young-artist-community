@@ -142,15 +142,24 @@ function ScrollButton({
 }
 
 const DRAG_THRESHOLD_PX = 5
+// Drag past this fraction of a card commits to advancing (browser default is ~50%).
+const ADVANCE_FRACTION = 0.2
+// How long flick velocity is allowed to "coast" past pointer-up — the rougher equivalent of iOS scroll inertia.
+const MOMENTUM_MS = 220
+// Velocity samples older than this window are dropped when computing release velocity.
+const VELOCITY_WINDOW_MS = 90
+
+type DragState = {
+  pointerId: number
+  startX: number
+  startScrollLeft: number
+  moved: boolean
+  samples: { sl: number; t: number }[]
+}
 
 export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) {
   const scrollerRef = useRef<HTMLUListElement>(null)
-  const dragRef = useRef<{
-    pointerId: number
-    startX: number
-    startScrollLeft: number
-    moved: boolean
-  } | null>(null)
+  const dragRef = useRef<DragState | null>(null)
   const [atStart, setAtStart] = useState(true)
   const [atEnd, setAtEnd] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
@@ -195,6 +204,7 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
       startX: e.clientX,
       startScrollLeft: el.scrollLeft,
       moved: false,
+      samples: [{ sl: el.scrollLeft, t: performance.now() }],
     }
   }
 
@@ -214,6 +224,8 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
     }
     if (drag.moved) {
       el.scrollLeft = drag.startScrollLeft - dx
+      drag.samples.push({ sl: el.scrollLeft, t: performance.now() })
+      if (drag.samples.length > 6) drag.samples.shift()
       e.preventDefault()
     }
   }
@@ -224,22 +236,51 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
     if (!drag || !el || drag.pointerId !== e.pointerId) return
     const moved = drag.moved
     dragRef.current = null
-    if (moved) {
-      setIsDragging(false)
-      try {
-        el.releasePointerCapture(e.pointerId)
-      } catch {
-        // ignore
-      }
-      // Suppress the click that the browser fires after a drag-release on a link.
-      const swallow = (clickEv: MouseEvent) => {
-        clickEv.preventDefault()
-        clickEv.stopPropagation()
-      }
-      el.addEventListener('click', swallow, { capture: true, once: true })
-      // Belt-and-suspenders: drop the listener if no click follows (e.g. release on empty space).
-      window.setTimeout(() => el.removeEventListener('click', swallow, true), 0)
+    if (!moved) return
+
+    setIsDragging(false)
+    try {
+      el.releasePointerCapture(e.pointerId)
+    } catch {
+      // ignore
     }
+    // Suppress the click that the browser fires after a drag-release on a link.
+    const swallow = (clickEv: MouseEvent) => {
+      clickEv.preventDefault()
+      clickEv.stopPropagation()
+    }
+    el.addEventListener('click', swallow, { capture: true, once: true })
+    // Belt-and-suspenders: drop the listener if no click follows (e.g. release on empty space).
+    window.setTimeout(() => el.removeEventListener('click', swallow, true), 0)
+
+    // ----- Custom snap with 20% commit threshold + flick momentum -----
+    const cards = Array.from(el.querySelectorAll<HTMLElement>('[data-card]'))
+    if (cards.length === 0) return
+    const cardStep = cards.length > 1 ? cards[1].offsetLeft - cards[0].offsetLeft : el.clientWidth
+
+    // Velocity in scrollLeft px/ms over the last ~90ms window.
+    const now = performance.now()
+    const recent = drag.samples.filter((s) => now - s.t < VELOCITY_WINDOW_MS)
+    let velocity = 0
+    if (recent.length >= 2) {
+      const first = recent[0]
+      const last = recent[recent.length - 1]
+      const dt = last.t - first.t
+      if (dt > 0) velocity = (last.sl - first.sl) / dt
+    }
+
+    const dragDelta = el.scrollLeft - drag.startScrollLeft
+    const projectedDelta = dragDelta + velocity * MOMENTUM_MS
+
+    const startIdx = Math.round(drag.startScrollLeft / cardStep)
+    const fraction = projectedDelta / cardStep
+    let advanceBy = 0
+    if (Math.abs(fraction) >= ADVANCE_FRACTION) {
+      advanceBy =
+        fraction > 0 ? Math.max(1, Math.round(fraction)) : Math.min(-1, Math.round(fraction))
+    }
+    const targetIdx = Math.max(0, Math.min(cards.length - 1, startIdx + advanceBy))
+    el.scrollTo({ left: targetIdx * cardStep, behavior: 'smooth' })
   }
 
   if (reviews.length === 0) return null
