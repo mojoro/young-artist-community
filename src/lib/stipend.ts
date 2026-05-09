@@ -1,43 +1,46 @@
-import type { StipendFrequency } from './types'
+import type { Currency, StipendFrequency } from './types'
+import { currencySymbol } from './money'
 
-function dollars(amount: number): string {
-  return `$${amount.toLocaleString('en-US')}`
+function dollars(amount: number, currency: Currency): string {
+  return `${currencySymbol(currency)}${amount.toLocaleString('en-US')}`
 }
 
 export function formatStipendShort(
   amount: number | null,
   frequency: StipendFrequency | null,
+  currency: Currency,
 ): string | null {
   if (amount === null || frequency === null) return null
   switch (frequency) {
     case 'daily':
-      return `${dollars(amount)}/d`
+      return `${dollars(amount, currency)}/d`
     case 'weekly':
-      return `${dollars(amount)}/wk`
+      return `${dollars(amount, currency)}/wk`
     case 'monthly':
-      return `${dollars(amount)}/mo`
+      return `${dollars(amount, currency)}/mo`
     case 'annual':
-      return `${dollars(amount)}/yr`
+      return `${dollars(amount, currency)}/yr`
     case 'one_time':
-      return `${dollars(amount)} once`
+      return `${dollars(amount, currency)} once`
   }
 }
 
 export function formatStipendLong(
   amount: number | null,
   frequency: StipendFrequency | null,
+  currency: Currency,
 ): string | null {
   if (amount === null || frequency === null) return null
   switch (frequency) {
     case 'daily':
-      return `${dollars(amount)} per day`
+      return `${dollars(amount, currency)} per day`
     case 'weekly':
-      return `${dollars(amount)} per week`
+      return `${dollars(amount, currency)} per week`
     case 'monthly':
-      return `${dollars(amount)} per month`
+      return `${dollars(amount, currency)} per month`
     case 'annual':
-      return `${dollars(amount)} per year`
+      return `${dollars(amount, currency)} per year`
     case 'one_time':
-      return `${dollars(amount)} (one-time)`
+      return `${dollars(amount, currency)} (one-time)`
   }
 }
