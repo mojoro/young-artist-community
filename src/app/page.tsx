@@ -7,6 +7,7 @@ import { SubscribeForm } from './subscribe/subscribe-form'
 import { ProgramCard } from './components/program-card'
 import { PlatformPoll } from './components/platform-poll'
 import { PLATFORMS, type Platform } from './components/platform-poll-constants'
+import { RecentReviewsCarousel, type RecentReview } from './components/recent-reviews-carousel'
 
 const PROGRAM_INCLUDE = {
   program_instruments: { include: { instrument: true } },
@@ -78,22 +79,73 @@ async function attachRatingStats(programs: ProgramWithRelations[]): Promise<Prog
 }
 
 export default async function Home() {
-  const [recentRows, categoryRows, platformGroups, cookieStore] = await Promise.all([
-    prisma.program.findMany({
-      orderBy: { updated_at: 'desc' },
-      take: 6,
-      include: PROGRAM_INCLUDE,
-    }),
-    prisma.category.findMany({
-      orderBy: { name: 'asc' },
-      select: { id: true, name: true },
-    }),
-    prisma.platformVote.groupBy({
-      by: ['platform'],
-      _count: { _all: true },
-    }),
-    cookies(),
-  ])
+  const [recentRows, categoryRows, platformGroups, recentReviewRows, cookieStore] =
+    await Promise.all([
+      prisma.program.findMany({
+        orderBy: { updated_at: 'desc' },
+        take: 6,
+        include: PROGRAM_INCLUDE,
+      }),
+      prisma.category.findMany({
+        orderBy: { name: 'asc' },
+        select: { id: true, name: true },
+      }),
+      prisma.platformVote.groupBy({
+        by: ['platform'],
+        _count: { _all: true },
+      }),
+      prisma.review.findMany({
+        orderBy: { created_at: 'desc' },
+        take: 12,
+        select: {
+          id: true,
+          rating: true,
+          title: true,
+          body: true,
+          reviewer_name: true,
+          year_attended: true,
+          program_id: true,
+          program: { select: { slug: true, name: true } },
+        },
+      }),
+      cookies(),
+    ])
+
+  const programIdsForRecent = Array.from(new Set(recentReviewRows.map((r) => r.program_id)))
+  const programReviewStats =
+    programIdsForRecent.length === 0
+      ? []
+      : await prisma.review.groupBy({
+          by: ['program_id'],
+          where: { program_id: { in: programIdsForRecent } },
+          _avg: { rating: true },
+          _count: { rating: true },
+        })
+  const programStatsMap = new Map(
+    programReviewStats.map((s) => [
+      s.program_id,
+      {
+        avg: s._avg.rating === null ? null : Math.round(s._avg.rating * 10) / 10,
+        count: s._count.rating,
+      },
+    ]),
+  )
+
+  const recentReviews: RecentReview[] = recentReviewRows.map((r) => {
+    const stats = programStatsMap.get(r.program_id) ?? { avg: null, count: 0 }
+    return {
+      id: r.id,
+      rating: r.rating,
+      title: r.title,
+      body: r.body,
+      reviewer_name: r.reviewer_name,
+      year_attended: r.year_attended,
+      program_slug: r.program.slug,
+      program_name: r.program.name,
+      program_average_rating: stats.avg,
+      program_review_count: stats.count,
+    }
+  })
 
   const initialCounts: Record<Platform, number> = {
     facebook: 0,
@@ -231,6 +283,32 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* Recent reviews */}
+      {recentReviews.length > 0 && (
+        <section className="py-12">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex items-end justify-between">
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight text-slate-900">Recent reviews</h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Honest takes from singers and instrumentalists who&apos;ve been there.
+                </p>
+              </div>
+              <Link
+                href="/reviews/new"
+                className="hidden text-sm font-medium text-brand-600 transition-colors hover:text-brand-700 sm:block"
+              >
+                Share yours &rarr;
+              </Link>
+            </div>
+
+            <div className="mt-6">
+              <RecentReviewsCarousel reviews={recentReviews} />
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Recently added / updated */}
       <section className="py-12">
