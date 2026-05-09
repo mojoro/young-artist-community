@@ -24,6 +24,14 @@
 /.extract-design-system/
 /design-system/
 
+# playwright MCP screenshots dropped at repo root during dev verification
+/.playwright-mcp/
+/*-desktop.png
+/*-desktop-*.png
+/*-mobile.png
+/*-mobile-*.png
+/homepage-*.png
+
 # next.js
 /.next/
 /out/
