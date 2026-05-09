@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Program } from '@/lib/types'
+import { formatStipendShort } from '@/lib/stipend'
 
 function formatTuition(n: number | null): string | null {
   if (n === null) return null
@@ -55,6 +56,7 @@ export function ProgramCard({ program }: { program: Program }) {
   const tuitionText = formatTuition(program.tuition)
   const appFeeText = formatAppFee(program.application_fee)
   const deadlineText = formatDate(program.application_deadline)
+  const stipendText = formatStipendShort(program.stipend, program.stipend_frequency)
 
   return (
     <article className="flex flex-col rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5 transition hover:-translate-y-0.5 hover:shadow-md">
@@ -125,6 +127,11 @@ export function ProgramCard({ program }: { program: Program }) {
           {program.offers_scholarship && (
             <span className="rounded-full bg-success-50 px-1.5 py-0.5 text-[10px] font-semibold text-success-700">
               Aid
+            </span>
+          )}
+          {stipendText && (
+            <span className="rounded-full bg-success-50 px-1.5 py-0.5 text-[10px] font-semibold text-success-700">
+              {stipendText}
             </span>
           )}
           <span className="mx-0.5 text-slate-300">|</span>
@@ -202,6 +209,11 @@ export function ProgramCard({ program }: { program: Program }) {
           {program.offers_scholarship && (
             <span className="rounded-full bg-success-50 px-1.5 py-0.5 text-[10px] font-semibold text-success-700">
               Aid
+            </span>
+          )}
+          {stipendText && (
+            <span className="rounded-full bg-success-50 px-1.5 py-0.5 text-[10px] font-semibold text-success-700">
+              {stipendText}
             </span>
           )}
         </div>

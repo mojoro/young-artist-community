@@ -3,7 +3,8 @@ import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
 import type { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
-import type { Audition, Review } from '@/lib/types'
+import type { Audition, Review, StipendFrequency } from '@/lib/types'
+import { formatStipendLong } from '@/lib/stipend'
 import { submitReview } from './actions'
 import { HelpfulButton } from './helpful-button'
 import { ReportButton } from './report-form'
@@ -279,6 +280,8 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
       : null,
     tuition: programRow.tuition,
     application_fee: programRow.application_fee,
+    stipend: programRow.stipend,
+    stipend_frequency: programRow.stipend_frequency as StipendFrequency | null,
     age_min: programRow.age_min,
     age_max: programRow.age_max,
     offers_scholarship: programRow.offers_scholarship,
@@ -470,6 +473,11 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
           </KeyFact>
           <KeyFact label="Application fee">
             {formatFee(program.application_fee) ?? <EditLink href={`/programs/${slug}/edit`} />}
+          </KeyFact>
+          <KeyFact label="Stipend / salary">
+            {formatStipendLong(program.stipend, program.stipend_frequency) ?? (
+              <EditLink href={`/programs/${slug}/edit`} />
+            )}
           </KeyFact>
           <KeyFact label="Age range">
             {formatAgeRange(program.age_min, program.age_max) ?? (
