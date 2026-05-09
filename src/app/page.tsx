@@ -30,6 +30,7 @@ function formatProgram(
     start_date: row.start_date ? row.start_date.toISOString() : null,
     end_date: row.end_date ? row.end_date.toISOString() : null,
     application_deadline: row.application_deadline ? row.application_deadline.toISOString() : null,
+    currency: row.currency as Program['currency'],
     tuition: row.tuition,
     application_fee: row.application_fee,
     stipend: row.stipend,

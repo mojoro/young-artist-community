@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { parsePagination, buildMeta, encodeCursor } from '@/lib/pagination'
 import { parseSort, toPrismaOrderBy } from '@/lib/sort'
 import { type Program, sortInstruments } from '@/lib/types'
+import { formatMoney } from '@/lib/money'
 import { ProgramCard } from '@/app/components/program-card'
 
 type SearchParams = { [key: string]: string | string[] | undefined }
@@ -42,6 +43,7 @@ function formatProgram(
     start_date: row.start_date ? row.start_date.toISOString() : null,
     end_date: row.end_date ? row.end_date.toISOString() : null,
     application_deadline: row.application_deadline ? row.application_deadline.toISOString() : null,
+    currency: row.currency as Program['currency'],
     tuition: row.tuition,
     application_fee: row.application_fee,
     stipend: row.stipend,
@@ -80,10 +82,8 @@ function getString(params: SearchParams, key: string): string | undefined {
   return v
 }
 
-function formatTuition(n: number | null): string {
-  if (n === null) return 'Not listed'
-  if (n === 0) return 'Free'
-  return `$${n.toLocaleString('en-US')}`
+function formatTuition(p: Program): string {
+  return formatMoney(p.tuition, p.currency) ?? 'Not listed'
 }
 
 function formatDate(iso: string | null): string {
@@ -97,10 +97,8 @@ function formatDate(iso: string | null): string {
   })
 }
 
-function formatAppFee(n: number | null): string {
-  if (n === null) return '\u2014'
-  if (n === 0) return 'Free'
-  return `$${n.toLocaleString('en-US')}`
+function formatAppFee(p: Program): string {
+  return formatMoney(p.application_fee, p.currency) ?? '\u2014'
 }
 
 function cursorLink(params: SearchParams, newCursor: string | null): string {
@@ -693,10 +691,10 @@ function ProgramRow({ program }: { program: Program }) {
         )}
       </td>
       <td className="px-4 py-3 text-right font-medium whitespace-nowrap text-slate-900">
-        {formatTuition(program.tuition)}
+        {formatTuition(program)}
       </td>
       <td className="px-4 py-3 text-right whitespace-nowrap text-slate-600">
-        {formatAppFee(program.application_fee)}
+        {formatAppFee(program)}
       </td>
       <td className="hidden px-4 py-3 whitespace-nowrap text-slate-500 lg:table-cell">
         {formatDate(program.application_deadline)}
