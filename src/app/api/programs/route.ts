@@ -6,7 +6,7 @@ import { badRequest, internalError, validationError } from '@/lib/problem'
 import { buildMeta, parsePagination } from '@/lib/pagination'
 import { parseSort, toPrismaOrderBy } from '@/lib/sort'
 import { toSlug } from '@/lib/slug'
-import { isStipendFrequency } from '@/lib/types'
+import { isCurrency, isStipendFrequency } from '@/lib/types'
 
 // ---------------------------------------------------------------------------
 // Types & helpers
@@ -42,6 +42,7 @@ function formatProgram(
     application_deadline: program.application_deadline
       ? program.application_deadline.toISOString()
       : null,
+    currency: program.currency,
     tuition: program.tuition,
     application_fee: program.application_fee,
     stipend: program.stipend,
@@ -336,6 +337,13 @@ function buildProgramData(
   const appDeadline = parseDateField(raw, 'application_deadline')
   if (appDeadline && 'error' in appDeadline) return { error: appDeadline.error }
   if (appDeadline) data.application_deadline = appDeadline.value
+
+  if ('currency' in raw) {
+    if (!isCurrency(raw.currency)) {
+      return { error: validationError('currency must be USD, EUR, or GBP') }
+    }
+    data.currency = raw.currency
+  }
 
   const tuition = parseNumberField(raw, 'tuition')
   if (tuition && 'error' in tuition) return { error: tuition.error }

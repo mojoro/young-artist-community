@@ -3,7 +3,7 @@ import type { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/auth'
 import { badRequest, internalError, notFound, validationError } from '@/lib/problem'
-import { isStipendFrequency } from '@/lib/types'
+import { isCurrency, isStipendFrequency } from '@/lib/types'
 
 // Re-use the include shape and formatter from the collection route. Keeping a
 // local copy here avoids importing non-exported internals and keeps this file
@@ -39,6 +39,7 @@ function formatProgram(
     application_deadline: program.application_deadline
       ? program.application_deadline.toISOString()
       : null,
+    currency: program.currency,
     tuition: program.tuition,
     application_fee: program.application_fee,
     stipend: program.stipend,
@@ -159,6 +160,13 @@ export async function PUT(
   const appDeadline = parseDateField(raw, 'application_deadline')
   if (appDeadline && 'error' in appDeadline) return appDeadline.error
   if (appDeadline) update.application_deadline = appDeadline.value
+
+  if ('currency' in raw) {
+    if (!isCurrency(raw.currency)) {
+      return validationError('currency must be USD, EUR, or GBP')
+    }
+    update.currency = raw.currency
+  }
 
   const tuition = parseNumberField(raw, 'tuition')
   if (tuition && 'error' in tuition) return tuition.error
