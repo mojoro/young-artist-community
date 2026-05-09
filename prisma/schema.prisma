@@ -18,6 +18,7 @@ model Program {
   start_date           DateTime? @db.Date
   end_date             DateTime? @db.Date
   application_deadline DateTime? @db.Date
+  currency             String    @default("USD") // USD | EUR | GBP
   tuition              Float?
   application_fee      Float?
   stipend              Float?
