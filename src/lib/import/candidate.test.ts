@@ -27,6 +27,7 @@ function makeExtraction(overrides: Partial<ExtractionSuccess['program']> = {}): 
       start_date: null,
       end_date: null,
       application_deadline: null,
+      currency: 'USD',
       tuition: null,
       application_fee: null,
       stipend: null,
