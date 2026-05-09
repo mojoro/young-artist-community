@@ -32,6 +32,8 @@ function formatProgram(
     application_deadline: row.application_deadline ? row.application_deadline.toISOString() : null,
     tuition: row.tuition,
     application_fee: row.application_fee,
+    stipend: row.stipend,
+    stipend_frequency: row.stipend_frequency as Program['stipend_frequency'],
     age_min: row.age_min,
     age_max: row.age_max,
     offers_scholarship: row.offers_scholarship,
