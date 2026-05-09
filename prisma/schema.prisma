@@ -20,6 +20,8 @@ model Program {
   application_deadline DateTime? @db.Date
   tuition              Float?
   application_fee      Float?
+  stipend              Float?
+  stipend_frequency    String?  // daily | weekly | monthly | annual | one_time
   age_min              Int?
   age_max              Int?
   offers_scholarship   Boolean  @default(false)
