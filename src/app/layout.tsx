@@ -147,7 +147,7 @@ export default function RootLayout({
                     If anything about this project interests you or you&apos;d like to help out,
                     please reach out.
                   </p>
-                  <div className="mt-3 flex items-center gap-4 text-sm text-slate-300">
+                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-300">
                     <a
                       href="mailto:john@johnmoorman.com"
                       className="transition-colors hover:text-white"
