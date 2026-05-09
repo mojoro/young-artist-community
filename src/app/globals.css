@@ -148,7 +148,7 @@ select:not([multiple]):not([size]) {
   transform: translateY(-50%);
   transition: transform 180ms ease;
 }
-.select-wrap:focus-within > .select-chevron {
+.select-wrap[data-open='true'] > .select-chevron {
   transform: translateY(-50%) rotate(180deg);
 }
 
