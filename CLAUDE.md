@@ -29,7 +29,7 @@ yactracker/
 ├── scripts/
 │   └── sync-prod-to-neon.sh   # daily Supabase→Neon dump + PII scrub
 ├── .github/workflows/
-│   ├── ci.yml                 # lint/typecheck/test on PR + Playwright e2e
+│   ├── ci.yml                 # migration-safety + lint/typecheck/test + Playwright e2e
 │   └── sync-prod-to-neon.yml  # cron 04:00 UTC + manual dispatch
 ├── src/
 │   ├── app/
@@ -47,6 +47,7 @@ yactracker/
 │   │   │   ├── program-card.tsx
 │   │   │   ├── program-combobox.tsx
 │   │   │   ├── mobile-header.tsx
+│   │   │   ├── select-input.tsx       # custom dropdown (button + listbox) replacing native <select> for currency/frequency
 │   │   │   ├── feedback-modal.tsx     # site-wide feedback widget
 │   │   │   └── feedback-actions.ts
 │   │   ├── programs/
@@ -95,6 +96,8 @@ yactracker/
 │       ├── types.ts           # shared TypeScript types
 │       ├── api.ts             # typed fetch helpers (server actions only — most write paths now use Prisma directly)
 │       ├── slug.ts            # name → kebab-case slug (strips diacritics)
+│       ├── money.ts           # formatMoney(amount, currency) — USD/EUR/GBP symbol + locale formatting
+│       ├── stipend.ts         # formatStipendShort/Long(amount, frequency, currency) — paid-program display
 │       ├── ip-hash.ts         # sha256 of request IP (ReviewLike, rate-limit keys, etc.)
 │       ├── __mocks__/prisma.ts # vitest-mock-extended mock
 │       ├── *.test.ts          # vitest unit tests colocated in lib/
@@ -127,7 +130,7 @@ Prisma schema at `prisma/schema.prisma`. Models:
 
 **Core entities:**
 
-- `Program` — central entity. Scalar fields: dates, tuition, age range, scholarship, URLs. Has unique `slug` (public pages key on this).
+- `Program` — central entity. Scalar fields: dates, `currency` (USD/EUR/GBP, default USD), `tuition`, `application_fee`, `stipend` + `stipend_frequency` (`daily | weekly | monthly | annual | one_time`), age range, scholarship, URLs. All monetary fields render in the program's `currency`. Has unique `slug` (public pages key on this).
 - `Review` — belongs to one Program (FK `program_id`). Fields: rating (int 1-5), year_attended, reviewer_name, title, body.
 - `ReviewLike` — user "helpful" vote on a review. Dedup by `(review_id, ip_hash)` where `ip_hash` is sha256 of the request IP (`src/lib/ip-hash.ts`).
 - `Audition` — belongs to one Program (FK `program_id`) + one Location (FK `location_id`). Fields: time_slot, fee, instructions, registration URL.
@@ -241,6 +244,8 @@ Vercel Marketplace Supabase integration also auto-wires `SUPABASE_URL`, `SUPABAS
 5. Next daily sync overwrites Neon main with Supabase state (which now includes the new migration row).
 
 **Never commit a schema change without a migration file.** `prisma db push` is removed from package scripts to prevent accidental destructive sync. If you must prototype without a migration, use `npx prisma db push` directly against your Neon dev branch only.
+
+**Migration-safety CI gate** (`.github/workflows/ci.yml` `migration-safety` job): scans every PR's new/modified `prisma/migrations/*/migration.sql` for `DROP TABLE` / `DROP COLUMN`, fails the build if any are found. The Supabase prod + Neon preview/dev split exists specifically to keep destructive migrations from reaching prod data — don't bypass this gate without coordinating; if a destructive change is genuinely intended, raise it explicitly.
 
 **The sync script (`scripts/sync-prod-to-neon.sh`)** uses `pg_restore --clean` — dropping all tables in Neon before restoring. PII columns (`subscriber.email`, `feedback.email`, `report.reporter_email`) are anonymized post-restore.
 

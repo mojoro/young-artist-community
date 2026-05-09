@@ -94,8 +94,11 @@ erDiagram
         date start_date
         date end_date
         date application_deadline
+        string currency
         float tuition
         float application_fee
+        float stipend
+        string stipend_frequency
         int age_min
         int age_max
         bool offers_scholarship
@@ -312,7 +315,7 @@ npm run dev
 
 ### CI/CD
 
-- **CI** (`ci.yml`) runs on every PR: ESLint, Prettier, `tsc --noEmit`, Vitest, `npm audit`. On PR open, polls GitHub for the matching Vercel preview, then runs Playwright against the preview URL using `VERCEL_AUTOMATION_BYPASS_SECRET`.
+- **CI** (`ci.yml`) runs on every PR: a `migration-safety` job that scans new `prisma/migrations/*/migration.sql` for `DROP TABLE` / `DROP COLUMN` (data-loss guard), then a `quality` job (ESLint, Prettier, `tsc --noEmit`, Vitest, `npm audit`), then an `e2e` job that polls GitHub for the matching Vercel preview and runs Playwright against the preview URL using `VERCEL_AUTOMATION_BYPASS_SECRET`.
 - **Sync** (`sync-prod-to-neon.yml`) runs daily at 04:00 UTC and on demand: `pg_dump` from Supabase (public schema only), `pg_restore --clean` to Neon, then anonymizes `subscriber.email`, `feedback.email`, `report.reporter_email`. Required GH secrets: `SUPABASE_PROD_URL` (Session pooler URL), `NEON_DEV_URL` (Neon main branch unpooled URL).
 
 ## Import pipeline
