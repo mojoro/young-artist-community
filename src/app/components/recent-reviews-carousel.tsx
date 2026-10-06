@@ -172,6 +172,9 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
       const max = el.scrollWidth - el.clientWidth
       setAtStart(el.scrollLeft <= 1)
       setAtEnd(max <= 1 || el.scrollLeft >= max - 1)
+      // Distance to each end drives the edge fade (see `ul.review-scroller` in globals.css).
+      el.style.setProperty('--scroll-start', `${Math.round(el.scrollLeft)}px`)
+      el.style.setProperty('--scroll-end', `${Math.max(0, Math.round(max - el.scrollLeft))}px`)
     }
 
     update()
