@@ -234,6 +234,27 @@ ul.review-scroller::-webkit-scrollbar {
   height: 0;
 }
 
+/* ---------- Recent reviews carousel — fade content out at the edges ----------
+   Each side's fade grows with the distance scrolled from that end (vars set in the component),
+   so nothing fades at rest on the left and the right fade shrinks away as you reach the end.
+   --scroll-end falls back to the full fade so the server render matches the usual first paint. */
+ul.review-scroller {
+  --fade-max: 2rem;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black min(var(--scroll-start, 0px), var(--fade-max)),
+    black calc(100% - min(var(--scroll-end, var(--fade-max)), var(--fade-max))),
+    transparent
+  );
+  @variant sm {
+    --fade-max: 3rem;
+  }
+  @variant lg {
+    --fade-max: 4rem;
+  }
+}
+
 /* ---------- ACTIVE PALETTE ---------- */
 @theme inline {
   --font-sans: var(--font-geist-sans);

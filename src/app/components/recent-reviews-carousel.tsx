@@ -141,43 +141,6 @@ function ScrollButton({
   )
 }
 
-// Each layer doubles the blur and is masked to a band one step nearer the edge, so the frost builds gradually.
-const FROST_BLURS_PX = [1, 2, 4, 8, 16, 32]
-
-function EdgeFrost({ side, visible }: { side: 'left' | 'right'; visible: boolean }) {
-  const toEdge = side === 'left' ? 'to left' : 'to right'
-  const step = 100 / (FROST_BLURS_PX.length + 1)
-  // Opacity goes on each layer, not the wrapper: an ancestor with opacity < 1 becomes the
-  // backdrop root, and the blur would vanish for the length of the fade.
-  const layer = `absolute inset-0 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`
-  return (
-    <div
-      aria-hidden="true"
-      className={`pointer-events-none absolute inset-y-0 w-12 sm:w-16 lg:w-24 ${
-        side === 'left' ? 'left-0' : 'right-0'
-      }`}
-    >
-      {FROST_BLURS_PX.map((px, i) => (
-        <div
-          key={px}
-          className={layer}
-          style={{
-            backdropFilter: `blur(${px}px)`,
-            WebkitBackdropFilter: `blur(${px}px)`,
-            maskImage: `linear-gradient(${toEdge}, transparent ${i * step}%, black ${(i + 1) * step}%, black ${(i + 2) * step}%, transparent ${(i + 3) * step}%)`,
-          }}
-        />
-      ))}
-      {/* Tint toward the page background so the cards' clip line dissolves into the frost. */}
-      <div
-        className={`${layer} from-transparent via-slate-50/40 via-55% to-slate-50 ${
-          side === 'left' ? 'bg-linear-to-l' : 'bg-linear-to-r'
-        }`}
-      />
-    </div>
-  )
-}
-
 const DRAG_THRESHOLD_PX = 5
 // Drag past this fraction of a card commits to advancing (browser default is ~50%).
 const ADVANCE_FRACTION = 0.2
@@ -209,6 +172,9 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
       const max = el.scrollWidth - el.clientWidth
       setAtStart(el.scrollLeft <= 1)
       setAtEnd(max <= 1 || el.scrollLeft >= max - 1)
+      // Distance to each end drives the edge fade (see `ul.review-scroller` in globals.css).
+      el.style.setProperty('--scroll-start', `${Math.round(el.scrollLeft)}px`)
+      el.style.setProperty('--scroll-end', `${Math.max(0, Math.round(max - el.scrollLeft))}px`)
     }
 
     update()
@@ -326,30 +292,26 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
 
   return (
     <div>
-      <div className="relative -mx-4 sm:-mx-6 lg:-mx-8">
-        <ul
-          ref={scrollerRef}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
-          className={`review-scroller flex gap-5 overflow-x-auto px-4 pt-1 pb-3 select-none sm:px-6 lg:px-8 ${
-            isDragging ? 'cursor-grabbing' : 'cursor-grab snap-x snap-mandatory scroll-smooth'
-          }`}
-        >
-          {reviews.map((r, i) => (
-            <li
-              key={r.id}
-              data-card
-              className="w-[80%] shrink-0 sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)]"
-            >
-              <ReviewCard review={r} index={i} />
-            </li>
-          ))}
-        </ul>
-        <EdgeFrost side="left" visible={!atStart} />
-        <EdgeFrost side="right" visible={!atEnd} />
-      </div>
+      <ul
+        ref={scrollerRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        className={`review-scroller -mx-4 flex gap-5 overflow-x-auto px-4 pt-1 pb-3 select-none sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 ${
+          isDragging ? 'cursor-grabbing' : 'cursor-grab snap-x snap-mandatory scroll-smooth'
+        }`}
+      >
+        {reviews.map((r, i) => (
+          <li
+            key={r.id}
+            data-card
+            className="w-[80%] shrink-0 sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)]"
+          >
+            <ReviewCard review={r} index={i} />
+          </li>
+        ))}
+      </ul>
 
       {showButtons && (
         <div className="mt-2 hidden justify-end gap-2 sm:flex">
