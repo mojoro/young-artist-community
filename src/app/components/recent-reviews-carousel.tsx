@@ -141,17 +141,40 @@ function ScrollButton({
   )
 }
 
-// Width is the scroller's bleed gutter + 0.5rem, so at rest it only reaches into card padding (p-5), never text.
-function EdgeBlur({ side, visible }: { side: 'left' | 'right'; visible: boolean }) {
+// Each layer doubles the blur and is masked to a band one step nearer the edge, so the frost builds gradually.
+const FROST_BLURS_PX = [1, 2, 4, 8, 16, 32]
+
+function EdgeFrost({ side, visible }: { side: 'left' | 'right'; visible: boolean }) {
+  const toEdge = side === 'left' ? 'to left' : 'to right'
+  const step = 100 / (FROST_BLURS_PX.length + 1)
+  // Opacity goes on each layer, not the wrapper: an ancestor with opacity < 1 becomes the
+  // backdrop root, and the blur would vanish for the length of the fade.
+  const layer = `absolute inset-0 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none absolute inset-y-0 w-6 backdrop-blur-sm transition-opacity duration-300 sm:w-8 lg:w-10 ${
-        side === 'left'
-          ? 'left-0 [mask-image:linear-gradient(to_right,black,transparent)]'
-          : 'right-0 [mask-image:linear-gradient(to_left,black,transparent)]'
-      } ${visible ? 'opacity-100' : 'opacity-0'}`}
-    />
+      className={`pointer-events-none absolute inset-y-0 w-12 sm:w-16 lg:w-24 ${
+        side === 'left' ? 'left-0' : 'right-0'
+      }`}
+    >
+      {FROST_BLURS_PX.map((px, i) => (
+        <div
+          key={px}
+          className={layer}
+          style={{
+            backdropFilter: `blur(${px}px)`,
+            WebkitBackdropFilter: `blur(${px}px)`,
+            maskImage: `linear-gradient(${toEdge}, transparent ${i * step}%, black ${(i + 1) * step}%, black ${(i + 2) * step}%, transparent ${(i + 3) * step}%)`,
+          }}
+        />
+      ))}
+      {/* Tint toward the page background so the cards' clip line dissolves into the frost. */}
+      <div
+        className={`${layer} from-transparent via-slate-50/40 via-55% to-slate-50 ${
+          side === 'left' ? 'bg-linear-to-l' : 'bg-linear-to-r'
+        }`}
+      />
+    </div>
   )
 }
 
@@ -324,8 +347,8 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
             </li>
           ))}
         </ul>
-        <EdgeBlur side="left" visible={!atStart} />
-        <EdgeBlur side="right" visible={!atEnd} />
+        <EdgeFrost side="left" visible={!atStart} />
+        <EdgeFrost side="right" visible={!atEnd} />
       </div>
 
       {showButtons && (
