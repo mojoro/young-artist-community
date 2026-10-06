@@ -141,6 +141,20 @@ function ScrollButton({
   )
 }
 
+// Width is the scroller's bleed gutter + 0.5rem, so at rest it only reaches into card padding (p-5), never text.
+function EdgeBlur({ side, visible }: { side: 'left' | 'right'; visible: boolean }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={`pointer-events-none absolute inset-y-0 w-6 backdrop-blur-sm transition-opacity duration-300 sm:w-8 lg:w-10 ${
+        side === 'left'
+          ? 'left-0 [mask-image:linear-gradient(to_right,black,transparent)]'
+          : 'right-0 [mask-image:linear-gradient(to_left,black,transparent)]'
+      } ${visible ? 'opacity-100' : 'opacity-0'}`}
+    />
+  )
+}
+
 const DRAG_THRESHOLD_PX = 5
 // Drag past this fraction of a card commits to advancing (browser default is ~50%).
 const ADVANCE_FRACTION = 0.2
@@ -289,26 +303,30 @@ export function RecentReviewsCarousel({ reviews }: { reviews: RecentReview[] }) 
 
   return (
     <div>
-      <ul
-        ref={scrollerRef}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-        className={`review-scroller -mx-4 flex gap-5 overflow-x-auto px-4 pt-1 pb-3 select-none sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 ${
-          isDragging ? 'cursor-grabbing' : 'cursor-grab snap-x snap-mandatory scroll-smooth'
-        }`}
-      >
-        {reviews.map((r, i) => (
-          <li
-            key={r.id}
-            data-card
-            className="w-[80%] shrink-0 sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)]"
-          >
-            <ReviewCard review={r} index={i} />
-          </li>
-        ))}
-      </ul>
+      <div className="relative -mx-4 sm:-mx-6 lg:-mx-8">
+        <ul
+          ref={scrollerRef}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          className={`review-scroller flex gap-5 overflow-x-auto px-4 pt-1 pb-3 select-none sm:px-6 lg:px-8 ${
+            isDragging ? 'cursor-grabbing' : 'cursor-grab snap-x snap-mandatory scroll-smooth'
+          }`}
+        >
+          {reviews.map((r, i) => (
+            <li
+              key={r.id}
+              data-card
+              className="w-[80%] shrink-0 sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)]"
+            >
+              <ReviewCard review={r} index={i} />
+            </li>
+          ))}
+        </ul>
+        <EdgeBlur side="left" visible={!atStart} />
+        <EdgeBlur side="right" visible={!atEnd} />
+      </div>
 
       {showButtons && (
         <div className="mt-2 hidden justify-end gap-2 sm:flex">
